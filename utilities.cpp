@@ -4,6 +4,10 @@
 
 #include "utilities.h"
 
+#include <fstream>
+
+namespace fs = std::filesystem;
+
 namespace aoc {
 
     namespace {
@@ -30,6 +34,22 @@ namespace aoc {
 
     std::string trim(const std::string& s) {
         return ltrim(rtrim(s));
+    }
+
+    std::vector<std::string> read_file_lines(const fs::path& file) {
+        if (!fs::exists(file)) {
+            throw std::runtime_error{"Can't read lines from file which doesn't exist."};
+        }
+        else if (!fs::is_regular_file(file)) {
+            throw std::runtime_error{"Can't read lines from file which isn't a regular file."};
+        }
+        std::string line;
+        std::vector<std::string> input;
+        std::ifstream in {file};
+        while (std::getline(in, line) && !line.empty()) {
+            input.push_back(std::move(trim(line)));
+        }
+        return input;
     }
 
 } /* namespace aoc */

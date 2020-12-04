@@ -18,13 +18,7 @@ namespace aoc {
     namespace {
 
         std::vector<int> get_input(const fs::path& input_dir) {
-            std::string line;
-            auto input_file = input_dir / "day_1_input.txt";
-            std::vector<std::string> input;
-            std::ifstream in {input_file};
-            while (std::getline(in, line) && !line.empty()) {
-                input.push_back(std::move(trim(line)));
-            }
+            auto input = aoc::read_file_lines(input_dir / "day_1_input.txt");
             std::vector<int> values;
             std::transform(input.begin(), input.end(), std::back_inserter(values), [](const std::string& s){ return std::stoi(s); });
             return values;
