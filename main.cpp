@@ -10,6 +10,7 @@
 
 #include "day1.h"
 #include "day2.h"
+#include "day3.h"
 
 namespace fs = std::filesystem;
 
@@ -63,7 +64,9 @@ namespace {
             challenge{1, 1, aoc::solve_day_1_1},
             challenge{1, 2, aoc::solve_day_1_2},
             challenge{2, 1, aoc::solve_day_2_1},
-            challenge{2, 2, aoc::solve_day_2_2}
+            challenge{2, 2, aoc::solve_day_2_2},
+            challenge{3, 1, aoc::solve_day_3_1},
+            challenge{3, 2, aoc::solve_day_3_2}
     };
 
 }
