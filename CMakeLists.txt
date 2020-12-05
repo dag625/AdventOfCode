@@ -12,4 +12,4 @@ add_executable(AdventOfCode2020
         day2.cpp
         day2.h
         day3.cpp
-        day3.h day4.cpp day4.h)
+        day3.h day4.cpp day4.h day5.cpp day5.h)
