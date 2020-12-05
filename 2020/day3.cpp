@@ -15,7 +15,9 @@
 
 namespace fs = std::filesystem;
 
-namespace aoc {
+namespace aoc2020 {
+
+    using namespace aoc;
 
     namespace {
 
@@ -24,7 +26,7 @@ namespace aoc {
         constexpr char VALID_VALUES[] = { OPEN_SPACE, TREE_SPACE, '\0' };
 
         std::vector<std::string> get_input(const fs::path& input_dir) {
-            auto input = aoc::read_file_lines(input_dir / "day_3_input.txt");
+            auto input = read_file_lines(input_dir / "2020" / "day_3_input.txt");
             if (input.empty() || input.front().empty() ||
                     !std::all_of(input.begin(), input.end(),
                                  [&input](const std::string& a){ return input.front().size() == a.size() &&
@@ -190,4 +192,4 @@ namespace aoc {
                                              [pos, &map](int64_t acc, velocity vel){ return acc * num_trees_in_path(map, pos, vel); }) << std::endl;
     }
 
-} /* namespace aoc */
+} /* namespace aoc2020 */

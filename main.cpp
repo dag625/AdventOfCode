@@ -2,17 +2,15 @@
 #include <filesystem>
 #include <string>
 #include <utility>
-#include <vector>
-#include <fstream>
 #include <algorithm>
 #include <sstream>
 #include <array>
 
-#include "day1.h"
-#include "day2.h"
-#include "day3.h"
-#include "day4.h"
-#include "day5.h"
+#include "2020/day1.h"
+#include "2020/day2.h"
+#include "2020/day3.h"
+#include "2020/day4.h"
+#include "2020/day5.h"
 
 namespace fs = std::filesystem;
 
@@ -21,21 +19,27 @@ namespace {
     using challenge_function = void (*)(const std::filesystem::path&);
 
     struct challenge {
+        int year;
         int day;
         int num;
         challenge_function function;
 
-        constexpr challenge(int d, int c, challenge_function f) : day{d}, num{c}, function{f} {}
+        constexpr challenge(int y, int d, int c, challenge_function f) : year{y}, day{d}, num{c}, function{f} {}
 
-        [[nodiscard]] bool matches(int rday, int rnum) const {
-            if (rday <= 0) {
+        [[nodiscard]] bool matches(int ryear, int rday, int rnum) const {
+            if (ryear <= 0) {
                 return true;
             }
-            else if (rday == day) {
-                if (rnum <= 0 || rnum == num) {
+            else if (ryear == year) {
+                if (rday <= 0) {
                     return true;
-                }
-                else {
+                } else if (rday == day) {
+                    if (rnum <= 0 || rnum == num) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             }
@@ -57,22 +61,22 @@ namespace {
 
         [[nodiscard]] std::string str() const {
             std::stringstream ss;
-            ss << "Day " << day << " - Challenge " << num;
+            ss << "Year " << year << " - Day " << day << " - Challenge " << num;
             return ss.str();
         }
     };
 
     constexpr auto challenge_solutions = std::array{
-            challenge{1, 1, aoc::solve_day_1_1},
-            challenge{1, 2, aoc::solve_day_1_2},
-            challenge{2, 1, aoc::solve_day_2_1},
-            challenge{2, 2, aoc::solve_day_2_2},
-            challenge{3, 1, aoc::solve_day_3_1},
-            challenge{3, 2, aoc::solve_day_3_2},
-            challenge{4, 1, aoc::solve_day_4_1},
-            challenge{4, 2, aoc::solve_day_4_2},
-            challenge{5, 1, aoc::solve_day_5_1},
-            challenge{5, 2, aoc::solve_day_5_2}
+            challenge{2020, 1, 1, aoc2020::solve_day_1_1},
+            challenge{2020, 1, 2, aoc2020::solve_day_1_2},
+            challenge{2020, 2, 1, aoc2020::solve_day_2_1},
+            challenge{2020, 2, 2, aoc2020::solve_day_2_2},
+            challenge{2020, 3, 1, aoc2020::solve_day_3_1},
+            challenge{2020, 3, 2, aoc2020::solve_day_3_2},
+            challenge{2020, 4, 1, aoc2020::solve_day_4_1},
+            challenge{2020, 4, 2, aoc2020::solve_day_4_2},
+            challenge{2020, 5, 1, aoc2020::solve_day_5_1},
+            challenge{2020, 5, 2, aoc2020::solve_day_5_2}
     };
 
 }
@@ -93,16 +97,19 @@ int main(int argc, char** argv) {
             return 1;
         }
 
-        int day = 0, chal = 0;
+        int year = 0, day = 0, chal = 0;
         if (argc > 2) {
-            day = std::stoi(argv[2]);
+            year = std::stoi(argv[2]);
         }
         if (argc > 3) {
-            chal = std::stoi(argv[3]);
+            day = std::stoi(argv[3]);
+        }
+        if (argc > 4) {
+            chal = std::stoi(argv[4]);
         }
 
         for (const auto& c : challenge_solutions) {
-            if (c.matches(day, chal)) {
+            if (c.matches(year, day, chal)) {
                 std::cout << c.str() << '\n';
                 c.run_challenge(input_dir);
             }

@@ -12,7 +12,9 @@
 
 namespace fs = std::filesystem;
 
-namespace aoc {
+namespace aoc2020 {
+
+    using namespace aoc;
 
     namespace {
 
@@ -49,7 +51,7 @@ namespace aoc {
         }
 
         std::vector<seat> get_input(const fs::path& input_dir) {
-            auto lines = read_file_lines(input_dir / "day_5_input.txt");
+            auto lines = read_file_lines(input_dir / "2020" / "day_5_input.txt");
             std::vector<seat> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_seat);
@@ -123,4 +125,4 @@ namespace aoc {
         std::cout << '\t' << next_id << '\n';
     }
 
-} /* namespace aoc */
+} /* namespace aoc2020 */
