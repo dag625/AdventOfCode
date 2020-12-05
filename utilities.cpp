@@ -46,7 +46,7 @@ namespace aoc {
         std::string line;
         std::vector<std::string> input;
         std::ifstream in {file};
-        while (std::getline(in, line) && !line.empty()) {
+        while (std::getline(in, line)) {
             input.push_back(std::move(trim(line)));
         }
         return input;
