@@ -16,7 +16,7 @@
 
 namespace fs = std::filesystem;
 
-namespace aoc {
+namespace aoc2020 {
 
     namespace {
 
@@ -194,7 +194,7 @@ namespace aoc {
         }
 
         std::vector<id> get_input(const fs::path& input_dir) {
-            std::ifstream in {input_dir / "day_4_input.txt"};
+            std::ifstream in {input_dir / "2020" / "day_4_input.txt"};
             std::string contents {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
             auto retval = parse(contents);
             if (std::any_of(retval.begin(), retval.end(),
@@ -334,4 +334,4 @@ namespace aoc {
     }
 
 
-} /* namespace aoc */
+} /* namespace aoc2020 */
