@@ -18,7 +18,12 @@ namespace aoc {
 
     std::string ltrim(const std::string& s) {
         auto pos = s.find_first_not_of(whitespace);
-        return s.substr(pos);
+        if (pos != std::string::npos) {
+            return s.substr(pos);
+        }
+        else {
+            return s;
+        }
     }
 
     std::string rtrim(const std::string& s) {
