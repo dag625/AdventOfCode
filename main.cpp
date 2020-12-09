@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <sstream>
 #include <array>
+#include <chrono>
+
+#include "time_format.h"
 
 #include "2020/day1.h"
 #include "2020/day2.h"
@@ -117,12 +120,14 @@ int main(int argc, char** argv) {
             chal = std::stoi(argv[4]);
         }
 
+        const auto start = std::chrono::system_clock::now();
         for (const auto& c : challenge_solutions) {
             if (c.matches(year, day, chal)) {
                 std::cout << c.str() << '\n';
                 c.run_challenge(input_dir);
             }
         }
+        std::cout << "" << (std::chrono::system_clock::now() - start) << '\n';
         return 0;
     }
     catch (const std::exception& e) {
