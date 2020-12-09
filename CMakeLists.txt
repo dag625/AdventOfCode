@@ -18,5 +18,10 @@ add_executable(AdventOfCode
         2020/day5.cpp
         2020/day5.h
         2020/day6.cpp
-        2020/day6.h 2020/day7.cpp 2020/day7.h 2020/day8.cpp 2020/day8.h)
+        2020/day6.h
+        2020/day7.cpp
+        2020/day7.h
+        2020/day8.cpp
+        2020/day8.h
+        time_format.h)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
