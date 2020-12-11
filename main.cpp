@@ -18,6 +18,7 @@
 #include "2020/day7.h"
 #include "2020/day8.h"
 #include "2020/day9.h"
+#include "2020/day10.h"
 
 namespace fs = std::filesystem;
 
@@ -91,7 +92,9 @@ namespace {
             challenge{2020, 8, 1, aoc2020::solve_day_8_1},
             challenge{2020, 8, 2, aoc2020::solve_day_8_2},
             challenge{2020, 9, 1, aoc2020::solve_day_9_1},
-            challenge{2020, 9, 2, aoc2020::solve_day_9_2}
+            challenge{2020, 9, 2, aoc2020::solve_day_9_2},
+            challenge{2020, 10, 1, aoc2020::solve_day_10_1},
+            challenge{2020, 10, 2, aoc2020::solve_day_10_2}
     };
 
 }
@@ -126,11 +129,14 @@ int main(int argc, char** argv) {
         const auto start = std::chrono::system_clock::now();
         for (const auto& c : challenge_solutions) {
             if (c.matches(year, day, chal)) {
+                const auto cstart = std::chrono::system_clock::now();
                 std::cout << c.str() << '\n';
                 c.run_challenge(input_dir);
+                std::cout << "\tChallenge time:  " << (std::chrono::system_clock::now() - cstart) << '\n';
             }
         }
-        std::cout << "" << (std::chrono::system_clock::now() - start) << '\n';
+        auto dur = std::chrono::system_clock::now() - start;
+        std::cout << "Finished solutions in:  " << dur << '\n';
         return 0;
     }
     catch (const std::exception& e) {
