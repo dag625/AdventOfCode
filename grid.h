@@ -53,7 +53,15 @@ namespace aoc {
         return p -= v;
     }
 
-    inline position top_left(const std::vector<std::string>&) noexcept {
+    inline bool operator==(position a, position b) noexcept {
+        return a.x == b.x && a.y == b.y;
+    }
+
+    inline bool operator!=(position a, position b) noexcept {
+        return a.x != b.x || a.y != b.y;
+    }
+
+    inline position top_left() noexcept {
         return {0, 0};
     }
 
@@ -209,6 +217,8 @@ namespace aoc {
             }
             return m_data[p.x * m_num_cols + p.y];
         }
+
+        void display(std::ostream& os, std::optional<position> marked = std::nullopt) const;
     };
 
     inline grid::position_iterator operator+(int n, grid::position_iterator i) noexcept { return i + n; }

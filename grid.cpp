@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 #include <stdexcept>
+#include <iomanip>
 
 namespace aoc {
 
@@ -62,16 +63,28 @@ namespace aoc {
         return retval;
     }
 
-    std::ostream& operator<<(std::ostream& os, const grid& g) {
+    void grid::display(std::ostream& os, std::optional<position> marked) const {
         std::size_t idx = 0;
-        for (auto c : g) {
-            os << c;
+        os << std::setw(6) << std::left << (idx / m_num_cols);
+        for (auto p : list_positions()) {
+            if (marked && *marked == p) {
+                os << 'x';
+            }
+            else {
+                os << at(p);
+            }
             ++idx;
-            if (idx % g.num_cols() == 0) {
+            if (idx % m_num_cols == 0) {
                 os << '\n';
+                if (idx < m_data.size()) {
+                    os << std::setw(6) << std::left << (idx / m_num_cols);
+                }
             }
         }
-        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const grid& g) {
+        g.display(os);
     }
 
 } /* namespace aoc */
