@@ -5,6 +5,7 @@
 #include "day3.h"
 
 #include "utilities.h"
+#include "grid.h"
 
 #include <vector>
 #include <string>
@@ -12,6 +13,7 @@
 #include <iostream>
 #include <numeric>
 #include <cstdint>
+#include <array>
 
 namespace fs = std::filesystem;
 
@@ -23,90 +25,32 @@ namespace aoc2020 {
 
         constexpr char OPEN_SPACE = '.';
         constexpr char TREE_SPACE = '#';
-        constexpr char VALID_VALUES[] = { OPEN_SPACE, TREE_SPACE, '\0' };
+        constexpr auto VALID_VALUES = std::array{ OPEN_SPACE, TREE_SPACE };
 
-        std::vector<std::string> get_input(const fs::path& input_dir) {
+        grid get_input(const fs::path& input_dir) {
             auto input = read_file_lines(input_dir / "2020" / "day_3_input.txt");
-            if (input.empty() || input.front().empty() ||
-                    !std::all_of(input.begin(), input.end(),
-                                 [&input](const std::string& a){ return input.front().size() == a.size() &&
-                                                    a.find_first_not_of(VALID_VALUES) == std::string::npos; }))
+            grid retval{input};
+            if (std::any_of(retval.begin(), retval.end(),
+                            [](char c){ return std::none_of(VALID_VALUES.begin(), VALID_VALUES.end(),
+                                                     [c](char v){ return c == v; }); }))
             {
-                throw std::runtime_error{"Invalid input data.  Input must be a non-empty "
-                                         "set of non-empty lines of the same length containing "
-                                         "only '.' and '#' characters."};
+                throw std::runtime_error{"Invalid input data.  Input must contain only '.' and '#' characters."};
             }
-            return input;
+            return retval;
         }
 
-        struct velocity {
-            int dx = 0;
-            int dy = 0;
-        };
-
-        struct position {
-            int x = 0;
-            int y = 0;
-
-            position& operator+=(velocity v) noexcept {
-                x += v.dx;
-                y += v.dy;
-                return *this;
-            }
-
-            position& operator-=(velocity v) noexcept {
-                x -= v.dx;
-                y -= v.dy;
-                return *this;
-            }
-
-            bool wrap(const std::vector<std::string>& map) noexcept {
-                if (y < 0 || y >= map.size()) {
-                    //False if we are vertically outside the map.
-                    return false;
-                }
-                const auto size = map.front().size();
-                while (x < 0) {
-                    x += size;
-                }
-                while (x >= size) {
-                    x -= size;
-                }
-                return true;
-            }
-        };
-
-        position operator+(position a, position b) noexcept {
-            return {a.x + b.x, a.y + b.y};
-        }
-
-        position operator-(position a, position b) noexcept {
-            return {a.x - b.x, a.y - b.y};
-        }
-
-        position operator+(position p, velocity v) noexcept {
-            return p += v;
-        }
-
-        position operator-(position p, velocity v) noexcept {
-            return p -= v;
-        }
-
-        position top_left(const std::vector<std::string>&) noexcept {
-            return {0, 0};
-        }
-
-        int trees_in_space(const std::vector<std::string>& map, const position p) noexcept {
+        int trees_in_space(const grid& g, const position p) noexcept {
             //We assume wrap() has been called on the position since the last change.
             constexpr int denom = TREE_SPACE - OPEN_SPACE;
-            return static_cast<int>(map[p.y][p.x] - OPEN_SPACE) / denom;
+            return static_cast<int>(g[p.x][p.y] - OPEN_SPACE) / denom;
         }
 
-        int num_trees_in_path(const std::vector<std::string>& map, position pos, const velocity vel) noexcept {
+        int num_trees_in_path(const grid& g, position pos, const velocity vel) noexcept {
             int num_trees = 0;
-            while (pos.wrap(map)) {
-                num_trees += trees_in_space(map, pos);
-                pos += vel;
+            std::optional<position> op = pos;
+            while (op) {
+                num_trees += trees_in_space(g, *op);
+                op = g.wrap(*op + vel);
             }
             return num_trees;
         }
@@ -167,7 +111,7 @@ namespace aoc2020 {
     */
     void solve_day_3_1(const fs::path& input_dir) {
         const auto map = get_input(input_dir);
-        std::cout << '\t' << num_trees_in_path(map, top_left(map), {3, 1}) << std::endl;
+        std::cout << '\t' << num_trees_in_path(map, top_left(), {1, 3}) << std::endl;
     }
 
     /*
@@ -186,8 +130,8 @@ namespace aoc2020 {
     */
     void solve_day_3_2(const fs::path& input_dir) {
         const auto map = get_input(input_dir);
-        const auto pos = top_left(map);
-        const velocity vels[] = { {1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2} };
+        const auto pos = top_left();
+        const velocity vels[] = { {1, 1}, {1, 3}, {1, 5}, {1, 7}, {2, 1} };
         std::cout << '\t' << std::accumulate(std::begin(vels), std::end(vels), 1LL,
                                              [pos, &map](int64_t acc, velocity vel){ return acc * num_trees_in_path(map, pos, vel); }) << std::endl;
     }
