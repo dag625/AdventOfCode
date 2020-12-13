@@ -41,6 +41,21 @@ namespace aoc {
         return ltrim(rtrim(s));
     }
 
+    std::vector<std::string_view> split(const std::string& s, char c) {
+        std::vector<std::string_view> retval;
+        if (s.empty()) {
+            return retval;
+        }
+        std::string::size_type pos = s.find(c, 0), start = 0;
+        while (pos != std::string::npos) {
+            retval.emplace_back(s.data() + start, pos - start);
+            start = pos + 1;
+            pos = s.find(c, start);
+        }
+        retval.emplace_back(s.data() + start, s.size() - start);
+        return retval;
+    }
+
     std::vector<std::string> read_file_lines(const fs::path& file) {
         if (!fs::exists(file)) {
             throw std::runtime_error{"Can't read lines from file which doesn't exist."};
