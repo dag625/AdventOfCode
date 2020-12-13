@@ -20,6 +20,14 @@ namespace aoc {
         int dy = 0;
     };
 
+    inline bool operator==(velocity a, velocity b) noexcept {
+        return a.dx == b.dx && a.dy == b.dy;
+    }
+
+    inline bool operator!=(velocity a, velocity b) noexcept {
+        return a.dx != b.dx || a.dy != b.dy;
+    }
+
     struct position {
         int x = 0;
         int y = 0;
@@ -223,6 +231,8 @@ namespace aoc {
 
     inline grid::position_iterator operator+(int n, grid::position_iterator i) noexcept { return i + n; }
 
+    std::ostream& operator<<(std::ostream& os, position p);
+    std::ostream& operator<<(std::ostream& os, velocity v);
     std::ostream& operator<<(std::ostream& os, const grid& g);
 
 } /* namespace aoc */

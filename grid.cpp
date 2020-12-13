@@ -83,8 +83,19 @@ namespace aoc {
         }
     }
 
+    std::ostream& operator<<(std::ostream& os, position p) {
+        os << "(" << p.x << ", " << p.y << ")";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, velocity v) {
+        os << "[" << v.dx << ", " << v.dy << "]";
+        return os;
+    }
+
     std::ostream& operator<<(std::ostream& os, const grid& g) {
         g.display(os);
+        return os;
     }
 
 } /* namespace aoc */

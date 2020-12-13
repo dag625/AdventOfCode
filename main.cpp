@@ -20,6 +20,7 @@
 #include "2020/day9.h"
 #include "2020/day10.h"
 #include "2020/day11.h"
+#include "2020/day12.h"
 
 namespace fs = std::filesystem;
 
@@ -97,7 +98,9 @@ namespace {
             challenge{2020, 10, 1, aoc2020::solve_day_10_1},
             challenge{2020, 10, 2, aoc2020::solve_day_10_2},
             challenge{2020, 11, 1, aoc2020::solve_day_11_1},
-            challenge{2020, 11, 2, aoc2020::solve_day_11_2}
+            challenge{2020, 11, 2, aoc2020::solve_day_11_2},
+            challenge{2020, 12, 1, aoc2020::solve_day_12_1},
+            challenge{2020, 12, 2, aoc2020::solve_day_12_2}
     };
 
 }
