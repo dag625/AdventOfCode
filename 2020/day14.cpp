@@ -5,6 +5,7 @@
 #include "day14.h"
 #include "utilities.h"
 
+#include <utility>
 #include <variant>
 #include <string_view>
 #include <charconv>
@@ -35,37 +36,20 @@ namespace aoc2020 {
             [[nodiscard]] uint64_t apply(uint64_t value) const {
                 return (value | set) & clear;
             }
-        };
 
-        struct mem_mask : public mask {
-            uint64_t floating_mask = 0;
-            std::vector<uint64_t> floating_masks;
-
-            mem_mask() = default;
-            explicit mem_mask(const mask& m) {
-                clear = m.clear;
-                set = m.set;
-                floating = m.floating;
-                floating_mask = ~(~clear | set) & WORD_BITS;
-                const auto num = 1ull << floating.size();
-                floating_masks.reserve(num);
-                for (std::size_t n = 0; n < num; ++n) {
-                    uint64_t mask = 0;
-                    for (std::size_t in = 0; in < floating.size(); ++in) {
-                        if (n & (1ull << in)) {
-                            mask |= floating[in];
-                        }
-                    }
-                    floating_masks.push_back(mask);
+            static void apply_floating_array(memory_map& memory, const std::size_t base, const int64_t val, const uint64_t* masks, std::size_t size) {
+                if (size == 0) {
+                    memory[base] = val;
                 }
-                floating_mask = ~floating_mask;
+                else {
+                    apply_floating_array(memory, base | *masks, val, masks + 1, size - 1);
+                    apply_floating_array(memory, base, val, masks + 1, size - 1);
+                }
             }
 
             void apply_floating(memory_map& memory, const std::size_t base, const int64_t val) const {
-                const auto set_base = (base | set) & floating_mask;
-                for (const auto m : floating_masks) {
-                    memory[set_base | m] = val;
-                }
+                const auto set_base = (base | set) & (~clear | set);
+                apply_floating_array(memory, set_base, val, floating.data(), floating.size());
             }
         };
 
@@ -101,6 +85,7 @@ namespace aoc2020 {
             }
             uint64_t clear = 0, set = 0;
             std::vector<uint64_t> floating_bits;
+            floating_bits.reserve(36);//Worst case
             data.remove_prefix(start);
             const auto begin = data.begin(), end = data.end();
             for (auto p = begin; p != end; ++p) {
@@ -120,7 +105,7 @@ namespace aoc2020 {
                 }
             }
             return {~clear & WORD_BITS, set, std::move(floating_bits)};
-        };
+        }
 
         set parse_set(std::string_view data) {
             if (data.empty()) {
@@ -179,7 +164,7 @@ namespace aoc2020 {
             mask current;
             memory_map memory;
 
-            void operator()(mask ins) { current = ins; }
+            void operator()(mask ins) { current = std::move(ins); }
             void operator()(set ins) { memory[ins.address] = current.apply(ins.value); }
 
             void apply(const instruction& ins) {
@@ -188,10 +173,10 @@ namespace aoc2020 {
         };
 
         struct decoder_v2 {
-            mem_mask current;
-            std::unordered_map<std::size_t, uint64_t> memory;
+            mask current;
+            memory_map memory;
 
-            void operator()(mask ins) { current = mem_mask{ins}; }
+            void operator()(mask ins) { current = std::move(ins); }
             void operator()(set ins) { current.apply_floating(memory, ins.address, ins.value); }
 
             void apply(const instruction& ins) {
