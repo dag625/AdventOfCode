@@ -13,7 +13,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <numeric>
-#include <cmath>
+#include <optional>
 
 namespace fs = std::filesystem;
 
@@ -23,39 +23,21 @@ namespace aoc2020 {
 
         constexpr uint64_t WORD_BITS = 0x0fffffffff;
 
-        using memory_map = std::unordered_map<std::size_t, uint64_t>;
+        using memory_map = std::unordered_map<std::size_t, int64_t>;
 
         struct mask {
             uint64_t clear = WORD_BITS;
             uint64_t set = 0;
-            std::vector<uint64_t> floating;
-
-            mask() = default;
-            mask(uint64_t c, uint64_t s, std::vector<uint64_t>&& f) : clear{c}, set{s}, floating{std::move(f)} {}
+            uint64_t floating = WORD_BITS;
 
             [[nodiscard]] uint64_t apply(uint64_t value) const {
                 return (value | set) & clear;
-            }
-
-            static void apply_floating_array(memory_map& memory, const std::size_t base, const int64_t val, const uint64_t* masks, std::size_t size) {
-                if (size == 0) {
-                    memory[base] = val;
-                }
-                else {
-                    apply_floating_array(memory, base | *masks, val, masks + 1, size - 1);
-                    apply_floating_array(memory, base, val, masks + 1, size - 1);
-                }
-            }
-
-            void apply_floating(memory_map& memory, const std::size_t base, const int64_t val) const {
-                const auto set_base = (base | set) & (~clear | set);
-                apply_floating_array(memory, set_base, val, floating.data(), floating.size());
             }
         };
 
         struct set {
             std::size_t address = 0;
-            uint64_t value = 0;
+            int64_t value = 0;
         };
 
         using instruction = std::variant<mask, set>;
@@ -83,14 +65,13 @@ namespace aoc2020 {
             if (start == std::string_view::npos) {
                 throw std::runtime_error{"Invalid mask instruction."};
             }
-            uint64_t clear = 0, set = 0;
-            std::vector<uint64_t> floating_bits;
-            floating_bits.reserve(36);//Worst case
+            uint64_t clear = 0, set = 0, floating = 0;
             data.remove_prefix(start);
             const auto begin = data.begin(), end = data.end();
             for (auto p = begin; p != end; ++p) {
                 clear <<= 1;
                 set <<= 1;
+                floating <<= 1;
                 if (*p == '1') {
                     set |= 1;
                 }
@@ -98,13 +79,13 @@ namespace aoc2020 {
                     clear |= 1;
                 }
                 else if (*p == 'X') {
-                    floating_bits.push_back(1ull << (35 - (p - begin)));
+                    floating |= 1;
                 }
                 else {
                     throw std::runtime_error{"Invalid mask instruction bit."};
                 }
             }
-            return {~clear & WORD_BITS, set, std::move(floating_bits)};
+            return {~clear & WORD_BITS, set, ~floating & WORD_BITS};
         }
 
         set parse_set(std::string_view data) {
@@ -129,7 +110,7 @@ namespace aoc2020 {
                 throw std::runtime_error{"Invalid memory instruction."};
             }
             data.remove_prefix(start);
-            uint64_t value = 0;
+            int64_t value = 0;
             res = std::from_chars(data.data(), data.data() + data.size(), value);
             if (res.ec != std::errc{}) {
                 throw std::system_error{std::make_error_code(res.ec)};
@@ -164,23 +145,63 @@ namespace aoc2020 {
             mask current;
             memory_map memory;
 
-            void operator()(mask ins) { current = std::move(ins); }
+            void operator()(mask ins) { current = ins; }
             void operator()(set ins) { memory[ins.address] = current.apply(ins.value); }
 
             void apply(const instruction& ins) {
                 std::visit(*this, ins);
             }
+
+            [[nodiscard]] uint64_t sum() const {
+                return std::accumulate(memory.begin(), memory.end(), 0ULL,
+                                       [](uint64_t acc, const std::pair<std::size_t, uint64_t>& v){ return acc + v.second; });
+            }
+        };
+
+        struct range {
+            uint64_t addr;
+            uint64_t mask;
+
+            [[nodiscard]] std::optional<range> intersection(const range& other) const {
+                if ((addr ^ other.addr) & (mask & other.mask)) {
+                    return range{addr | other.addr, mask | other.mask};
+                }
+                else {
+                    return std::nullopt;
+                }
+            }
+            [[nodiscard]] std::size_t size() const {
+                return 1ull << (36 - std::bitset<36>{mask}.size());
+            }
         };
 
         struct decoder_v2 {
-            mask current;
-            memory_map memory;
+            using pair = std::pair<range, int64_t>;
 
-            void operator()(mask ins) { current = std::move(ins); }
-            void operator()(set ins) { current.apply_floating(memory, ins.address, ins.value); }
+            mask current;
+            std::vector<pair> memory;
+
+            void operator()(mask ins) { current = ins; }
+            void operator()(set ins) {
+                range r {ins.address | current.set, current.floating};
+                std::vector<pair> overlaps;
+                for (const auto& m : memory) {
+                    auto overlap = r.intersection(m.first);
+                    if (overlap) {
+                        overlaps.emplace_back(*overlap, -m.second);
+                    }
+                }
+                memory.insert(memory.end(), overlaps.begin(), overlaps.end());
+                memory.emplace_back(r, ins.value);
+            }
 
             void apply(const instruction& ins) {
                 std::visit(*this, ins);
+            }
+
+            [[nodiscard]] int64_t sum() const {
+                return std::accumulate(memory.begin(), memory.end(), 0ll,
+                                       [](int64_t acc, const pair& p){ return acc + (p.second * p.first.size()); });
             }
         };
 
@@ -230,9 +251,7 @@ namespace aoc2020 {
         for (const auto& ins : instructions) {
             s.apply(ins);
         }
-        uint64_t sum = std::accumulate(s.memory.begin(), s.memory.end(), 0ULL,
-                                       [](uint64_t acc, const std::pair<std::size_t, uint64_t>& v){ return acc + v.second; });
-        std::cout << '\t' << sum << '\n';
+        std::cout << '\t' << s.sum() << '\n';
     }
 
     /*
@@ -287,9 +306,7 @@ namespace aoc2020 {
         for (const auto& ins : instructions) {
             s.apply(ins);
         }
-        uint64_t sum = std::accumulate(s.memory.begin(), s.memory.end(), 0ULL,
-                                       [](uint64_t acc, const std::pair<std::size_t, uint64_t>& v){ return acc + v.second; });
-        std::cout << '\t' << sum << '\n';
+        std::cout << '\t' << s.sum() << '\n';
     }
 
 } /* namespace aoc2020 */
