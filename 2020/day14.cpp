@@ -12,7 +12,6 @@
 #include <iostream>
 #include <unordered_map>
 #include <numeric>
-#include <bitset>
 #include <cmath>
 
 namespace fs = std::filesystem;
@@ -28,6 +27,10 @@ namespace aoc2020 {
         struct mask {
             uint64_t clear = WORD_BITS;
             uint64_t set = 0;
+            std::vector<uint64_t> floating;
+
+            mask() = default;
+            mask(uint64_t c, uint64_t s, std::vector<uint64_t>&& f) : clear{c}, set{s}, floating{std::move(f)} {}
 
             [[nodiscard]] uint64_t apply(uint64_t value) const {
                 return (value | set) & clear;
@@ -36,31 +39,31 @@ namespace aoc2020 {
 
         struct mem_mask : public mask {
             uint64_t floating_mask = 0;
-            std::vector<uint64_t> floating;
+            std::vector<uint64_t> floating_masks;
 
             mem_mask() = default;
             explicit mem_mask(const mask& m) {
                 clear = m.clear;
                 set = m.set;
+                floating = m.floating;
                 floating_mask = ~(~clear | set) & WORD_BITS;
-                const std::bitset<36> bs {floating_mask};
-                std::bitset<36> masks{0};
-                const auto n_max = bs.count();
-                const auto num = 1 << n_max;
-                floating.reserve(num);
+                const auto num = 1ull << floating.size();
+                floating_masks.reserve(num);
                 for (std::size_t n = 0; n < num; ++n) {
-                    for (std::size_t in = 0, idx = 0; in < n_max && idx < bs.size(); ++in, ++idx) {
-                        while (idx < bs.size() && !bs.test(idx)) { ++idx; }
-                        masks.set(idx, n & (1 << in));
+                    uint64_t mask = 0;
+                    for (std::size_t in = 0; in < floating.size(); ++in) {
+                        if (n & (1ull << in)) {
+                            mask |= floating[in];
+                        }
                     }
-                    floating.push_back(masks.to_ullong());
+                    floating_masks.push_back(mask);
                 }
                 floating_mask = ~floating_mask;
             }
 
             void apply_floating(memory_map& memory, const std::size_t base, const int64_t val) const {
                 const auto set_base = (base | set) & floating_mask;
-                for (const auto m : floating) {
+                for (const auto m : floating_masks) {
                     memory[set_base | m] = val;
                 }
             }
@@ -92,13 +95,15 @@ namespace aoc2020 {
         }
 
         mask parse_mask(std::string_view data) {
-            const auto end = data.end();
             auto start = data.find_first_not_of(" =");
             if (start == std::string_view::npos) {
                 throw std::runtime_error{"Invalid mask instruction."};
             }
             uint64_t clear = 0, set = 0;
-            for (auto p = data.begin() + start; p != end; ++p) {
+            std::vector<uint64_t> floating_bits;
+            data.remove_prefix(start);
+            const auto begin = data.begin(), end = data.end();
+            for (auto p = begin; p != end; ++p) {
                 clear <<= 1;
                 set <<= 1;
                 if (*p == '1') {
@@ -107,11 +112,14 @@ namespace aoc2020 {
                 else if (*p == '0') {
                     clear |= 1;
                 }
-                else if (*p != 'X') {
+                else if (*p == 'X') {
+                    floating_bits.push_back(1ull << (35 - (p - begin)));
+                }
+                else {
                     throw std::runtime_error{"Invalid mask instruction bit."};
                 }
             }
-            return {~clear & WORD_BITS, set};
+            return {~clear & WORD_BITS, set, std::move(floating_bits)};
         };
 
         set parse_set(std::string_view data) {
