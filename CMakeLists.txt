@@ -23,5 +23,5 @@ add_executable(AdventOfCode
         2020/day7.h
         2020/day8.cpp
         2020/day8.h
-        time_format.h 2020/day9.cpp 2020/day9.h 2020/day10.cpp 2020/day10.h 2020/day11.cpp 2020/day11.h grid.cpp grid.h 2020/day12.cpp 2020/day12.h 2020/day13.cpp 2020/day13.h)
+        time_format.h 2020/day9.cpp 2020/day9.h 2020/day10.cpp 2020/day10.h 2020/day11.cpp 2020/day11.h grid.cpp grid.h 2020/day12.cpp 2020/day12.h 2020/day13.cpp 2020/day13.h 2020/day14.cpp 2020/day14.h)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
