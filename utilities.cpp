@@ -41,7 +41,7 @@ namespace aoc {
         return ltrim(rtrim(s));
     }
 
-    std::vector<std::string_view> split(const std::string& s, char c) {
+    std::vector<std::string_view> split(std::string_view s, char c) {
         std::vector<std::string_view> retval;
         if (s.empty()) {
             return retval;

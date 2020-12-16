@@ -16,7 +16,7 @@ namespace aoc {
     std::string rtrim(const std::string& s);
     std::string trim(const std::string& s);
 
-    std::vector<std::string_view> split(const std::string& s, char c);
+    std::vector<std::string_view> split(std::string_view s, char c);
 
     std::vector<std::string> read_file_lines(const std::filesystem::path& file);
 
