@@ -65,6 +65,9 @@ namespace std::chrono {
             if (rem > 0) {
                 os << std::setw(3) << rem;
             }
+            else {
+                os << '0';
+            }
         }
         if (!haveTime) {
             os << units;
