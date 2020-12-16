@@ -34,9 +34,8 @@ namespace aoc2020 {
             for (; turn < last_turn; ++turn) {
                 auto prev = numbers[next];
                 if (prev >= 0) {
-                    auto last = numbers[next];
                     numbers[next] = turn;
-                    next = turn - last;
+                    next = turn - prev;
                 }
                 else {
                     numbers[next] = turn;
