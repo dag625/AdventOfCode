@@ -3,11 +3,13 @@
 #include <string>
 #include <utility>
 #include <algorithm>
-#include <sstream>
-#include <array>
 #include <chrono>
 
+#define DOCTEST_CONFIG_IMPLEMENT
+#include <doctest/doctest.h>
+
 #include "time_format.h"
+#include "arguments.h"
 
 #include "2020/day1.h"
 #include "2020/day2.h"
@@ -39,15 +41,15 @@ namespace {
 
         constexpr challenge(int y, int d, int c, challenge_function f) : year{y}, day{d}, num{c}, function{f} {}
 
-        [[nodiscard]] bool matches(int ryear, int rday, int rnum) const {
-            if (ryear <= 0) {
+        [[nodiscard]] bool matches(std::optional<int> ryear, std::optional<int> rday, std::optional<int> rnum) const {
+            if (!ryear.has_value()) {
                 return true;
             }
             else if (ryear == year) {
-                if (rday <= 0) {
+                if (!rday.has_value()) {
                     return true;
                 } else if (rday == day) {
-                    if (rnum <= 0 || rnum == num) {
+                    if (!rnum.has_value() || rnum == num) {
                         return true;
                     } else {
                         return false;
@@ -114,45 +116,51 @@ namespace {
 
 }
 
+int non_test_main(int argc, char** argv) {
+    using namespace std::string_view_literals;
+    fs::path input_dir;
+    bool have_required = false, run_challenges = true;
+    std::optional<int> year, day, chal;
+    parse_arguments(argc, argv)
+            .add('i', "input_dir"sv, input_dir)
+            .add_flag( "run"sv, run_challenges)
+            .add_opt("year"sv, year)
+            .add_opt("day"sv, day)
+            .add_opt("challenge"sv, chal)
+            .run(have_required);
+
+    if (!have_required) {
+        std::cerr << "Missing required arguments.\n";
+        return 1;
+    }
+    if (!run_challenges) {
+        return 0;
+    }
+
+    const auto start = std::chrono::system_clock::now();
+    for (const auto &c : challenge_solutions) {
+        if (c.matches(year, day, chal)) {
+            const auto cstart = std::chrono::system_clock::now();
+            std::cout << c.str() << '\n';
+            c.run_challenge(input_dir);
+            std::cout << "\tChallenge time:  " << (std::chrono::system_clock::now() - cstart) << '\n';
+        }
+    }
+    auto dur = std::chrono::system_clock::now() - start;
+    std::cout << "Finished solutions in:  " << dur << '\n';
+    return 0;
+}
+
 int main(int argc, char** argv) {
     try {
-        if (argc < 2) {
-            std::cerr << "Need directory containing input files." << std::endl;
-            return 1;
-        }
-        auto input_dir = fs::path{argv[1]};
-        if (!fs::exists(input_dir)) {
-            std::cerr << "Input directory '" << input_dir << "' does not exist." << std::endl;
-            return 1;
-        }
-        else if (!fs::is_directory(input_dir)) {
-            std::cerr << "Input directory '" << input_dir << "' is not a directory." << std::endl;
-            return 1;
+        doctest::Context ctxt {argc, argv};
+        int retval = ctxt.run();
+
+        if(ctxt.shouldExit()) {
+            return retval;
         }
 
-        int year = 0, day = 0, chal = 0;
-        if (argc > 2) {
-            year = std::stoi(argv[2]);
-        }
-        if (argc > 3) {
-            day = std::stoi(argv[3]);
-        }
-        if (argc > 4) {
-            chal = std::stoi(argv[4]);
-        }
-
-        const auto start = std::chrono::system_clock::now();
-        for (const auto& c : challenge_solutions) {
-            if (c.matches(year, day, chal)) {
-                const auto cstart = std::chrono::system_clock::now();
-                std::cout << c.str() << '\n';
-                c.run_challenge(input_dir);
-                std::cout << "\tChallenge time:  " << (std::chrono::system_clock::now() - cstart) << '\n';
-            }
-        }
-        auto dur = std::chrono::system_clock::now() - start;
-        std::cout << "Finished solutions in:  " << dur << '\n';
-        return 0;
+        return retval + non_test_main(argc, argv); // combine the 2 results
     }
     catch (const std::exception& e) {
         std::cerr << "Exception:  " << e.what() << std::endl;
