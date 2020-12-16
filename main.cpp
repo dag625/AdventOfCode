@@ -4,6 +4,7 @@
 #include <utility>
 #include <algorithm>
 #include <chrono>
+#include <array>
 
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
