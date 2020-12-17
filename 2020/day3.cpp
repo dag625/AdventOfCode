@@ -27,9 +27,9 @@ namespace aoc2020 {
         constexpr char TREE_SPACE = '#';
         constexpr auto VALID_VALUES = std::array{ OPEN_SPACE, TREE_SPACE };
 
-        grid get_input(const fs::path& input_dir) {
+        grid<char> get_input(const fs::path& input_dir) {
             auto input = read_file_lines(input_dir / "2020" / "day_3_input.txt");
-            grid retval{input};
+            grid<char> retval = to_grid(input);
             if (std::any_of(retval.begin(), retval.end(),
                             [](char c){ return std::none_of(VALID_VALUES.begin(), VALID_VALUES.end(),
                                                      [c](char v){ return c == v; }); }))
@@ -39,13 +39,13 @@ namespace aoc2020 {
             return retval;
         }
 
-        int trees_in_space(const grid& g, const position p) noexcept {
+        int trees_in_space(const grid<char>& g, const position p) noexcept {
             //We assume wrap() has been called on the position since the last change.
             constexpr int denom = TREE_SPACE - OPEN_SPACE;
             return static_cast<int>(g[p.x][p.y] - OPEN_SPACE) / denom;
         }
 
-        int num_trees_in_path(const grid& g, position pos, const velocity vel) noexcept {
+        int num_trees_in_path(const grid<char>& g, position pos, const velocity vel) noexcept {
             int num_trees = 0;
             std::optional<position> op = pos;
             while (op) {

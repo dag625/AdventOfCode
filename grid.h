@@ -10,10 +10,9 @@
 #include <string>
 #include <optional>
 #include <ostream>
+#include <iomanip>
 
 namespace aoc {
-
-    class grid;
 
     struct velocity {
         int dx = 0;
@@ -75,16 +74,48 @@ namespace aoc {
 
     constexpr velocity STANDARD_DIRECTIONS[] = {{1,-1}, {1,0}, {1,1}, {0,-1}, {0,1}, {-1,-1}, {-1,0}, {-1,1}};
 
+    template <typename T>
     class grid {
-        std::vector<char> m_data;
+        std::vector<T> m_data;
         std::size_t m_num_cols;
         std::size_t m_num_rows;
-    public:
-        explicit grid(const std::vector<std::string>& lines);
-        grid(std::vector<char> data, std::size_t row_len);
 
-        [[nodiscard]] std::optional<position> wrap(position p) const noexcept;
-        [[nodiscard]] std::vector<position> neighbors(position p) const;
+        static std::vector<T>&& check_data(std::vector<T>&& d, std::size_t row_len) {
+            if (d.empty() || d.size() % row_len != 0) {
+                throw std::runtime_error{"Invalid grid data."};
+            }
+            return std::move(d);
+        }
+
+    public:
+        grid(std::vector<T> data, std::size_t row_len) :
+                m_data{check_data(std::move(data), row_len)}, m_num_cols{row_len}, m_num_rows{m_data.size() / m_num_cols} {}
+
+        [[nodiscard]] std::optional<position> wrap(position p) const noexcept {
+            if (p.x < 0 || p.x >= m_num_rows) {
+                //False if we are vertically outside the map.
+                return std::nullopt;
+            }
+            while (p.y < 0) {
+                p.y += m_num_cols;
+            }
+            while (p.y >= m_num_cols) {
+                p.y -= m_num_cols;
+            }
+            return p;
+        }
+
+        [[nodiscard]] std::vector<position> neighbors(position p) const  {
+            std::vector<position> retval;
+            retval.reserve(std::size(STANDARD_DIRECTIONS));
+            for (auto v : STANDARD_DIRECTIONS) {
+                auto np = p + v;
+                if (in(np)) {
+                    retval.push_back(np);
+                }
+            }
+            return retval;
+        }
 
         [[nodiscard]] bool in(position p) const noexcept {
             return p.x >= 0 && p.x < m_num_rows &&
@@ -158,19 +189,28 @@ namespace aoc {
 
         [[nodiscard]] position_list list_positions() const noexcept { return position_list{*this}; }
 
+        void erase_row(std::size_t row_idx) {
+            if (row_idx < num_rows()) {
+                m_data.erase(m_data.begin() + row_idx * m_num_cols, m_data.begin() + (row_idx + 1) * m_num_cols);
+                --m_num_rows;
+            }
+        }
+
         class grid_row {
-            char* m_begin;
+            T* m_begin;
             std::size_t m_size;
         public:
-            grid_row(char* begin, std::size_t size) noexcept : m_begin{begin}, m_size{size} {}
+            static constexpr bool is_view = true;
+
+            grid_row(T* begin, std::size_t size) noexcept : m_begin{begin}, m_size{size} {}
             grid_row(const grid_row&) = delete;
             grid_row(grid_row&&) = delete;
 
-            char& operator[](std::size_t idx) noexcept  { return *(m_begin + idx); }
-            [[nodiscard]] char operator[](std::size_t idx) const noexcept  { return *(m_begin + idx); }
+            T& operator[](std::size_t idx) noexcept  { return *(m_begin + idx); }
+            [[nodiscard]] T operator[](std::size_t idx) const noexcept  { return *(m_begin + idx); }
 
-            char& at(std::size_t idx) { if (idx >= m_size) { throw std::out_of_range{"Index out of range."}; } return *(m_begin + idx); }
-            [[nodiscard]] char at(std::size_t idx) const { if (idx >= m_size) { throw std::out_of_range{"Index out of range."}; } return *(m_begin + idx); }
+            T& at(std::size_t idx) { if (idx >= m_size) { throw std::out_of_range{"Index out of range."}; } return *(m_begin + idx); }
+            [[nodiscard]] T at(std::size_t idx) const { if (idx >= m_size) { throw std::out_of_range{"Index out of range."}; } return *(m_begin + idx); }
 
             auto begin() noexcept { return m_begin; }
             auto end() noexcept { return m_begin + m_size; }
@@ -178,12 +218,15 @@ namespace aoc {
             [[nodiscard]] auto end() const noexcept { return m_begin + m_size; }
 
             [[nodiscard]] auto size() const noexcept { return m_size; }
+
+            T* data() { return m_begin; }
+            const T* data() const { return m_begin; }
         };
 
         grid_row operator[](std::size_t idx) noexcept  { return grid_row{m_data.data() + idx * m_num_cols, m_num_cols}; }
         [[nodiscard]] const grid_row operator[](std::size_t idx) const noexcept  { return grid_row{const_cast<char*>(m_data.data() + idx * m_num_cols), m_num_cols}; }
 
-        char& at(std::size_t row, std::size_t col) {
+        T& at(std::size_t row, std::size_t col) {
             if (row >= m_num_rows) {
                 throw std::out_of_range{"Row index out of range."};
             }
@@ -193,7 +236,7 @@ namespace aoc {
             return m_data[row * m_num_cols + col];
         }
 
-        [[nodiscard]] char at(std::size_t row, std::size_t col) const {
+        [[nodiscard]] T at(std::size_t row, std::size_t col) const {
             if (row >= m_num_rows) {
                 throw std::out_of_range{"Row index out of range."};
             }
@@ -203,10 +246,10 @@ namespace aoc {
             return m_data[row * m_num_cols + col];
         }
 
-        char& operator[](position p) noexcept { return m_data[p.x * m_num_cols + p.y]; }
-        [[nodiscard]] char operator[](position p) const noexcept { return m_data[p.x * m_num_cols + p.y]; }
+        T& operator[](position p) noexcept { return m_data[p.x * m_num_cols + p.y]; }
+        [[nodiscard]] T operator[](position p) const noexcept { return m_data[p.x * m_num_cols + p.y]; }
 
-        char& at(position p) {
+        T& at(position p) {
             if (p.x >= m_num_rows) {
                 throw std::out_of_range{"Row index out of range."};
             }
@@ -216,7 +259,7 @@ namespace aoc {
             return m_data[p.x * m_num_cols + p.y];
         }
 
-        [[nodiscard]] char at(position p) const {
+        [[nodiscard]] T at(position p) const {
             if (p.x >= m_num_rows) {
                 throw std::out_of_range{"Row index out of range."};
             }
@@ -226,14 +269,143 @@ namespace aoc {
             return m_data[p.x * m_num_cols + p.y];
         }
 
-        void display(std::ostream& os, std::optional<position> marked = std::nullopt) const;
+        friend class grid_col;
+        class grid_col {
+            grid* m_grid;
+            std::size_t m_col_num;
+        public:
+            static constexpr bool is_view = true;
+
+            grid_col(grid* g, std::size_t col) noexcept : m_grid{g}, m_col_num{col} {}
+            //grid_col(const grid_row&) = delete;
+            //grid_col(grid_row&&) = delete;
+
+            T& operator[](std::size_t idx) noexcept  { return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
+            [[nodiscard]] T operator[](std::size_t idx) const noexcept  { return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
+
+            T& at(std::size_t idx) { if (idx >= m_grid->m_num_cols) { throw std::out_of_range{"Index out of range."}; } return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
+            [[nodiscard]] T at(std::size_t idx) const { if (idx >= m_grid->m_num_cols) { throw std::out_of_range{"Index out of range."}; } return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
+
+            friend class iterator;
+            class iterator {
+                grid* m_grid;
+                std::size_t m_col;
+                std::size_t m_idx;
+                [[nodiscard]] bool is_end() const { return m_grid == nullptr || m_idx >= m_grid->m_num_rows; }
+            public:
+                using difference_type = decltype(std::declval<std::size_t>() - std::declval<std::size_t>());
+                using value_type = T;
+                using pointer = T*;
+                using reference = T&;
+                using iterator_category = std::random_access_iterator_tag;
+
+                iterator() noexcept : m_grid{nullptr}, m_col{0}, m_idx{0} {}
+                explicit iterator(grid& g, std::size_t col, std::size_t i = 0) noexcept : m_grid{&g}, m_col{col}, m_idx{i} {}
+
+                bool operator==(const iterator& rhs) const { return m_idx == rhs.m_idx || (is_end() && is_end() == rhs.is_end()); }
+                bool operator!=(const iterator& rhs) const { return m_idx != rhs.m_idx && (!is_end() || is_end() != rhs.is_end()); }
+                bool operator< (const iterator& rhs) const { return m_idx <  rhs.m_idx; }
+                bool operator<=(const iterator& rhs) const { return m_idx <= rhs.m_idx; }
+                bool operator> (const iterator& rhs) const { return m_idx >  rhs.m_idx; }
+                bool operator>=(const iterator& rhs) const { return m_idx >= rhs.m_idx; }
+
+                T& operator*() {
+                    if (m_grid == nullptr) {
+                        throw std::runtime_error{"Cannot dereference."};
+                    }
+                    return *(m_grid->m_data.data() + m_col + m_idx * m_grid->m_num_cols);
+                }
+
+                const T& operator*() const {
+                    if (m_grid == nullptr) {
+                        throw std::runtime_error{"Cannot dereference."};
+                    }
+                    return *(m_grid->m_data.data() + m_col + m_idx * m_grid->m_num_cols);
+                }
+
+                iterator& operator++() noexcept { ++m_idx; return *this; }
+                iterator operator++(int) noexcept { auto retval = *this; ++m_idx; return retval; }
+
+                iterator& operator--() noexcept { --m_idx; return *this; }
+                iterator operator--(int) noexcept { auto retval = *this; --m_idx; return retval; }
+
+                iterator& operator+=(int n) noexcept { m_idx += n; return *this; }
+                iterator& operator-=(int n) noexcept { m_idx -= n; return *this; }
+
+                iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return *this; }
+                iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return *this; }
+                T& operator[](int n) const { return *(*this + n); }
+
+                difference_type operator-(const position_iterator& rhs) const noexcept { if (m_grid != rhs.m_grid) { return 0; } return m_idx - rhs.m_idx; }
+            };
+
+            auto begin() noexcept { return iterator{*m_grid, m_col_num, 0}; }
+            auto end() noexcept { return iterator{*m_grid, m_col_num, m_grid->m_num_rows}; }
+            [[nodiscard]] auto begin() const noexcept { return iterator{*m_grid, m_col_num, 0}; }
+            [[nodiscard]] auto end() const noexcept { return iterator{*m_grid, m_col_num, m_grid->m_num_rows}; }
+
+            [[nodiscard]] auto size() const noexcept { return m_grid->m_num_rows; }
+        };
+
+        [[nodiscard]] grid_col column(std::size_t col) noexcept { return {this, col}; }
+        [[nodiscard]] const grid_col column(std::size_t col) const noexcept { return {this, col}; }
+
+        void display(std::ostream& os, std::optional<position> marked = std::nullopt) const {
+            std::size_t idx = 0;
+            os << std::setw(6) << std::left << (idx / m_num_cols);
+            for (auto p : list_positions()) {
+                os << std::setw(8) << std::right;
+                if (marked && *marked == p) {
+                    os << 'X';
+                }
+                else {
+                    os << at(p);
+                }
+                ++idx;
+                if (idx % m_num_cols == 0) {
+                    os << '\n';
+                    if (idx < m_data.size()) {
+                        os << std::setw(6) << std::left << (idx / m_num_cols);
+                    }
+                }
+            }
+        }
     };
 
-    inline grid::position_iterator operator+(int n, grid::position_iterator i) noexcept { return i + n; }
+    grid<char> to_grid(const std::vector<std::string>& lines);
+
+    template <>
+    inline void grid<char>::display(std::ostream &os, std::optional<position> marked) const {
+        std::size_t idx = 0;
+        os << std::setw(6) << std::left << (idx / m_num_cols);
+        for (auto p : list_positions()) {
+            if (marked && *marked == p) {
+                os << 'x';
+            }
+            else {
+                os << at(p);
+            }
+            ++idx;
+            if (idx % m_num_cols == 0) {
+                os << '\n';
+                if (idx < m_data.size()) {
+                    os << std::setw(6) << std::left << (idx / m_num_cols);
+                }
+            }
+        }
+    }
+
+    template<typename T>
+    inline typename grid<T>::position_iterator operator+(int n, typename grid<T>::position_iterator i) noexcept { return i + n; }
 
     std::ostream& operator<<(std::ostream& os, position p);
     std::ostream& operator<<(std::ostream& os, velocity v);
-    std::ostream& operator<<(std::ostream& os, const grid& g);
+
+    template <typename T>
+    std::ostream& operator<<(std::ostream& os, const grid<T>& g) {
+        g.display(os);
+        return os;
+    }
 
 } /* namespace aoc */
 

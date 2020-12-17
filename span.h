@@ -19,6 +19,9 @@ namespace aoc {
         template <typename Container>
         span(Container& c) : m_begin{std::data(c)}, m_end{std::data(c) + std::size(c)} {}
 
+        template <typename Container, typename = std::enable_if_t<Container::is_view, void>>
+        span(Container&& c) : m_begin{std::data(c)}, m_end{std::data(c) + std::size(c)} {}
+
         [[nodiscard]] bool empty() const { return m_begin == nullptr || m_end - m_begin == 0; }
         [[nodiscard]] std::size_t size() const { return static_cast<std::size_t>(m_end - m_begin); }
         [[nodiscard]] T* data() { return m_begin; }
