@@ -18,9 +18,9 @@ namespace aoc2020 {
 
     namespace {
 
-        grid get_input(const fs::path &input_dir) {
+        grid<char> get_input(const fs::path &input_dir) {
             auto lines = read_file_lines(input_dir / "2020" / "day_11_input.txt");
-            return grid{lines};
+            return to_grid(lines);
         }
 
         struct change {
@@ -32,18 +32,18 @@ namespace aoc2020 {
         };
 
         struct ruleset_1 {
-            static bool sit_down(const grid& g, position p) {
+            static bool sit_down(const grid<char>& g, position p) {
                 auto n = g.neighbors(p);
                 return std::none_of(n.begin(), n.end(), [&g](position np){ return g[np] == '#'; });
             }
-            static bool stand_up(const grid& g, position p) {
+            static bool stand_up(const grid<char>& g, position p) {
                 auto n = g.neighbors(p);
                 return std::count_if(n.begin(), n.end(), [&g](position np){ return g[np] == '#'; }) > 3;
             }
         };
 
         struct ruleset_2 {
-            static char first_visible(const grid& g, position p, velocity v) {
+            static char first_visible(const grid<char>& g, position p, velocity v) {
                 auto next_pos = p + v;
                 if (!g.in(next_pos)) {
                     return '\0';
@@ -57,12 +57,12 @@ namespace aoc2020 {
                 }
             }
 
-            static bool sit_down(const grid& g, position p) {
+            static bool sit_down(const grid<char>& g, position p) {
                 auto n = g.neighbors(p);
                 return std::none_of(std::begin(STANDARD_DIRECTIONS), std::end(STANDARD_DIRECTIONS),
                                     [&g, p](velocity v){ return first_visible(g, p, v) == '#'; });
             }
-            static bool stand_up(const grid& g, position p) {
+            static bool stand_up(const grid<char>& g, position p) {
                 auto n = g.neighbors(p);
                 return std::count_if(std::begin(STANDARD_DIRECTIONS), std::end(STANDARD_DIRECTIONS),
                                      [&g, p](velocity v){ return first_visible(g, p, v) == '#'; }) > 4;
@@ -70,7 +70,7 @@ namespace aoc2020 {
         };
 
         template <typename Ruleset>
-        std::vector<change> iterate(const grid& g) {
+        std::vector<change> iterate(const grid<char>& g) {
             std::vector<change> retval;
             retval.reserve(g.size());
             for (const auto p : g.list_positions()) {
@@ -84,13 +84,13 @@ namespace aoc2020 {
             return retval;
         }
 
-        void apply_changes(grid& g, const std::vector<change>& changes) {
+        void apply_changes(grid<char>& g, const std::vector<change>& changes) {
             for (const auto& c : changes) {
                 g[c.p] = c.new_val;
             }
         }
 
-        auto num_occupied(const grid& g) {
+        auto num_occupied(const grid<char>& g) {
             return std::count_if(g.begin(), g.end(), [](char c){ return c == '#'; });
         }
 

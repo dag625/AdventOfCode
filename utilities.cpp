@@ -41,6 +41,31 @@ namespace aoc {
         return ltrim(rtrim(s));
     }
 
+    std::string_view ltrim(std::string_view s) {
+        auto pos = s.find_first_not_of(whitespace);
+        if (pos != std::string::npos) {
+            return s.substr(pos);
+        }
+        else {
+            return s;
+        }
+    }
+
+    std::string_view rtrim(std::string_view s) {
+        auto pos = s.find_last_not_of(whitespace);
+        if (pos == std::string::npos) {
+            pos = 0;
+        }
+        else {
+            ++pos;
+        }
+        return s.substr(0, pos);
+    }
+
+    std::string_view trim(std::string_view s) {
+        return ltrim(rtrim(s));
+    }
+
     std::vector<std::string_view> split(std::string_view s, char c) {
         std::vector<std::string_view> retval;
         if (s.empty()) {
@@ -51,6 +76,21 @@ namespace aoc {
             retval.emplace_back(s.data() + start, pos - start);
             start = pos + 1;
             pos = s.find(c, start);
+        }
+        retval.emplace_back(s.data() + start, s.size() - start);
+        return retval;
+    }
+
+    std::vector<std::string_view> split(std::string_view s, std::string_view spl) {
+        std::vector<std::string_view> retval;
+        if (s.empty()) {
+            return retval;
+        }
+        std::string::size_type pos = s.find(spl, 0), start = 0;
+        while (pos != std::string::npos) {
+            retval.emplace_back(s.data() + start, pos - start);
+            start = pos + spl.size();
+            pos = s.find(spl, start);
         }
         retval.emplace_back(s.data() + start, s.size() - start);
         return retval;
