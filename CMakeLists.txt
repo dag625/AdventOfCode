@@ -50,7 +50,7 @@ add_executable(AdventOfCode
         2020/day14.cpp
         2020/day14.h
         2020/day15.cpp
-        2020/day15.h span.h arguments.h 2020/day16.cpp 2020/day16.h)
+        2020/day15.h span.h arguments.h 2020/day16.cpp 2020/day16.h 2020/day17.cpp 2020/day17.h point.h point_nd.h)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(AdventOfCode PRIVATE doctest)
 
