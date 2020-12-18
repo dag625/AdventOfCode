@@ -7,6 +7,7 @@
 
 #include <array>
 #include <numeric>
+#include <ostream>
 
 namespace aoc {
 
@@ -16,6 +17,21 @@ namespace aoc {
     //Not useful, but hopefully having this other name will help keep things sorted mentally.
     template <std::size_t D>
     using vector = point<D>;
+
+    template <std::size_t D>
+    std::ostream& operator<<(std::ostream& os, const point<D>& p) {
+        bool first = true;
+        os << '(';
+        for (auto v : p) {
+            if (!first) {
+                os << ',';
+            }
+            first = false;
+            os << v;
+        }
+        os << ')';
+        return os;
+    }
 
     template <std::size_t D>
     point<D> operator+(const point<D>& a, const vector<D>& b) {
