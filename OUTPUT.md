@@ -98,4 +98,9 @@ Challenge time:  565.0us
 ####Year 2020 - Day 16 - Challenge 2
 1940065747861  
 Challenge time:  654.0us
-###Finished solutions in:  792.0510ms
+####Year 2020 - Day 17 - Challenge 1
+372  
+Challenge time:  11.0400ms
+####Year 2020 - Day 17 - Challenge 2
+1896  
+Challenge time:  345.9400ms
