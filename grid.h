@@ -12,67 +12,9 @@
 #include <ostream>
 #include <iomanip>
 
+#include "point.h"
+
 namespace aoc {
-
-    struct velocity {
-        int dx = 0;
-        int dy = 0;
-    };
-
-    inline bool operator==(velocity a, velocity b) noexcept {
-        return a.dx == b.dx && a.dy == b.dy;
-    }
-
-    inline bool operator!=(velocity a, velocity b) noexcept {
-        return a.dx != b.dx || a.dy != b.dy;
-    }
-
-    struct position {
-        int x = 0;
-        int y = 0;
-
-        position& operator+=(velocity v) noexcept {
-            x += v.dx;
-            y += v.dy;
-            return *this;
-        }
-
-        position& operator-=(velocity v) noexcept {
-            x -= v.dx;
-            y -= v.dy;
-            return *this;
-        }
-    };
-
-    inline position operator+(position a, position b) noexcept {
-        return {a.x + b.x, a.y + b.y};
-    }
-
-    inline position operator-(position a, position b) noexcept {
-        return {a.x - b.x, a.y - b.y};
-    }
-
-    inline position operator+(position p, velocity v) noexcept {
-        return p += v;
-    }
-
-    inline position operator-(position p, velocity v) noexcept {
-        return p -= v;
-    }
-
-    inline bool operator==(position a, position b) noexcept {
-        return a.x == b.x && a.y == b.y;
-    }
-
-    inline bool operator!=(position a, position b) noexcept {
-        return a.x != b.x || a.y != b.y;
-    }
-
-    inline position top_left() noexcept {
-        return {0, 0};
-    }
-
-    constexpr velocity STANDARD_DIRECTIONS[] = {{1,-1}, {1,0}, {1,1}, {0,-1}, {0,1}, {-1,-1}, {-1,0}, {-1,1}};
 
     template <typename T>
     class grid {
