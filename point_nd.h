@@ -58,13 +58,13 @@ namespace aoc {
         auto less_dims = get_unit_cube<D - 1>();
         std::size_t idx = 0;
         for (const auto& p : less_dims) {
-            for (int i = -1; i <= 1; ++i) {
-                for (int d = 0; d < D - 1; ++d) {
-                    retval[idx][d] = p[d];
+            for (int i = 0; i < 3; ++i) {
+                for (int j = 0; j < D - 1; ++j) {
+                    retval[idx][j] = p[j];
                 }
-                retval[idx][D - 1] = i;
+                retval[idx][D - 1] = i - 1;
+                ++idx;
             }
-            ++idx;
         }
         return retval;
     }

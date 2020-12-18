@@ -5,6 +5,7 @@
 #include "day17.h"
 #include "utilities.h"
 #include "grid.h"
+#include "point_nd.h"
 
 #include <iostream>
 
@@ -16,42 +17,56 @@ namespace aoc2020 {
 
     namespace {
 
+        template <std::size_t D>
         struct cell {
-            position3d pos;
+            point<D> pos{};
             bool active = false;
             bool was_active = false;
         };
 
-        bool operator<(const cell& a, const cell& b) noexcept {
-            return std::tie(a.pos.x, a.pos.y, a.pos.z) < std::tie(b.pos.x, b.pos.y, b.pos.z);
+        template <std::size_t D>
+        bool operator<(const cell<D>& a, const cell<D>& b) noexcept {
+            if (a.pos < b.pos) {
+                return true;
+            }
+            else if (a.pos == b.pos) {
+                return a.active > b.active;
+            }
+            else {
+                return false;
+            }
         }
 
-        bool operator==(const cell& a, const cell& b) noexcept {
-            return std::tie(a.pos.x, a.pos.y, a.pos.z) == std::tie(b.pos.x, b.pos.y, b.pos.z);
+        template <std::size_t D>
+        bool operator==(const cell<D>& a, const cell<D>& b) noexcept {
+            return a.pos == b.pos;
         }
 
-        bool operator<(const cell& a, const position3d& b) noexcept {
-            return std::tie(a.pos.x, a.pos.y, a.pos.z) < std::tie(b.x, b.y, b.z);
+        template <std::size_t D>
+        bool operator<(const cell<D>& a, const point<D>& b) noexcept {
+            return a.pos < b;
         }
 
-        std::vector<cell> get_active(const grid<char>& g) {
-            std::vector<cell> retval;
+        template <std::size_t D>
+        std::vector<cell<D>> get_active(const grid<char>& g) {
+            std::vector<cell<D>> retval;
             for (const auto p : g.list_positions()) {
                 if (g[p] == '#') {
-                    retval.push_back({p, true, true});
+                    retval.push_back({from_flat<D>(p.x, p.y), true, true});
                 }
             }
             std::sort(retval.begin(), retval.end());
             return retval;
         }
 
-        void add_neighbors_of_active(std::vector<cell>& data) {
-            std::vector<cell> neighbors;
-            neighbors.reserve(data.size() * std::size(STANDARD_3D_DIRECTIONS));
+        template <std::size_t D>
+        void add_neighbors_of_active(std::vector<cell<D>>& data) {
+            std::vector<cell<D>> neighbors;
+            neighbors.reserve(data.size() * std::size(get_standard_directions<D>()));
             for (const auto& c : data) {
                 if (c.active) {
-                    for (const auto &n : STANDARD_3D_DIRECTIONS) {
-                        neighbors.push_back({c.pos + n, false, false});
+                    for (const auto &n : get_standard_directions<D>()) {
+                        neighbors.push_back({ c.pos + n, false, false});
                     }
                 }
             }
@@ -63,19 +78,22 @@ namespace aoc2020 {
             data.erase(std::unique(data.begin(), data.end()), data.end());
         }
 
-        int count_active(const std::vector<cell>& data, const cell& c) {
+        template <std::size_t D>
+        int count_active(const std::vector<cell<D>>& data, const cell<D>& c) {
             int retval = 0;
-            for (const auto& n : STANDARD_3D_DIRECTIONS) {
-                auto found = std::lower_bound(data.begin(), data.end(), c.pos + n);
-                if (found != data.end() && found->was_active) {
+            for (const auto& n : get_standard_directions<D>()) {
+                auto pos = c.pos + n;
+                auto found = std::lower_bound(data.begin(), data.end(), pos);
+                if (found != data.end() && found->pos == pos && found->was_active) {
                     ++retval;
                 }
             }
             return retval;
         }
 
-        void iterate(std::vector<cell>& data) {
-            std::for_each(data.begin(), data.end(), [](cell& c){ c.was_active = c.active; });
+        template <std::size_t D>
+        void iterate(std::vector<cell<D>>& data) {
+            std::for_each(data.begin(), data.end(), [](cell<D>& c){ c.was_active = c.active; });
             for (auto& c : data) {
                 auto num_active = count_active(data, c);
                 if (num_active == 3) {
@@ -99,20 +117,24 @@ namespace aoc2020 {
 
     */
     void solve_day_17_1(const std::filesystem::path& input_dir) {
-        auto cells = get_active(get_input(input_dir));
+        auto cells = get_active<3>(get_input(input_dir));
         add_neighbors_of_active(cells);
         for (int i = 0; i < 6; ++i) {
             iterate(cells);
         }
-        std::cout << '\t' << std::count_if(cells.begin(), cells.end(), [](const cell& c){ return c.active; }) << '\n';
+        std::cout << '\t' << std::count_if(cells.begin(), cells.end(), [](const cell<3>& c){ return c.active; }) << '\n';
     }
 
     /*
 
     */
     void solve_day_17_2(const std::filesystem::path& input_dir) {
-        auto cells = get_active(get_input(input_dir));
-        std::cout << '\t' << 0 << '\n';
+        auto cells = get_active<4>(get_input(input_dir));
+        add_neighbors_of_active(cells);
+        for (int i = 0; i < 6; ++i) {
+            iterate(cells);
+        }
+        std::cout << '\t' << std::count_if(cells.begin(), cells.end(), [](const cell<4>& c){ return c.active; }) << '\n';
     }
 
 } /* namespace aoc2020 */
