@@ -137,7 +137,9 @@ namespace aoc2020 {
                         std::vector<std::string> opts;
                         for (const auto& e : r->entry) {
                             auto eopts = to_terminal_sequence(e, terminals);
+                            auto mid = opts.size();
                             opts.insert(opts.end(), eopts.begin(), eopts.end());
+                            std::inplace_merge(opts.begin(), opts.begin() + mid, opts.end());
                         }
                         terminals.push_back({ r->id, std::move(opts) });
                         r = options.erase(r);
@@ -237,7 +239,8 @@ namespace aoc2020 {
         const auto rbegin = rule0.begin();
         const auto rend = rule0.end();
         for (const auto& m : messages) {
-            if (std::find(rbegin, rend, m) != rend) {
+            auto found = std::lower_bound(rbegin, rend, m);
+            if (found != rend && *found == m) {
                 ++matching;
             }
         }
