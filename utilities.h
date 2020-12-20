@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 #include <filesystem>
+#include <optional>
 
 namespace aoc {
 
@@ -22,6 +23,10 @@ namespace aoc {
 
     std::vector<std::string_view> split(std::string_view s, char c);
     std::vector<std::string_view> split(std::string_view s, std::string_view spl);
+    std::vector<std::string_view> split_no_empty(std::string_view s, char c);
+    std::vector<std::string_view> split_no_empty(std::string_view s, std::string_view spl);
+
+    std::optional<std::string_view> starts_with(std::string_view str, std::string_view to_find);
 
     std::vector<std::string> read_file_lines(const std::filesystem::path& file);
 
