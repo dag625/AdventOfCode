@@ -22,9 +22,9 @@ namespace aoc2020 {
     namespace {
 
         using sequence = std::vector<int>;
-        using option = std::vector<sequence>;
+        using option_list = std::vector<sequence>;
         using term_opt = std::vector<std::string>;
-        using rule = std::variant<option, char>;
+        using rule = std::variant<option_list, char>;
 
         struct rule_entry {
             int id;
@@ -40,35 +40,7 @@ namespace aoc2020 {
         bool operator< (int lhs, const rule_entry& rhs) { return lhs <  rhs.id; }
         bool operator==(int lhs, const rule_entry& rhs) { return lhs == rhs.id; }
 
-        struct option_entry {
-            int id;
-            option entry;
-
-            bool operator< (const option_entry& rhs) const noexcept { return id <  rhs.id; }
-            bool operator< (int rhs) const noexcept { return id <  rhs; }
-
-            bool operator==(const option_entry& rhs) const noexcept { return id == rhs.id; }
-            bool operator==(int rhs) const noexcept { return id == rhs; }
-        };
-
-        bool operator< (int lhs, const option_entry& rhs) { return lhs <  rhs.id; }
-        bool operator==(int lhs, const option_entry& rhs) { return lhs == rhs.id; }
-
-        struct terminal {
-            int id;
-            term_opt options;
-
-            bool operator< (const terminal& rhs) const noexcept { return id <  rhs.id; }
-            bool operator< (int rhs) const noexcept { return id <  rhs; }
-
-            bool operator==(const terminal& rhs) const noexcept { return id == rhs.id; }
-            bool operator==(int rhs) const noexcept { return id == rhs; }
-        };
-
-        bool operator< (int lhs, const terminal& rhs) { return lhs <  rhs.id; }
-        bool operator==(int lhs, const terminal& rhs) { return lhs == rhs.id; }
-
-        std::vector<int> unique_ids(const option& o) {
+        std::vector<int> unique_ids(const option_list& o) {
             std::vector<int> retval;
             for (const auto& s : o) {
                 retval.insert(retval.end(), s.begin(), s.end());
@@ -76,81 +48,6 @@ namespace aoc2020 {
             std::sort(retval.begin(), retval.end());
             retval.erase(std::unique(retval.begin(), retval.end()), retval.end());
             return retval;
-        }
-
-        std::vector<std::string> to_terminal_sequence(const std::vector<std::vector<terminal>::const_iterator>::iterator begin,
-                                                      const std::vector<std::vector<terminal>::const_iterator>::iterator end)
-        {
-            if (begin == end) {
-                return {};
-            }
-            auto after = to_terminal_sequence(begin + 1, end);
-            std::vector<std::string> retval;
-            if (after.empty()) {
-                for (const auto &opt : (*begin)->options) {
-                    retval.push_back(opt);
-                }
-            }
-            else {
-                const auto &terms = *begin;
-                retval.reserve(after.size() * terms->options.size());
-                for (const auto &opt : terms->options) {
-                    for (const auto &t : after) {
-                        retval.push_back(opt + t);
-                    }
-                }
-            }
-            return retval;
-        }
-
-        std::vector<std::string> to_terminal_sequence(const sequence& s, const std::vector<terminal>& terminals) {
-            std::vector<std::vector<terminal>::const_iterator> terms;
-            for (const auto& id : s) {
-                terms.push_back(std::find(terminals.begin(), terminals.end(), id));
-            }
-            return to_terminal_sequence(terms.begin(), terms.end());
-        }
-
-        int num_non_terminals(const option& o, const std::vector<terminal>& terminals) {
-            auto ids = unique_ids(o);
-            return std::count_if(ids.begin(), ids.end(), [&terminals](int id){
-                return std::none_of(terminals.begin(), terminals.end(), [id](const terminal& t){ return id == t.id; });
-            });
-        }
-
-        std::vector<terminal> terminal_rules_from_rules(const std::vector<rule_entry>& rules) {
-            std::vector<terminal> terminals;
-            std::vector<option_entry> options;
-            terminals.reserve(rules.size());
-            options.reserve(rules.size());
-            for (const auto& r : rules) {
-                if (std::holds_alternative<char>(r.entry)) {
-                    terminals.push_back({ r.id, { std::string{} + std::get<char>(r.entry) } });
-                }
-                else {
-                    options.push_back({ r.id, std::get<option>(r.entry) });
-                }
-            }
-            while (!options.empty()) {
-                for (auto r = options.begin(); r != options.end();) {
-                    if (num_non_terminals(r->entry, terminals) == 0) {
-                        std::vector<std::string> opts;
-                        for (const auto& e : r->entry) {
-                            auto eopts = to_terminal_sequence(e, terminals);
-                            auto mid = opts.size();
-                            opts.insert(opts.end(), eopts.begin(), eopts.end());
-                            std::inplace_merge(opts.begin(), opts.begin() + mid, opts.end());
-                        }
-                        terminals.push_back({ r->id, std::move(opts) });
-                        r = options.erase(r);
-                    }
-                    else {
-                        ++r;
-                    }
-                }
-            }
-            std::sort(terminals.begin(), terminals.end());
-            return terminals;
         }
 
         rule_entry parse_rule(std::string_view s) {
@@ -168,7 +65,7 @@ namespace aoc2020 {
             }
             else {
                 auto opt_strs = aoc::split(s, '|');
-                option opts;
+                option_list opts;
                 for (const auto str : opt_strs) {
                     auto seq_str = aoc::split_no_empty(str, ' ');
                     sequence seq;
@@ -186,45 +83,86 @@ namespace aoc2020 {
             }
         }
 
-        std::pair<std::vector<terminal>, std::vector<std::string>> get_input(const fs::path &input_dir) {
+        std::pair<std::vector<rule_entry>, std::vector<std::string>> get_input(const fs::path &input_dir) {
             const auto lines = aoc::read_file_lines(input_dir / "2020" / "day_19_input.txt");
             const auto blank = std::find_if(lines.begin(), lines.end(), [](const std::string& s){ return s.empty(); });
 
             std::vector<rule_entry> rules;
             rules.reserve(std::distance(lines.begin(), blank));
             std::transform(lines.begin(), blank, std::back_inserter(rules), parse_rule);
-            return { terminal_rules_from_rules(rules), {blank + 1, lines.end()} };
+            std::sort(rules.begin(), rules.end());
+            return { {std::move(rules)}, {blank + 1, lines.end()} };
         }
 
-        std::pair<std::string_view, int> count_matches(std::string_view msg, const terminal& term) {
-            int num = 0;
-            while (!msg.empty()) {
-                bool any = false;
-                for (const auto& t : term.options) {
-                    auto found = aoc::starts_with(msg, t);
-                    if (found) {
-                        any = true;
-                        ++num;
-                        msg = *found;
+        using index_list = std::vector<std::size_t>;
+
+        index_list matches_rule(std::string_view str, const index_list& idxs, char c, const std::vector<rule_entry>& rules) {
+            index_list valid_next;
+            valid_next.reserve(idxs.size());
+            for (auto idx : idxs) {
+                if (idx < str.size() && str[idx] == c) {
+                    valid_next.push_back(idx + 1);
+                }
+            }
+            return valid_next;
+        }
+
+        index_list matches_rule(std::string_view str, const index_list& idxs, const rule_entry& rule, const std::vector<rule_entry>& rules);
+
+        index_list matches_rule(std::string_view str, const index_list& idxs, const option_list& options, const std::vector<rule_entry>& rules) {
+            std::vector<std::size_t> valid_next;
+            valid_next.reserve(idxs.size() * options.size());
+            for (const auto &opt : options) {
+                bool matches_seq = true;
+                index_list next = idxs;
+                for (auto id : opt) {
+                    index_list next_next;
+                    //Assume rules are well formed, so don't check that we found it.
+                    next = matches_rule(str, next, *std::find(rules.begin(), rules.end(), id), rules);
+                    matches_seq = !next.empty();
+                    if (!matches_seq) {
                         break;
                     }
                 }
-                if (!any) {
-                    break;
+                if (matches_seq) {
+                    valid_next.insert(valid_next.end(), next.begin(), next.end());
                 }
             }
-            return { msg, num };
+            std::sort(valid_next.begin(), valid_next.end());
+            valid_next.erase(std::unique(valid_next.begin(), valid_next.end()), valid_next.end());
+            return valid_next;
         }
 
-        bool matches_part_2(std::string_view msg, const terminal& term1, const terminal& term2) {
-            auto [rest, count1] = count_matches(msg, term1);
-            auto [end, count2] = count_matches(rest, term2);
-            if (!end.empty() || count1 < 2 || count2 < 1) {
-                return false;
+        index_list matches_rule(std::string_view str, const index_list& idxs, const rule_entry& rule, const std::vector<rule_entry>& rules) {
+            return std::visit([&](auto&& r){ return matches_rule(str, idxs, r, rules); }, rule.entry);
+        }
+
+        bool matches_rule_helper(std::string_view str, const rule_entry& rule, const std::vector<rule_entry>& rules) {
+            auto matches = matches_rule(str, {0}, rule, rules);
+            return std::any_of(matches.begin(), matches.end(), [str](std::size_t match_end){ return match_end == str.size(); });
+        }
+
+        bool matches_part_2(std::string_view str, const rule_entry& rule1, const rule_entry& rule2, const std::vector<rule_entry>& rules) {
+            bool matching1 = true, matching2 = true;
+            int num1 = 0, num2 = 0;
+            index_list next = {0};
+            while (matching1) {
+                auto tmp = matches_rule(str, next, rule1, rules);
+                matching1 = !tmp.empty();
+                if (matching1) {
+                    ++num1;
+                    next = std::move(tmp);
+                }
             }
-            else {
-                return count1 > count2;
+            while (matching2) {
+                auto tmp = matches_rule(str, next, rule2, rules);
+                matching2 = !tmp.empty();
+                if (matching2) {
+                    ++num2;
+                    next = std::move(tmp);
+                }
             }
+            return std::any_of(next.begin(), next.end(), [str](std::size_t idx){ return idx == str.size(); }) && num1 > 0 && num2 > 0 && num1 > num2;
         }
 
     }
@@ -283,12 +221,9 @@ namespace aoc2020 {
     void solve_day_19_1(const std::filesystem::path& input_dir) {
         auto [rules, messages] = get_input(input_dir);
         int matching = 0;
-        const auto& rule0 = rules.front().options;
-        const auto rbegin = rule0.begin();
-        const auto rend = rule0.end();
+        const auto& rule0 = rules.front();
         for (const auto& m : messages) {
-            auto found = std::lower_bound(rbegin, rend, m);
-            if (found != rend && *found == m) {
+            if (matches_rule_helper(m, rule0, rules)) {
                 ++matching;
             }
         }
@@ -393,7 +328,7 @@ namespace aoc2020 {
         }
         int matching = 0;
         for (const auto& m : messages) {
-            if (matches_part_2(m, *rule42, *rule31)) {
+            if (matches_part_2(m, *rule42, *rule31, rules)) {
                 ++matching;
             }
         }
@@ -403,85 +338,128 @@ namespace aoc2020 {
     TEST_SUITE("day19" * doctest::description("Tests for day 19 challenges.")) {
         using namespace std::string_literals;
         using namespace std::string_view_literals;
-        TEST_CASE("day19:count_matches1" * doctest::description("Testing counting the number of times a terminal shows up at the start of a string. (#1)")) {
-            terminal term { 0, { "a"s } };
-                    REQUIRE_EQ(count_matches("a"sv, term).second, 1);
-                    REQUIRE(count_matches("a"sv, term).first.empty());
-                    REQUIRE_EQ(count_matches("aaaaa"sv, term).second, 5);
-                    REQUIRE(count_matches("aaaaa"sv, term).first.empty());
-                    REQUIRE_EQ(count_matches("aaaabb"sv, term).second, 4);
-                    REQUIRE_EQ(count_matches("aaaabb"sv, term).first, "bb"sv);
-                    REQUIRE_EQ(count_matches("aaaabbaa"sv, term).second, 4);
-                    REQUIRE_EQ(count_matches("aaaabbaa"sv, term).first, "bbaa"sv);
+        TEST_CASE("day19:matches_rule1" * doctest::description("Testing rule matching. (#1)")) {
+            std::vector<rule_entry> rules = {
+                    { 0, option_list{ {1, 2}, {1, 3} } },   //"abaaaaaba" or "aabaaaaba" or "bbbaaaaba" or "ababbaaba" or "aabbbaaba" or "bbbbbaaba" ! or "abaaaaaab" or "aabaaaaab" or "bbbaaaaab" or "ababbaaab" or "aabbbaaab" or "bbbbbaaab" !or  "abaaaabbb" or "aabaaabbb" or "bbbaaabbb" or "ababbabbb" or "aabbbabbb" or "bbbbbabbb" ! or "abaaaaab" or "aabaaaab" or "bbbaaaab" or "ababbaab" or "aabbbaab" or "bbbbbaab"
+                    { 1, option_list{ {2, 4, 5} } },        //"abaaaa" or "aabaaa" or "bbbaaa" or "ababba" or "aabbba" or "bbbbba"
+                    { 2, option_list{ {3, 5}, {4, 6} } },   //"aba" or "aab" or "bbb"
+                    { 3, option_list{ {5, 6} } },           //"ab"
+                    { 4, option_list{ {5, 5}, {6, 6} } },   //"aa" or "bb"
+                    { 5, 'a' },
+                    { 6, 'b' }
+            };
+            std::vector<std::string_view> valid = {
+                    "abaaaaaba"sv,
+                    "aabaaaaba"sv,
+                    "bbbaaaaba"sv,
+                    "ababbaaba"sv,
+                    "aabbbaaba"sv,
+                    "bbbbbaaba"sv,
+                    "abaaaaaab"sv,
+                    "aabaaaaab"sv,
+                    "bbbaaaaab"sv,
+                    "ababbaaab"sv,
+                    "aabbbaaab"sv,
+                    "bbbbbaaab"sv,
+                    "abaaaabbb"sv,
+                    "aabaaabbb"sv,
+                    "bbbaaabbb"sv,
+                    "ababbabbb"sv,
+                    "aabbbabbb"sv,
+                    "bbbbbabbb"sv,
+                    "abaaaaab"sv,
+                    "aabaaaab"sv,
+                    "bbbaaaab"sv,
+                    "ababbaab"sv,
+                    "aabbbaab"sv,
+                    "bbbbbaab"sv
+            };
+            for (auto str : valid) {
+                CHECK_MESSAGE(matches_rule_helper(str, rules.front(), rules), str);
+            }
         }
-        TEST_CASE("day19:count_matches2" * doctest::description("Testing counting the number of times a terminal shows up at the start of a string. (#2)")) {
-            terminal term { 0, { "ab"s, "ba"s } };
-                    REQUIRE_EQ(count_matches("ab"sv, term).second, 1);
-                    REQUIRE(count_matches("ab"sv, term).first.empty());
-                    REQUIRE_EQ(count_matches("ba"sv, term).second, 1);
-                    REQUIRE(count_matches("ba"sv, term).first.empty());
-                    REQUIRE_EQ(count_matches("bababa"sv, term).second, 3);
-                    REQUIRE(count_matches("bababa"sv, term).first.empty());
-                    REQUIRE_EQ(count_matches("baabbaab"sv, term).second, 4);
-                    REQUIRE(count_matches("baabbaab"sv, term).first.empty());
-                    REQUIRE_EQ(count_matches("bababaaa"sv, term).second, 3);
-                    REQUIRE_EQ(count_matches("bababaaa"sv, term).first, "aa"sv);
-                    REQUIRE_EQ(count_matches("baabbb"sv, term).second, 2);
-                    REQUIRE_EQ(count_matches("baabbb"sv, term).first, "bb"sv);
-                    REQUIRE_EQ(count_matches("babbaa"sv, term).second, 1);
-                    REQUIRE_EQ(count_matches("babbaa"sv, term).first, "bbaa"sv);
+        TEST_CASE("day19:matches_rule2" * doctest::description("Testing rule matching. (#2)")) {
+            std::vector<rule_entry> rules = {
+                    { 0, 'a' }
+            };
+                    CHECK_FALSE_MESSAGE(matches_rule_helper(""sv, rules.front(), rules), "<Empty>");
+                    CHECK_MESSAGE(matches_rule_helper("a"sv, rules.front(), rules), "a");
+                    CHECK_FALSE_MESSAGE(matches_rule_helper("b"sv, rules.front(), rules), "b");
+                    CHECK_FALSE_MESSAGE(matches_rule_helper("aa"sv, rules.front(), rules), "aa");
         }
-        TEST_CASE("day19:count_matches3" * doctest::description("Testing counting the number of times a terminal shows up at the start of a string. (#3)")) {
-            terminal term { 0, { "aba"s, "baa"s, "aab"s } };
-                    REQUIRE_EQ(count_matches("a"sv, term).second, 0);
-                    REQUIRE_EQ(count_matches("a"sv, term).first, "a"sv);
-                    REQUIRE_EQ(count_matches("ba"sv, term).second, 0);
-                    REQUIRE_EQ(count_matches("ba"sv, term).first, "ba"sv);
-                    REQUIRE_EQ(count_matches("bab"sv, term).second, 0);
-                    REQUIRE_EQ(count_matches("bab"sv, term).first, "bab"sv);
-                    REQUIRE_EQ(count_matches("baa"sv, term).second, 1);
-                    REQUIRE_EQ(count_matches("baa"sv, term).first, ""sv);
-                    REQUIRE_EQ(count_matches("baabaabaa"sv, term).second, 3);
-                    REQUIRE_EQ(count_matches("baabaabaa"sv, term).first, ""sv);
-                    REQUIRE_EQ(count_matches("baaababaa"sv, term).second, 3);
-                    REQUIRE_EQ(count_matches("baaababaa"sv, term).first, ""sv);
-                    REQUIRE_EQ(count_matches("baaaabbaaaba"sv, term).second, 4);
-                    REQUIRE_EQ(count_matches("baaaabbaaaba"sv, term).first, ""sv);
-                    REQUIRE_EQ(count_matches("baabaabaabba"sv, term).second, 3);
-                    REQUIRE_EQ(count_matches("baabaabaabba"sv, term).first, "bba"sv);
-                    REQUIRE_EQ(count_matches("baaababaabbaab"sv, term).second, 3);
-                    REQUIRE_EQ(count_matches("baaababaabbaab"sv, term).first, "bbaab"sv);
-                    REQUIRE_EQ(count_matches("baaaabbaaabaaaabaa"sv, term).second, 4);
-                    REQUIRE_EQ(count_matches("baaaabbaaabaaaabaa"sv, term).first, "aaabaa"sv);
+        TEST_CASE("day19:matches_rule3" * doctest::description("Testing rule matching. (#3)")) {
+            std::vector<rule_entry> rules = {
+                    { 0, option_list{ {1, 2}, {1, 3}, {2, 4} } }, //"ab" or "ac" or "bd"
+                    { 1, 'a' },
+                    { 2, 'b' },
+                    { 3, 'c' },
+                    { 4, 'd' }
+            };
+            std::vector<std::pair<std::string_view, bool>> tests = {
+                    { ""sv, false },
+                    { "a"sv, false },
+                    { "b"sv, false },
+                    { "c"sv, false },
+                    { "d"sv, false },
+                    { "aa"sv, false },
+                    { "ab"sv, true },
+                    { "ac"sv, true },
+                    { "ad"sv, false },
+                    { "ba"sv, false },
+                    { "bb"sv, false },
+                    { "bc"sv, false },
+                    { "bd"sv, true },
+                    { "ca"sv, false },
+                    { "cb"sv, false },
+                    { "cc"sv, false },
+                    { "cd"sv, false },
+                    { "da"sv, false },
+                    { "db"sv, false },
+                    { "dc"sv, false },
+                    { "dd"sv, false },
+                    { "aaa"sv, false },
+                    { "aba"sv, false },
+                    { "aca"sv, false },
+                    { "adb"sv, false },
+                    { "bab"sv, false },
+                    { "bbb"sv, false },
+                    { "bcd"sv, false },
+                    { "bdd"sv, false },
+                    { "cad"sv, false },
+                    { "cbd"sv, false },
+                    { "ccc"sv, false },
+                    { "cdc"sv, false },
+                    { "dac"sv, false },
+                    { "bdb"sv, false },
+                    { "bdc"sv, false },
+                    { "bdd"sv, false }
+            };
+            for (const auto test : tests) {
+                        CHECK_MESSAGE(matches_rule_helper(test.first, rules.front(), rules) == test.second, test.first);
+            }
         }
-        TEST_CASE("day19:pt2_match1" * doctest::description("Testing match check for part 2. (#1)")) {
-            terminal term1 { 0, { "a"s } }, term2 { 1, { "b"s } };
-                    REQUIRE(matches_part_2("aab"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("ab"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("b"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("a"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2(""sv, term1, term2));
-                    REQUIRE(matches_part_2("aaaaaaaaaaaaaab"sv, term1, term2));
-                    REQUIRE(matches_part_2("aaaabbb"sv, term1, term2));
-                    REQUIRE(matches_part_2("aaaaaaaaaaabbbbbb"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("aaaabbbbbbbbbbb"sv, term1, term2));
-        }
-        TEST_CASE("day19:pt2_match2" * doctest::description("Testing match check for part 2. (#2)")) {
-            terminal term1 { 0, { "ab"s, "ba"s } }, term2 { 1, { "aa"s, "bb"s } };
-                    REQUIRE_FALSE(matches_part_2(""sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("ab"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("ba"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("bb"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("aa"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("abbb"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("babb"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("abaa"sv, term1, term2));
-                    REQUIRE_FALSE(matches_part_2("baaa"sv, term1, term2));
-                    REQUIRE(matches_part_2("abbaaa"sv, term1, term2));
-                    REQUIRE(matches_part_2("baabbb"sv, term1, term2));
-                    REQUIRE(matches_part_2("ababaa"sv, term1, term2));
-                    REQUIRE(matches_part_2("bababb"sv, term1, term2));
-                    REQUIRE(matches_part_2("baabbababbaa"sv, term1, term2));
+        TEST_CASE("day19:matches_rule4" * doctest::description("Testing rule matching. (#4)")) {
+            std::vector<rule_entry> rules = {
+                    {0, option_list{{1, 2}, {3, 4}}},
+                    {1, option_list{{7}, {7, 8}}},
+                    {2, option_list{{7, 7}}},
+                    {3, option_list{{7}, {8, 8}}},
+                    {4, option_list{{8}, {8, 8}}},
+                    {7, 'a'},
+                    {8, 'b'}
+            };
+            std::vector<std::pair<std::string_view, bool>> tests = {
+                    {""sv, false},
+                    {"aaa"sv, true},
+                    {"abaa"sv, true},
+                    {"ab"sv, true},
+                    {"abb"sv, true},
+                    {"bbb"sv, true},
+                    {"bbbb"sv, true}
+            };
+            for (const auto test : tests) {
+                        CHECK_MESSAGE(matches_rule_helper(test.first, rules.front(), rules) == test.second, test.first);
+            }
         }
     }
 
