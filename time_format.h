@@ -34,39 +34,45 @@ namespace std::chrono {
             haveTime = true;
         }
         std::string units;
+        bool havePeriod = false;
         if (haveTime || v > std::chrono::seconds{1}) {
             auto secs = std::chrono::duration_cast<std::chrono::seconds>(v);
             v -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(secs);
-            os << secs.count() << ".";
+            os << secs.count();
             units = "s";
         }
         if (v > std::chrono::milliseconds{1}) {
             auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(v);
             v -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(ms);
             if (units.empty()) {
-                os << ms.count() << ".";
+                os << ms.count();
                 units = "ms";
             }
             else if (ms.count() > 0) {
-                os << std::setw(3) << ms.count();
+                os << '.' << std::setw(3) << ms.count();
+                havePeriod = true;
+            }
+            else if (v.count() > 0) {
+                os << ".000";
+                havePeriod = true;
             }
         }
         if (v > std::chrono::microseconds{1}) {
             auto ms = std::chrono::duration_cast<std::chrono::microseconds>(v);
             v -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(ms);
             if (units.empty()) {
-                os << ms.count() << ".";
+                os << ms.count();
                 units = "us";
             }
             else if (ms.count() > 0) {
+                if (!havePeriod) {
+                    os << '.';
+                }
                 os << std::setw(3) << ms.count();
             }
             auto rem = std::chrono::duration_cast<std::chrono::nanoseconds>(v).count();
             if (rem > 0) {
                 os << std::setw(3) << rem;
-            }
-            else {
-                os << '0';
             }
         }
         if (!haveTime) {
