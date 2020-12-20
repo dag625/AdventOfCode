@@ -4,6 +4,8 @@
 
 #include "utilities.h"
 
+#include <doctest/doctest.h>
+
 #include <fstream>
 
 namespace fs = std::filesystem;
@@ -96,6 +98,31 @@ namespace aoc {
         return retval;
     }
 
+    std::vector<std::string_view> split_no_empty(std::string_view s, char c) {
+        auto splited = split(s, c);
+        splited.erase(std::remove_if(splited.begin(), splited.end(),
+                                 [](const std::string_view sv){ return sv.empty(); }),
+                      splited.end());
+        return splited;
+    }
+
+    std::vector<std::string_view> split_no_empty(std::string_view s, std::string_view spl) {
+        auto splited = split(s, spl);
+        splited.erase(std::remove_if(splited.begin(), splited.end(),
+                                     [](const std::string_view sv){ return sv.empty(); }),
+                      splited.end());
+        return splited;
+    }
+
+    std::optional<std::string_view> starts_with(std::string_view str, std::string_view to_find) {
+        if (str.find(to_find) == 0) {
+            return str.substr(to_find.size());
+        }
+        else {
+            return std::nullopt;
+        }
+    }
+
     std::vector<std::string> read_file_lines(const fs::path& file) {
         if (!fs::exists(file)) {
             throw std::runtime_error{"Can't read lines from file which doesn't exist."};
@@ -110,6 +137,32 @@ namespace aoc {
             input.push_back(std::move(trim(line)));
         }
         return input;
+    }
+
+    TEST_SUITE("utilities" * doctest::description("Tests for utility functions.")) {
+        using namespace std::string_view_literals;
+        TEST_CASE("utilities:split1" * doctest::description("Tests for split() functions.")) {
+            REQUIRE_EQ(split("a,b,c,d"sv, ',').size(), 4);
+            REQUIRE_EQ(split(",a,b,c,d"sv, ',').size(), 5);
+            REQUIRE_EQ(split("a,b,c,d,"sv, ',').size(), 5);
+            REQUIRE_EQ(split("a,b,,c,d"sv, ',').size(), 5);
+            REQUIRE_EQ(split("a,b,c,d,,"sv, ',').size(), 6);
+            REQUIRE_EQ(split(",a,b,c,d,"sv, ',').size(), 6);
+            REQUIRE_EQ(split(",,a,b,c,d"sv, ',').size(), 6);
+            REQUIRE_EQ(split("a,,b,c,,d"sv, ',').size(), 6);
+            REQUIRE_EQ(split("a,,,b,c,d"sv, ',').size(), 6);
+        }
+        TEST_CASE("utilities:split_no_empty1" * doctest::description("Tests for split() functions.")) {
+            REQUIRE_EQ(split_no_empty("a,b,c,d"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty(",a,b,c,d"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty("a,b,c,d,"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty("a,b,,c,d"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty("a,b,c,d,,"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty(",a,b,c,d,"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty(",,a,b,c,d"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty("a,,b,c,,d"sv, ',').size(), 4);
+            REQUIRE_EQ(split_no_empty("a,,,b,c,d"sv, ',').size(), 4);
+        }
     }
 
 } /* namespace aoc */

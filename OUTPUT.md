@@ -110,3 +110,9 @@ Challenge time:  1.6110ms
 ####Year 2020 - Day 18 - Challenge 2
 43423343619505  
 Challenge time:  1.5440ms
+####Year 2020 - Day 19 - Challenge 1
+124  
+Challenge time:  1.9828780s
+####Year 2020 - Day 19 - Challenge 2
+228  
+Challenge time:  746.1530ms
