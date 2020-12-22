@@ -199,46 +199,6 @@ namespace aoc2020 {
             }
         }
 
-        stride_span<const char> get_next_tile_in_row(const tile& t, std::size_t row, border from, bool flip_row, bool flip_col) {
-            stride_span<const char> retval;
-            if (from == border::left) {
-                if (!flip_col) {
-                    retval = t.data.row_span(row);
-                }
-                else {
-                    retval = t.data.row_span(t.data.num_rows() - row - 1);
-                }
-            }
-            else if (from == border::bottom) {
-                if (!flip_col) {
-                    retval = t.data.column_span(row).reverse();
-                }
-                else {
-                    retval = t.data.column_span(t.data.num_cols() - row - 1).reverse();
-                }
-            }
-            else if (from == border::right) {
-                if (!flip_col) {
-                    retval = t.data.row_span(t.data.num_rows() - row - 1).reverse();
-                }
-                else {
-                    retval = t.data.row_span(row).reverse();
-                }
-            }
-            else if (from == border::top) {
-                if (!flip_col) {
-                    retval = t.data.column_span(t.data.num_cols() - row - 1);
-                }
-                else {
-                    retval = t.data.column_span(row);
-                }
-            }
-//            if (flip_row) {
-//                retval = retval.reverse();
-//            }
-            return retval;
-        }
-
         border opposite(border b) {
             switch (b) {
                 case border::left: return border::right;
@@ -259,8 +219,45 @@ namespace aoc2020 {
             }
         }
 
+        stride_span<const char> get_next_tile_in_row(const tile& t, std::size_t row, border from, bool flip) {
+            stride_span<const char> retval;
+            if (from == border::left) {
+                if (!flip) {
+                    retval = t.data.row_span(row);
+                }
+                else {
+                    retval = t.data.row_span(t.data.num_rows() - row - 1);
+                }
+            }
+            else if (from == border::bottom) {
+                if (!flip) {
+                    retval = t.data.column_span(row).reverse();
+                }
+                else {
+                    retval = t.data.column_span(t.data.num_cols() - row - 1).reverse();
+                }
+            }
+            else if (from == border::right) {
+                if (!flip) {
+                    retval = t.data.row_span(t.data.num_rows() - row - 1).reverse();
+                }
+                else {
+                    retval = t.data.row_span(row).reverse();
+                }
+            }
+            else if (from == border::top) {
+                if (!flip) {
+                    retval = t.data.column_span(t.data.num_cols() - row - 1);
+                }
+                else {
+                    retval = t.data.column_span(row);
+                }
+            }
+            return retval;
+        }
+
         void build_row(std::vector<char>& data, const std::size_t row, const std::size_t col, const std::size_t total_size,
-                       const tile& current, border from, bool flip_row, bool flip_col, const std::vector<tile>& tiles)
+                       const tile& current, border from, bool flip, const std::vector<tile>& tiles)
         {
 //            const auto start_row = row == 0 ? 0 : 1;
 //            for (std::size_t data_row = start_row; data_row < current.data.num_rows(); ++data_row) {
@@ -276,7 +273,7 @@ namespace aoc2020 {
 //               }
 //            }
             for (std::size_t data_row = 0; data_row < current.data.num_rows(); ++data_row) {
-                const auto row_data = get_next_tile_in_row(current, data_row, from, flip_row, flip_col);
+                const auto row_data = get_next_tile_in_row(current, data_row, from, flip);
                 auto dest = (row * current.data.num_rows() + data_row) * total_size + col * current.data.num_cols();
                 std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
             }
@@ -285,9 +282,9 @@ namespace aoc2020 {
             if (!next_info) {
                 return;
             }
-            bool next_flipped = flip_col != next_info->flipped;
+            flip = flip != next_info->flipped;
             const tile& next = *std::find(tiles.begin(), tiles.end(), next_info->id);
-            build_row(data, row, col + 1, total_size, next, next_info->side, flip_row, next_flipped, tiles);
+            build_row(data, row, col + 1, total_size, next, next_info->side, flip, tiles);
         }
 
         std::vector<char> build(const std::vector<tile>& tiles, const std::size_t num_tiles_1d) {
@@ -299,30 +296,29 @@ namespace aoc2020 {
                                      [](const std::optional<neighbor_info>& i){ return i.has_value(); }) == 2;
             });
             //We assume here that everything is well formed, meaning the two neighbors are adjacent.
-            border right = border::right, down = border::bottom;
+            border left = border::left, down = border::bottom;
             if (row_start->neighbors[static_cast<std::size_t>(border::bottom)].has_value() &&
                 row_start->neighbors[static_cast<std::size_t>(border::left)].has_value())
             {
-                right = border::bottom;
+                left = border::top;
                 down = border::left;
             }
             else if (row_start->neighbors[static_cast<std::size_t>(border::left)].has_value() &&
                      row_start->neighbors[static_cast<std::size_t>(border::top)].has_value())
             {
-                right = border::left;
+                left = border::right;
                 down = border::top;
             }
             else if (row_start->neighbors[static_cast<std::size_t>(border::top)].has_value() &&
                      row_start->neighbors[static_cast<std::size_t>(border::right)].has_value())
             {
-                right = border::top;
+                left = border::bottom;
                 down = border::right;
             }
 
-            border left = opposite(right);
-            bool flipped_col = false, flipped_row = false;
+            bool flip = false;
             for (std::size_t row = 0; row < num_tiles_1d; ++row) {
-                build_row(retval, row, 0, num_chars_1d, *row_start, left, flipped_row, flipped_col, tiles);
+                build_row(retval, row, 0, num_chars_1d, *row_start, left, flip, tiles);
                 const auto& next_info = row_start->neighbors[static_cast<std::size_t>(down)];
                 int prev_id = row_start->id;
                 row_start = std::find(tiles.begin(), tiles.end(), next_info->id);
@@ -332,9 +328,9 @@ namespace aoc2020 {
                         break;
                     }
                 }
-                flipped_col = next_info->flipped != flipped_col;
-                left = rotate_direction_clockwise(static_cast<border>(from));
-                down = rotate_direction_clockwise(left);
+                flip = next_info->flipped != flip;
+                left = rotate_direction_clockwise(flip ? static_cast<border>(from) : opposite(static_cast<border>(from)));
+                down = opposite(next_info->side);
             }
             return retval;
         }
