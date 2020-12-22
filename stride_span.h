@@ -47,8 +47,8 @@ namespace aoc {
         stride_span_iterator& operator+=(int n) noexcept { m_index += n; return *this; }
         stride_span_iterator& operator-=(int n) noexcept { m_index -= n; return *this; }
 
-        stride_span_iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return *this; }
-        stride_span_iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return *this; }
+        stride_span_iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return retval; }
+        stride_span_iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return retval; }
         T& operator[](int n) { return *(*this + n); }
         const T& operator[](int n) const { return *(*this + n); }
 
@@ -105,21 +105,28 @@ namespace aoc {
     class stride_span {
         T* m_begin;
         T* m_end;
+        std::size_t m_offset = 0;
         std::ptrdiff_t m_stride = 1;
         friend class stride_span_iterator<T>;
         friend class const_stride_span_iterator<T>;
 
-        stride_span(T* b, T* e, std::ptrdiff_t str) : m_begin{b}, m_end{e}, m_stride{str} {}
+        stride_span(T* b, T* e, std::size_t off, std::ptrdiff_t str) : m_begin{b}, m_end{e}, m_offset{off}, m_stride{str} {}
     public:
         stride_span() = default;
 
+        enum class length : std::size_t {};
+
         template <typename Container>
         stride_span(Container& c, std::size_t offset = 0, std::ptrdiff_t stride = 1) noexcept :
-            m_begin{std::data(c) + offset}, m_end{std::data(c) + std::size(c)}, m_stride{stride} {}
+            m_begin{std::data(c)}, m_end{std::data(c) + std::size(c)}, m_offset{offset}, m_stride{stride} {}
+
+        template <typename Container>
+        stride_span(Container& c, length len, std::size_t offset = 0, std::ptrdiff_t stride = 1) noexcept :
+                m_begin{std::data(c)}, m_end{std::data(c) + static_cast<std::size_t>(len) * stride}, m_offset{offset}, m_stride{stride} {}
 
         template <typename Container, typename = std::enable_if_t<Container::is_view, void>>
         stride_span(Container&& c, std::size_t offset = 0, std::ptrdiff_t stride = 1) noexcept :
-            m_begin{std::data(c) + offset}, m_end{std::data(c) + std::size(c)}, m_stride{stride} {}
+            m_begin{std::data(c)}, m_end{std::data(c) + std::size(c)}, m_offset{offset}, m_stride{stride} {}
 
         [[nodiscard]] bool empty() const {
             return m_begin == nullptr ||
@@ -133,7 +140,9 @@ namespace aoc {
         //[[nodiscard]] T* data() { return m_begin; }
         //[[nodiscard]] const T* data() const { return m_begin; }
 
-        stride_span<T> reverse() const { return stride_span{m_begin + (size() - 1) * m_stride, m_begin - 1, -m_stride}; }
+        stride_span<T> reverse() const {
+            return stride_span{m_end, m_begin, -m_stride + m_offset, -m_stride};
+        }
 
         [[nodiscard]] stride_span_iterator<T> begin() { return {this, 0}; }
         [[nodiscard]] stride_span_iterator<T> end() { return {this, size()}; }
@@ -148,12 +157,12 @@ namespace aoc {
 
     template <typename T>
     T& stride_span_iterator<T>::operator*() {
-        return *(m_span->m_begin + m_index * m_span->m_stride);
+        return *(m_span->m_begin + m_span->m_offset + m_index * m_span->m_stride);
     }
 
     template <typename T>
     const T& stride_span_iterator<T>::operator*() const {
-        return *(m_span->m_begin + m_index * m_span->m_stride);
+        return *(m_span->m_begin + m_span->m_offset + m_index * m_span->m_stride);
     }
 
     template <typename T>
@@ -161,7 +170,7 @@ namespace aoc {
 
     template <typename T>
     const T& const_stride_span_iterator<T>::operator*() const {
-        return *(m_span->m_begin + m_index * m_span->m_stride);
+        return *(m_span->m_begin + m_span->m_offset + m_index * m_span->m_stride);
     }
 
 } /* namespace aoc */

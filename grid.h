@@ -295,6 +295,9 @@ namespace aoc {
         [[nodiscard]] grid_col column(std::size_t col) noexcept { return {this, col}; }
         [[nodiscard]] const grid_col column(std::size_t col) const noexcept { return {this, col}; }
 
+        [[nodiscard]] stride_span<T> row_span(std::size_t row) noexcept { return {m_data, static_cast<typename stride_span<T>::length>(num_cols()), row * num_cols()}; }
+        [[nodiscard]] stride_span<const T> row_span(std::size_t row) const noexcept { return {m_data, static_cast<typename stride_span<const T>::length>(num_cols()), row * num_cols()}; }
+
         [[nodiscard]] stride_span<T> column_span(std::size_t col) noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
         [[nodiscard]] stride_span<const T> column_span(std::size_t col) const noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
 
