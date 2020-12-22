@@ -13,6 +13,7 @@
 #include <iomanip>
 
 #include "point.h"
+#include "stride_span.h"
 
 namespace aoc {
 
@@ -66,6 +67,8 @@ namespace aoc {
 
         [[nodiscard]] std::size_t num_rows() const noexcept { return m_num_rows; }
         [[nodiscard]] std::size_t num_cols() const noexcept { return m_num_cols; }
+
+        [[nodiscard]] const std::vector<T>& buffer() const { return m_data; }
 
         auto begin() noexcept { return m_data.begin(); }
         auto end() noexcept { return m_data.end(); }
@@ -292,6 +295,9 @@ namespace aoc {
         [[nodiscard]] grid_col column(std::size_t col) noexcept { return {this, col}; }
         [[nodiscard]] const grid_col column(std::size_t col) const noexcept { return {this, col}; }
 
+        [[nodiscard]] stride_span<T> column_span(std::size_t col) noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
+        [[nodiscard]] stride_span<const T> column_span(std::size_t col) const noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
+
         void display(std::ostream& os, std::optional<position> marked = std::nullopt) const {
             std::size_t idx = 0;
             os << std::setw(6) << std::left << (idx / m_num_cols);
@@ -314,6 +320,7 @@ namespace aoc {
         }
     };
 
+    grid<char> to_grid(std::vector<std::string>::const_iterator begin, std::vector<std::string>::const_iterator end);
     grid<char> to_grid(const std::vector<std::string>& lines);
 
     template <>
