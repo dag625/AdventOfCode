@@ -25,7 +25,7 @@ namespace aoc2020 {
     namespace {
 
         constexpr bool KEEP_TILE_BORDERS = false;
-        constexpr bool SHOW_FINAL_GRID = true;
+        constexpr bool SHOW_FINAL_GRID = false;
 
         constexpr auto MONSTER_TOP = "                  # "sv;
         constexpr auto MONSTER_MID = "#    ##    ##    ###"sv;
@@ -206,18 +206,13 @@ namespace aoc2020 {
         void build_row(std::vector<char>& data, const std::size_t row, const std::size_t col, const std::size_t total_size,
                        const tile& current, border from, bool flip, const std::vector<tile>& tiles)
         {
-            const auto start_row = row == 0 ? 0 : 1;
             if constexpr (!KEEP_TILE_BORDERS) {
-                for (std::size_t data_row = start_row; data_row < current.data.num_rows(); ++data_row) {
-                    const auto row_data = get_next_tile_in_row(current, data_row, from, flip);
-                    const auto col_size = row_data.size() - 1;
-                    if (col == 0) {
-                        auto dest = total_size * (row * col_size + data_row);
-                        std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
-                    } else {
-                        auto dest = total_size * (row * col_size + data_row) + col * col_size + 1;
-                        std::copy(row_data.begin() + 1, row_data.end(), data.begin() + dest);
-                    }
+                //Key point I missed for a few days:  the borders aren't part of the image!
+                for (std::size_t data_row = 1; data_row < current.data.num_rows() - 1; ++data_row) {
+                    const auto col_size = current.data.num_cols() - 2;
+                    const auto row_data = get_next_tile_in_row(current, data_row, from, flip).sub_span(1, col_size);
+                    std::copy(row_data.begin(), row_data.end(),
+                              data.begin() + ((row * col_size + data_row - 1) * total_size + col * col_size));
                 }
             }
             else {
@@ -242,7 +237,8 @@ namespace aoc2020 {
                 return num_tiles_1d * tile_size_1d;
             }
             else {
-                return num_tiles_1d * (tile_size_1d - 1) + 1;
+                //Key point I missed for a few days:  the borders aren't part of the image!
+                return num_tiles_1d * (tile_size_1d - 2);
             }
         }
 
@@ -466,9 +462,8 @@ namespace aoc2020 {
         while (i * i < tiles.size()) { ++i; }
         const auto size = static_cast<std::size_t>(i);
         grid<char> full {build(tiles, size), grid_total_size(size, tiles.front().data.num_cols())};
-        std::cout << '\t' << count_monsters(full) << '\n';
         mark_monsters(full);
-        if (SHOW_FINAL_GRID) {
+        if constexpr (SHOW_FINAL_GRID) {
             std::cout << "Full grid:\n";
             full.display(std::cout);
         }
