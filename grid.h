@@ -11,6 +11,7 @@
 #include <optional>
 #include <ostream>
 #include <iomanip>
+#include <cmath>
 
 #include "point.h"
 #include "stride_span.h"
@@ -329,6 +330,17 @@ namespace aoc {
     template <>
     inline void grid<char>::display(std::ostream &os, std::optional<position> marked) const {
         std::size_t idx = 0;
+        auto hdr_height = static_cast<int>(std::ceil(log10(m_num_cols)));
+        for (std::size_t row = 0; row < hdr_height; ++row) {
+            os << std::setw(6) << std::left << ' ';
+            const auto div = static_cast<int64_t>(std::pow(10, hdr_height - row - 1));
+            const auto mod = div * 10;
+            for (std::size_t col = 0; col < m_num_cols; ++col) {
+                auto digit = (col % mod) / div;
+                os << digit;
+            }
+            os << '\n';
+        }
         os << std::setw(6) << std::left << (idx / m_num_cols);
         for (auto p : list_positions()) {
             if (marked && *marked == p) {
