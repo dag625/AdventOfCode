@@ -137,11 +137,23 @@ namespace aoc {
                    static_cast<std::size_t>((std::distance(m_begin, m_end) + m_stride - 1) / m_stride) :
                    static_cast<std::size_t>((std::distance(m_end, m_begin) - m_stride - 1) / -m_stride);
         }
-        //[[nodiscard]] T* data() { return m_begin; }
-        //[[nodiscard]] const T* data() const { return m_begin; }
 
         stride_span<T> reverse() const {
             return stride_span{m_end, m_begin, -m_stride + m_offset, -m_stride};
+        }
+
+        T& operator[](std::size_t index) { return *(m_begin + m_offset + m_stride * index); }
+        const T& operator[](std::size_t index) const { return *(m_begin + m_offset + m_stride * index); }
+
+        stride_span<T> sub_span(std::size_t offset = 0, std::size_t length = 0) const {
+            const auto sz = size();
+            if (offset >= sz) {
+                throw std::runtime_error{"Offset past end of span."};
+            }
+            else if (offset + length >= sz || length == 0) {
+                length = sz - offset;
+            }
+            return stride_span{ m_begin + m_stride * offset, m_begin + m_stride * (offset + length), m_offset, m_stride };
         }
 
         [[nodiscard]] stride_span_iterator<T> begin() { return {this, 0}; }

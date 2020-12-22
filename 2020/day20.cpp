@@ -13,6 +13,7 @@
 #include <vector>
 #include <charconv>
 #include <array>
+#include <iterator>
 
 namespace fs = std::filesystem;
 
@@ -22,6 +23,13 @@ namespace aoc2020 {
     using namespace std::string_view_literals;
 
     namespace {
+
+        constexpr bool KEEP_TILE_BORDERS = false;
+        constexpr bool SHOW_FINAL_GRID = true;
+
+        constexpr auto MONSTER_TOP = "                  # "sv;
+        constexpr auto MONSTER_MID = "#    ##    ##    ###"sv;
+        constexpr auto MONSTER_BOT = " #  #  #  #  #  #   "sv;
 
         enum class border : std::size_t {
             top = 0,
@@ -81,51 +89,6 @@ namespace aoc2020 {
             return std::tie(a.id, a.side) <  std::tie(b.id, b.side);
         }
 
-        enum class match_type {
-            both,
-            rotate,
-            flip
-        };
-
-        using matching_border = std::tuple<tile_border, tile_border, match_type>;
-
-//        bool operator==(const matching_border& a, const matching_border& b) {
-//            return std::tie(a.first, a.second) == std::tie(b.first, b.second);
-//        }
-//        bool operator< (const matching_border& a, const matching_border& b) {
-//            return std::tie(a.first, a.second) <  std::tie(b.first, b.second);
-//        }
-
-        std::pair<border, match_type> get_match_for(const matching_border& mb, int id) {
-            if (std::get<0>(mb).id == id) {
-                return {std::get<0>(mb).side, std::get<2>(mb)};
-            }
-            else {
-                return {std::get<1>(mb).side, std::get<2>(mb)};
-            }
-        }
-
-        std::pair<tile_border, match_type> get_match_not_for(const matching_border& mb, int id) {
-            if (std::get<0>(mb).id == id) {
-                return {std::get<1>(mb), std::get<2>(mb)};
-            }
-            else {
-                return {std::get<0>(mb), std::get<2>(mb)};
-            }
-        }
-
-        int get_rotate(border from, border to) {
-            constexpr auto num = static_cast<int>(border::num_borders);
-            auto diff = static_cast<int>(to) - static_cast<int>(from);
-            while (diff < 0) {
-                diff += num;
-            }
-            while (diff >= num) {
-                diff -= num;
-            }
-            return diff;
-        }
-
         border rotate(border from, int diff) {
             constexpr auto num = static_cast<int>(border::num_borders);
             auto to = static_cast<int>(from) + diff;
@@ -136,22 +99,6 @@ namespace aoc2020 {
                 to += num;
             }
             return static_cast<border>(to);
-        }
-
-        border get_border(border desired, int rotation, bool flipped) {
-            auto rot = rotate(desired, -rotation);
-            if (flipped) {
-                switch (rot) {
-                    case border::top: return border::bottom;
-                    case border::bottom: return border::top;
-                    case border::right: return border::left;
-                    case border::left: return border::right;
-                    default: throw std::runtime_error{"Invalid rotation."};
-                }
-            }
-            else {
-                return rot;
-            }
         }
 
         std::array<aoc::stride_span<const char>, 4> get_borders(const grid<char>& tile) {
@@ -259,23 +206,26 @@ namespace aoc2020 {
         void build_row(std::vector<char>& data, const std::size_t row, const std::size_t col, const std::size_t total_size,
                        const tile& current, border from, bool flip, const std::vector<tile>& tiles)
         {
-//            const auto start_row = row == 0 ? 0 : 1;
-//            for (std::size_t data_row = start_row; data_row < current.data.num_rows(); ++data_row) {
-//               const auto row_data = get_tile_row(current, data_row, from, flipped);
-//               const auto col_size = row_data.size() - 1;
-//               if (col == 0) {
-//                   auto dest = total_size * (row * col_size + data_row + start_row);
-//                   std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
-//               }
-//               else {
-//                   auto dest = total_size * (row * col_size + data_row + start_row) + col * col_size + 1;
-//                   std::copy(row_data.begin() + 1, row_data.end(), data.begin() + dest);
-//               }
-//            }
-            for (std::size_t data_row = 0; data_row < current.data.num_rows(); ++data_row) {
-                const auto row_data = get_next_tile_in_row(current, data_row, from, flip);
-                auto dest = (row * current.data.num_rows() + data_row) * total_size + col * current.data.num_cols();
-                std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
+            const auto start_row = row == 0 ? 0 : 1;
+            if constexpr (!KEEP_TILE_BORDERS) {
+                for (std::size_t data_row = start_row; data_row < current.data.num_rows(); ++data_row) {
+                    const auto row_data = get_next_tile_in_row(current, data_row, from, flip);
+                    const auto col_size = row_data.size() - 1;
+                    if (col == 0) {
+                        auto dest = total_size * (row * col_size + data_row);
+                        std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
+                    } else {
+                        auto dest = total_size * (row * col_size + data_row) + col * col_size + 1;
+                        std::copy(row_data.begin() + 1, row_data.end(), data.begin() + dest);
+                    }
+                }
+            }
+            else {
+                for (std::size_t data_row = 0; data_row < current.data.num_rows(); ++data_row) {
+                    const auto row_data = get_next_tile_in_row(current, data_row, from, flip);
+                    auto dest = (row * current.data.num_rows() + data_row) * total_size + col * current.data.num_cols();
+                    std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
+                }
             }
 
             const auto& next_info = current.neighbors[static_cast<std::size_t>(opposite(from))];
@@ -287,9 +237,17 @@ namespace aoc2020 {
             build_row(data, row, col + 1, total_size, next, next_info->side, flip, tiles);
         }
 
+        std::size_t grid_total_size(const std::size_t num_tiles_1d, const std::size_t tile_size_1d) {
+            if constexpr (KEEP_TILE_BORDERS) {
+                return num_tiles_1d * tile_size_1d;
+            }
+            else {
+                return num_tiles_1d * (tile_size_1d - 1) + 1;
+            }
+        }
+
         std::vector<char> build(const std::vector<tile>& tiles, const std::size_t num_tiles_1d) {
-            //const auto num_chars_1d = num_tiles_1d * (tiles.front().data.num_cols() - 1) + 1;
-            const auto num_chars_1d = num_tiles_1d * tiles.front().data.num_cols();
+            const auto num_chars_1d = grid_total_size(num_tiles_1d, tiles.front().data.num_cols());
             std::vector<char> retval (num_chars_1d * num_chars_1d, '\0');
             auto row_start = std::find_if(tiles.begin(), tiles.end(), [](const tile& t){
                 return std::count_if(t.neighbors.begin(), t.neighbors.end(),
@@ -333,6 +291,124 @@ namespace aoc2020 {
                 down = opposite(next_info->side);
             }
             return retval;
+        }
+
+        stride_span<const char> get_row(const grid<char>& g, std::size_t row, std::size_t offset, std::size_t len) {
+            return g.row_span(row).sub_span(offset, len);
+        }
+
+        stride_span<const char> get_col(const grid<char>& g, std::size_t col, std::size_t offset, std::size_t len) {
+            return g.column_span(col).sub_span(offset, len);
+        }
+
+        stride_span<char> get_mutable_row(grid<char>& g, std::size_t row, std::size_t offset, std::size_t len) {
+            return g.row_span(row).sub_span(offset, len);
+        }
+
+        stride_span<char> get_mutable_col(grid<char>& g, std::size_t col, std::size_t offset, std::size_t len) {
+            return g.column_span(col).sub_span(offset, len);
+        }
+
+        bool equal_char(char a, char b) {
+            if (a == ' ' || b == ' ') {
+                return true;
+            }
+            return a == b;
+        }
+
+        template <typename T>
+        using get_seq = stride_span<T> (*)(std::conditional_t<std::is_const_v<T>, std::add_const_t<grid<std::remove_const_t<T>>>, grid<std::remove_const_t<T>>>&,
+                std::size_t, std::size_t, std::size_t);
+
+        template <typename T>
+        std::pair<std::vector<position>, std::vector<position>> find_appearances(const grid<std::remove_const_t<T>>& g, std::string_view seq, get_seq<T> func) {
+            const auto seq_len = seq.size();
+            const auto grid_size = g.num_cols();//We assume squareness here.
+            const auto max_offset = grid_size - seq_len;
+            std::pair<std::vector<position>, std::vector<position>> retval;
+            for (std::size_t idx = 0; idx < grid_size; ++idx) {
+                for (std::size_t off = 0; off < max_offset; ++off) {
+                    auto span = func(g, idx, off, seq_len);
+                    if (std::equal(seq.begin(), seq.end(), span.begin(), equal_char)) {
+                        retval.first.push_back({static_cast<int>(idx), static_cast<int>(off)});
+                    }
+                    if (std::equal(seq.begin(), seq.end(), span.reverse().begin(), equal_char)) {
+                        retval.second.push_back({static_cast<int>(idx), static_cast<int>(off)});
+                    }
+                }
+            }
+            return retval;
+        }
+
+        std::vector<std::pair<std::array<position, 3>, bool>> find_monsters(const std::vector<position>& top, const std::vector<position>& mid, const std::vector<position>& bot, bool backwards) {
+            std::vector<std::pair<std::array<position, 3>, bool>> found;
+            for (const auto& tp : top) {
+                auto m_up = std::find_if(mid.begin(), mid.end(), [&tp](const position& mp){
+                   return mp.y == tp.y && mp.x == tp.x + 1;
+                });
+                auto m_down = std::find_if(mid.begin(), mid.end(), [&tp](const position& mp){
+                    return mp.y == tp.y && mp.x == tp.x - 1;
+                });
+                auto b_up = std::find_if(bot.begin(), bot.end(), [&tp](const position& mp){
+                    return mp.y == tp.y && mp.x == tp.x + 2;
+                });
+                auto b_down = std::find_if(bot.begin(), bot.end(), [&tp](const position& mp){
+                    return mp.y == tp.y && mp.x == tp.x - 2;
+                });
+                if (m_up != mid.end() && b_up != bot.end()) {
+                    found.push_back({{tp, *m_up, *b_up}, backwards});
+                }
+                if (m_down != mid.end() && b_down != bot.end()) {
+                    found.push_back({{tp, *m_down, *b_down}, backwards});
+                }
+            }
+            return found;
+        }
+
+        template <typename T>
+        std::vector<std::pair<std::array<position, 3>, bool>> find_monsters(const grid<std::remove_const_t<T>>& g, get_seq<T> func) {
+            auto [forwards1, backwards1] = find_appearances(g, MONSTER_TOP, func);
+            auto [forwards2, backwards2] = find_appearances(g, MONSTER_MID, func);
+            auto [forwards3, backwards3] = find_appearances(g, MONSTER_BOT, func);
+            auto forwards = find_monsters(forwards1, forwards2, forwards3, false);
+            auto backwards = find_monsters(backwards1, backwards2, backwards3, true);
+            forwards.insert(forwards.end(), backwards.begin(), backwards.end());
+            return forwards;
+        }
+
+        std::size_t count_monsters(const grid<char>& g) {
+            return find_monsters(g, get_row).size() + find_monsters(g, get_col).size();
+        }
+
+        void mark_sequence(stride_span<char>& seq, std::string_view pattern, char to_mark, char mark_char) {
+            for (std::size_t idx = 0; idx < seq.size() && idx < pattern.size(); ++idx) {
+                if (pattern[idx] == to_mark) {
+                    seq[idx] = mark_char;
+                }
+            }
+        }
+
+        void mark_monsters(grid<char>& g, const std::vector<std::pair<std::array<position, 3>, bool>>& found, get_seq<char> func) {
+            for (const auto& monster : found) {
+                auto top = func(g, monster.first[0].x, monster.first[0].y, MONSTER_TOP.size());
+                auto mid = func(g, monster.first[1].x, monster.first[1].y, MONSTER_MID.size());
+                auto bot = func(g, monster.first[2].x, monster.first[2].y, MONSTER_BOT.size());
+                if (monster.second) {
+                    top = top.reverse();
+                    mid = mid.reverse();
+                    bot = bot.reverse();
+                }
+                mark_sequence(top, MONSTER_TOP, '#', 'x');
+                mark_sequence(mid, MONSTER_MID, '#', 'x');
+                mark_sequence(bot, MONSTER_BOT, '#', 'x');
+            }
+        }
+
+        void mark_monsters(grid<char>& g) {
+            auto row_monsters = find_monsters(g, get_row);
+            auto col_monsters = find_monsters(g, get_col);
+            mark_monsters(g, row_monsters, get_mutable_row);
+            mark_monsters(g, col_monsters, get_mutable_col);
         }
 
         std::vector<tile> get_input(const fs::path &input_dir) {
@@ -389,11 +465,14 @@ namespace aoc2020 {
         int i = 0;
         while (i * i < tiles.size()) { ++i; }
         const auto size = static_cast<std::size_t>(i);
-        //grid<char> full {build(tiles, size), size * (tiles.front().data.num_cols() - 1) + 1};
-        grid<char> full {build(tiles, size), size * tiles.front().data.num_cols()};
-        std::cout << "Full grid:\n";
-        full.display(std::cout);
-        std::cout << '\t' << 0 << '\n';
+        grid<char> full {build(tiles, size), grid_total_size(size, tiles.front().data.num_cols())};
+        std::cout << '\t' << count_monsters(full) << '\n';
+        mark_monsters(full);
+        if (SHOW_FINAL_GRID) {
+            std::cout << "Full grid:\n";
+            full.display(std::cout);
+        }
+        std::cout << '\t' << std::count_if(full.begin(), full.end(), [](char c){ return c == '#'; }) << '\n';
     }
 
     TEST_SUITE("day20" * doctest::description("Tests for day 20 challenges.")) {
@@ -527,6 +606,66 @@ namespace aoc2020 {
                     REQUIRE_EQ(*(col9rr.begin() + 7), 79);
                     REQUIRE_EQ(*(col9rr.begin() + 8), 89);
                     REQUIRE_EQ(*(col9rr.begin() + 9), 99);
+        }
+        TEST_CASE("day20:stride_span_sub" * doctest::description("Testing getting sub stride_spans.")) {
+            std::vector<int> data;
+            int current = 0;
+            std::generate_n(std::back_inserter(data), 100, [&current](){ return current++; });
+            grid<int> g {data, 10};
+
+            auto row0 = g.row_span(0).sub_span(2, 3);
+                    REQUIRE_EQ(row0.size(), 3);
+                    REQUIRE_EQ(row0[0], 2);
+                    REQUIRE_EQ(row0[1], 3);
+                    REQUIRE_EQ(row0[2], 4);
+
+            auto col3 = g.column_span(3).sub_span(3, 5);
+                    REQUIRE_EQ(col3.size(), 5);
+                    REQUIRE_EQ(col3[0], 33);
+                    REQUIRE_EQ(col3[1], 43);
+                    REQUIRE_EQ(col3[2], 53);
+                    REQUIRE_EQ(col3[3], 63);
+                    REQUIRE_EQ(col3[4], 73);
+
+            auto col4 = g.column_span(4).sub_span(7).reverse();
+                    REQUIRE_EQ(col4.size(), 3);
+                    REQUIRE_EQ(col4[0], 94);
+                    REQUIRE_EQ(col4[1], 84);
+                    REQUIRE_EQ(col4[2], 74);
+        }
+        TEST_CASE("day20:part2_example" * doctest::description("Testing part 2 example.")) {
+            const char* ex_text = ".#.#..#.##...#.##..#####"
+                                  "###....#.#....#..#......"
+                                  "##.##.###.#.#..######..."
+                                  "###.#####...#.#####.#..#"
+                                  "##.#....#.##.####...#.##"
+                                  "...########.#....#####.#"
+                                  "....#..#...##..#.#.###.."
+                                  ".####...#..#.....#......"
+                                  "#..#.##..#..###.#.##...."
+                                  "#.####..#.####.#.#.###.."
+                                  "###.#.#...#.######.#..##"
+                                  "#.####....##..########.#"
+                                  "##..##.#...#...#.#.#.#.."
+                                  "...#..#..#.#.##..###.###"
+                                  ".#.#....#.##.#...###.##."
+                                  "###.#...#..#.##.######.."
+                                  ".#.#.###.##.##.#..#.##.."
+                                  ".####.###.#...###.#..#.#"
+                                  "..#.#..#..#.#.#.####.###"
+                                  "#..####...#.#.#.###.###."
+                                  "#####..#####...###....##"
+                                  "#.##..#..#...#..####...#"
+                                  ".#.###..##..##..####.##."
+                                  "...###...##...#...#..###";
+            std::string ex_str {ex_text};
+            grid<char> data {std::vector<char>{ex_str.begin(), ex_str.end()}, 24};
+
+                    CHECK_EQ(count_monsters(data), 2);
+
+                    mark_monsters(data);
+
+                    CHECK_EQ(std::count_if(data.begin(), data.end(), [](char c){ return c == '#'; }), 273);
         }
     }
 
