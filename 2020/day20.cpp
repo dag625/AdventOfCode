@@ -7,6 +7,8 @@
 #include "grid.h"
 #include "stride_span.h"
 
+#include <doctest/doctest.h>
+
 #include <iostream>
 #include <vector>
 #include <charconv>
@@ -53,13 +55,14 @@ namespace aoc2020 {
 
         struct neighbor_info {
             int id = 0;
+            border side = border::num_borders;
             bool flipped = false;
         };
 
         struct tile {
             int id = 0;
             grid<char> data;
-            std::array<neighbor_info, 4> neighbors;
+            std::array<std::optional<neighbor_info>, 4> neighbors;
         };
 
         bool operator==(const tile& a, int id) {
@@ -153,15 +156,14 @@ namespace aoc2020 {
 
         std::array<aoc::stride_span<const char>, 4> get_borders(const grid<char>& tile) {
             std::array<aoc::stride_span<const char>, 4> retval;
-            retval[static_cast<std::size_t>(border::top)] = stride_span<const char>{tile[0]};
+            retval[static_cast<std::size_t>(border::top)] = tile.row_span(0);
             retval[static_cast<std::size_t>(border::right)] = tile.column_span(tile.num_cols() - 1);
-            retval[static_cast<std::size_t>(border::bottom)] = stride_span<const char>{tile[tile.num_rows() - 1]};
+            retval[static_cast<std::size_t>(border::bottom)] = tile.row_span(tile.num_rows() - 1);
             retval[static_cast<std::size_t>(border::left)] = tile.column_span(0);
             return retval;
         }
 
-        std::vector<matching_border> find_matching_borders(const tile& a, const tile& b) {
-            std::vector<matching_border> retval;
+        void find_matching_borders(tile& a, tile& b) {
             constexpr auto bsize = static_cast<std::size_t>(border::num_borders);
             if (a.id != b.id) {
                 const auto a_borders = get_borders(a.data);
@@ -180,144 +182,161 @@ namespace aoc2020 {
                         if (rotate_match && flip_match) {
                             throw std::runtime_error{"A match cannot be both"};
                         }
-                        bool match = rotate_match || flip_match;
-                        match_type mt = match_type::both;
-                        if (!flip_match) {
-                            mt = match_type::rotate;
-                        }
-                        else if (!rotate_match) {
-                            mt = match_type::flip;
-                        }
-                        if (match) {
-                            if (a.id < b.id) {
-                                retval.push_back({{a.id, static_cast<border>(ai)},
-                                                  {b.id, static_cast<border>(bi)},
-                                                  mt});
-                            } else {
-                                retval.push_back({{b.id, static_cast<border>(bi)},
-                                                  {a.id, static_cast<border>(ai)},
-                                                  mt});
-                            }
+                        else if (rotate_match || flip_match) {
+                            a.neighbors[ai] = neighbor_info{b.id, static_cast<border>(bi), flip_match};
+                            b.neighbors[bi] = neighbor_info{a.id, static_cast<border>(ai), flip_match};
                         }
                     }
                 }
             }
-            return retval;
         }
 
-        std::vector<matching_border> find_matching_borders(const tile& t, const std::vector<tile>& tiles) {
-            std::vector<matching_border> retval;
-            for (const auto& tb : tiles) {
-                auto b = find_matching_borders(t, tb);
-                retval.insert(retval.end(), b.begin(), b.end());
+        void find_matching_borders(std::vector<tile>& tiles) {
+            for (std::size_t i = 0; i < tiles.size(); ++i) {
+                for (std::size_t j = i + 1; j < tiles.size(); ++j) {
+                    find_matching_borders(tiles[i], tiles[j]);
+                }
             }
-            return retval;
         }
 
-        stride_span<const char> get_tile_row(const tile& t, std::size_t row, int rotate, bool flip) {
+        stride_span<const char> get_next_tile_in_row(const tile& t, std::size_t row, border from, bool flip_row, bool flip_col) {
             stride_span<const char> retval;
-            if (rotate == 0) {
-                retval = stride_span<const char>(t.data[row]);
-            }
-            else if (rotate == 1) {
-                retval = t.data.column_span(0);
-            }
-            else if (rotate == 2) {
-                retval = stride_span<const char>(t.data[t.data.num_rows() - row - 1]).reverse();
-            }
-            else if (rotate == 3) {
-                retval = t.data.column_span(t.data.num_cols() - 1).reverse();
-            }
-            if (flip) {
-                retval = retval.reverse();
-            }
-            return retval;
-        }
-
-        constexpr int PREVIOUS_ID_FIRST_COL = -1;
-        constexpr int PREVIOUS_ID_FIRST_ROW = -2;
-        constexpr int PREVIOUS_ID_TOP_LEFT = -3;
-
-        std::tuple<int, int, bool> get_next(int current_id, int prev_id, int current_rotate, bool current_flip, const std::vector<tile>& tiles, const std::vector<std::pair<int, std::vector<matching_border>>>& borders_map) {
-            const auto& borders = std::find_if(borders_map.begin(), borders_map.end(), [id = current_id](const auto& p){ return id == p.first; })->second;
-            const auto next_border = get_border(direction, current_rotate, current_flip);
-            const auto& next = *std::find_if(borders.begin(), borders.end(), [next_border, id = current_id](const matching_border& b){
-                return std::get<0>(b).id == id && std::get<0>(b).side == next_border ||
-                       std::get<1>(b).id == id && std::get<1>(b).side == next_border;
-            });
-            const auto [nb, mt] = get_match_not_for(next, current_id);
-            if (mt == match_type::flip || mt == match_type::both) {
-                current_flip = !current_flip;
-            }
-            if (mt == match_type::rotate || mt == match_type::both) {
-                current_rotate += get_rotate(nb.side, border::left);
-            }
-            return {nb.id, current_rotate, current_flip};
-        }
-
-        void build_row(std::vector<char>& data, const std::size_t total_size, const std::size_t num_cols, const std::size_t row, const std::size_t col,
-                       const tile& current, int prev_id, int current_rotate, bool current_flip,
-                       const std::vector<tile>& tiles, const std::vector<std::pair<int, std::vector<matching_border>>>& borders_map)
-        {
-            const auto start_row = row == 0 ? 0 : 1;
-            for (std::size_t data_row = start_row; data_row < current.data.num_rows(); ++data_row) {
-                const auto row_data = get_tile_row(current, data_row, current_rotate, current_flip);
-                const auto col_size = row_data.size() - 1;
-                if (col == 0) {
-                    data.insert(data.begin() + total_size * row, row_data.begin(), row_data.end());
+            if (from == border::left) {
+                if (!flip_col) {
+                    retval = t.data.row_span(row);
                 }
                 else {
-                    data.insert(data.begin() + total_size * row + col * col_size + 1, row_data.begin() + 1, row_data.end());
+                    retval = t.data.row_span(t.data.num_rows() - row - 1);
                 }
             }
-            if (col == num_cols - 1) {
-                return;
+            else if (from == border::bottom) {
+                if (!flip_col) {
+                    retval = t.data.column_span(row).reverse();
+                }
+                else {
+                    retval = t.data.column_span(t.data.num_cols() - row - 1).reverse();
+                }
             }
-
-            //auto [next_id, next_rotate, next_flip] = get_next(current.id, border::right, current_rotate, current_flip, tiles, borders_map);
-            auto tuple = get_next(current.id, prev_id, current_rotate, current_flip, tiles, borders_map);
-            auto [next_id, next_rotate, next_flip] = tuple;
-            build_row(data, total_size, num_cols, row, col + 1, *std::find(tiles.begin(), tiles.end(), next_id), current.id, next_rotate, next_flip, tiles, borders_map);
+            else if (from == border::right) {
+                if (!flip_col) {
+                    retval = t.data.row_span(t.data.num_rows() - row - 1).reverse();
+                }
+                else {
+                    retval = t.data.row_span(row).reverse();
+                }
+            }
+            else if (from == border::top) {
+                if (!flip_col) {
+                    retval = t.data.column_span(t.data.num_cols() - row - 1);
+                }
+                else {
+                    retval = t.data.column_span(row);
+                }
+            }
+//            if (flip_row) {
+//                retval = retval.reverse();
+//            }
+            return retval;
         }
 
-        std::vector<char> build(const std::size_t size, const std::vector<tile>& tiles, const std::vector<std::pair<int, std::vector<matching_border>>>& borders_map) {
-            const auto total_size = size * (tiles.front().data.num_cols() - 1) + 1;
-            std::vector<char> data;
-            data.resize(total_size * total_size);
-            const auto& first_borders = *std::find_if(borders_map.begin(), borders_map.end(),[](const std::pair<int, std::vector<matching_border>>& p){
-                return p.second.size() == 2;
+        border opposite(border b) {
+            switch (b) {
+                case border::left: return border::right;
+                case border::right: return border::left;
+                case border::top: return border::bottom;
+                case border::bottom: return border::top;
+                default: return border::num_borders;
+            }
+        }
+
+        border rotate_direction_clockwise(border prev_row_from) {
+            switch (prev_row_from) {
+                case border::top: return border::right;
+                case border::right: return border::bottom;
+                case border::bottom: return border::left;
+                case border::left: return border::top;
+                default: return border::num_borders;
+            }
+        }
+
+        void build_row(std::vector<char>& data, const std::size_t row, const std::size_t col, const std::size_t total_size,
+                       const tile& current, border from, bool flip_row, bool flip_col, const std::vector<tile>& tiles)
+        {
+//            const auto start_row = row == 0 ? 0 : 1;
+//            for (std::size_t data_row = start_row; data_row < current.data.num_rows(); ++data_row) {
+//               const auto row_data = get_tile_row(current, data_row, from, flipped);
+//               const auto col_size = row_data.size() - 1;
+//               if (col == 0) {
+//                   auto dest = total_size * (row * col_size + data_row + start_row);
+//                   std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
+//               }
+//               else {
+//                   auto dest = total_size * (row * col_size + data_row + start_row) + col * col_size + 1;
+//                   std::copy(row_data.begin() + 1, row_data.end(), data.begin() + dest);
+//               }
+//            }
+            for (std::size_t data_row = 0; data_row < current.data.num_rows(); ++data_row) {
+                const auto row_data = get_next_tile_in_row(current, data_row, from, flip_row, flip_col);
+                auto dest = (row * current.data.num_rows() + data_row) * total_size + col * current.data.num_cols();
+                std::copy(row_data.begin(), row_data.end(), data.begin() + dest);
+            }
+
+            const auto& next_info = current.neighbors[static_cast<std::size_t>(opposite(from))];
+            if (!next_info) {
+                return;
+            }
+            bool next_flipped = flip_col != next_info->flipped;
+            const tile& next = *std::find(tiles.begin(), tiles.end(), next_info->id);
+            build_row(data, row, col + 1, total_size, next, next_info->side, flip_row, next_flipped, tiles);
+        }
+
+        std::vector<char> build(const std::vector<tile>& tiles, const std::size_t num_tiles_1d) {
+            //const auto num_chars_1d = num_tiles_1d * (tiles.front().data.num_cols() - 1) + 1;
+            const auto num_chars_1d = num_tiles_1d * tiles.front().data.num_cols();
+            std::vector<char> retval (num_chars_1d * num_chars_1d, '\0');
+            auto row_start = std::find_if(tiles.begin(), tiles.end(), [](const tile& t){
+                return std::count_if(t.neighbors.begin(), t.neighbors.end(),
+                                     [](const std::optional<neighbor_info>& i){ return i.has_value(); }) == 2;
             });
+            //We assume here that everything is well formed, meaning the two neighbors are adjacent.
+            border right = border::right, down = border::bottom;
+            if (row_start->neighbors[static_cast<std::size_t>(border::bottom)].has_value() &&
+                row_start->neighbors[static_cast<std::size_t>(border::left)].has_value())
+            {
+                right = border::bottom;
+                down = border::left;
+            }
+            else if (row_start->neighbors[static_cast<std::size_t>(border::left)].has_value() &&
+                     row_start->neighbors[static_cast<std::size_t>(border::top)].has_value())
+            {
+                right = border::left;
+                down = border::top;
+            }
+            else if (row_start->neighbors[static_cast<std::size_t>(border::top)].has_value() &&
+                     row_start->neighbors[static_cast<std::size_t>(border::right)].has_value())
+            {
+                right = border::top;
+                down = border::right;
+            }
 
-            auto [b1, t1] = get_match_for(first_borders.second[0], first_borders.first);
-            auto [b2, t2] = get_match_for(first_borders.second[1], first_borders.first);
-            auto r1 = get_rotate(b1, border::right);
-            auto r2 = get_rotate(b2, border::right);
-            int rotate = 0, next_id = first_borders.first;
-            if (r1 == 0 && r2 == 3 || r2 == 0 && r1 == 3) {
-                //No rotation needed, either b1 is right and b2 is bottom (1st condition) or b2 is right and b1 is bottom (2nd condition).
-            }
-            else if (r1 > r2) {
-                //Rotate by r1, r1 is seed for first row and r2 is the seed for the second row.
-                rotate = r1;
-            }
-            else {
-                //Rotate by r2, r2 is seed for first row and r1 is the seed for the second row.
-                rotate = r2;
-            }
-
-            auto row_start = std::find(tiles.begin(), tiles.end(), first_borders.first);
-            bool flip = false;
-            int prev_id = PREVIOUS_ID_FIRST_ROW;
-            for (std::size_t i = 0; i < size; ++i) {
-                build_row(data, total_size, size, i, 0, *row_start, i == 0 ? PREVIOUS_ID_TOP_LEFT : PREVIOUS_ID_FIRST_COL, rotate, flip, tiles, borders_map);
-                if (i < size - 1) {
-                    std::tie(next_id, rotate, flip) =
-                            get_next(row_start->id, prev_id, rotate, flip, tiles, borders_map);
-                    prev_id = row_start->id;
-                    row_start = std::find(tiles.begin(), tiles.end(), next_id);
+            border left = opposite(right);
+            bool flipped_col = false, flipped_row = false;
+            for (std::size_t row = 0; row < num_tiles_1d; ++row) {
+                build_row(retval, row, 0, num_chars_1d, *row_start, left, flipped_row, flipped_col, tiles);
+                const auto& next_info = row_start->neighbors[static_cast<std::size_t>(down)];
+                int prev_id = row_start->id;
+                row_start = std::find(tiles.begin(), tiles.end(), next_info->id);
+                std::size_t from = 0;
+                for (; from < static_cast<std::size_t>(border::num_borders); ++from) {
+                    if (row_start->neighbors[from].has_value() && row_start->neighbors[from]->id == prev_id) {
+                        break;
+                    }
                 }
+                flipped_col = next_info->flipped != flipped_col;
+                left = rotate_direction_clockwise(static_cast<border>(from));
+                down = rotate_direction_clockwise(left);
             }
-            return data;
+            return retval;
         }
 
         std::vector<tile> get_input(const fs::path &input_dir) {
@@ -356,10 +375,9 @@ namespace aoc2020 {
     void solve_day_20_1(const std::filesystem::path& input_dir) {
         auto tiles = get_input(input_dir);
         int64_t acc = 1;
+        find_matching_borders(tiles);
         for (const auto& t : tiles) {
-            auto borders = get_borders(t.data);
-            auto mb = find_matching_borders(t, tiles);
-            if (mb.size() == 2) {
+            if (std::count_if(t.neighbors.begin(), t.neighbors.end(), [](const std::optional<neighbor_info>& i){ return i.has_value(); }) == 2) {
                 acc *= t.id;
             }
         }
@@ -371,23 +389,149 @@ namespace aoc2020 {
     */
     void solve_day_20_2(const std::filesystem::path& input_dir) {
         auto tiles = get_input(input_dir);
+        find_matching_borders(tiles);
         int i = 0;
         while (i * i < tiles.size()) { ++i; }
         const auto size = static_cast<std::size_t>(i);
-        std::vector<std::pair<int, std::vector<matching_border>>> borders_map;
-        int start = -1;
-        for (const auto& t : tiles) {
-            auto borders = get_borders(t.data);
-            auto mb = find_matching_borders(t, tiles);
-            if (mb.size() == 2 && start < 0) {
-                start = t.id;
-            }
-            borders_map.emplace_back(t.id, std::move(mb));
-        }
-        grid<char> full {build(size, tiles, borders_map), size};
+        //grid<char> full {build(tiles, size), size * (tiles.front().data.num_cols() - 1) + 1};
+        grid<char> full {build(tiles, size), size * tiles.front().data.num_cols()};
         std::cout << "Full grid:\n";
         full.display(std::cout);
         std::cout << '\t' << 0 << '\n';
+    }
+
+    TEST_SUITE("day20" * doctest::description("Tests for day 20 challenges.")) {
+        using namespace std::string_literals;
+        using namespace std::string_view_literals;
+        TEST_CASE("day20:stride_span_reverse0" * doctest::description("Testing reversing stride_spans (column 0).")) {
+            std::vector<int> data;
+            int current = 0;
+            std::generate_n(std::back_inserter(data), 100, [&current](){ return current++; });
+            grid<int> g {data, 10};
+
+            auto col0 = g.column_span(0);
+                    REQUIRE_EQ(col0.size(), 10);
+                    REQUIRE_EQ(*(col0.begin()), 0);
+                    REQUIRE_EQ(*(col0.begin() + 1), 10);
+                    REQUIRE_EQ(*(col0.begin() + 2), 20);
+                    REQUIRE_EQ(*(col0.begin() + 3), 30);
+                    REQUIRE_EQ(*(col0.begin() + 4), 40);
+                    REQUIRE_EQ(*(col0.begin() + 5), 50);
+                    REQUIRE_EQ(*(col0.begin() + 6), 60);
+                    REQUIRE_EQ(*(col0.begin() + 7), 70);
+                    REQUIRE_EQ(*(col0.begin() + 8), 80);
+                    REQUIRE_EQ(*(col0.begin() + 9), 90);
+            auto col0r = col0.reverse();
+                    REQUIRE_EQ(col0r.size(), 10);
+                    REQUIRE_EQ(*(col0r.begin()), 90);
+                    REQUIRE_EQ(*(col0r.begin() + 1), 80);
+                    REQUIRE_EQ(*(col0r.begin() + 2), 70);
+                    REQUIRE_EQ(*(col0r.begin() + 3), 60);
+                    REQUIRE_EQ(*(col0r.begin() + 4), 50);
+                    REQUIRE_EQ(*(col0r.begin() + 5), 40);
+                    REQUIRE_EQ(*(col0r.begin() + 6), 30);
+                    REQUIRE_EQ(*(col0r.begin() + 7), 20);
+                    REQUIRE_EQ(*(col0r.begin() + 8), 10);
+                    REQUIRE_EQ(*(col0r.begin() + 9), 0);
+            auto col0rr = col0r.reverse();
+                    REQUIRE_EQ(col0rr.size(), 10);
+                    REQUIRE_EQ(*(col0rr.begin()), 0);
+                    REQUIRE_EQ(*(col0rr.begin() + 1), 10);
+                    REQUIRE_EQ(*(col0rr.begin() + 2), 20);
+                    REQUIRE_EQ(*(col0rr.begin() + 3), 30);
+                    REQUIRE_EQ(*(col0rr.begin() + 4), 40);
+                    REQUIRE_EQ(*(col0rr.begin() + 5), 50);
+                    REQUIRE_EQ(*(col0rr.begin() + 6), 60);
+                    REQUIRE_EQ(*(col0rr.begin() + 7), 70);
+                    REQUIRE_EQ(*(col0rr.begin() + 8), 80);
+                    REQUIRE_EQ(*(col0rr.begin() + 9), 90);
+        }
+        TEST_CASE("day20:stride_span_reverse1" * doctest::description("Testing reversing stride_spans (column 1).")) {
+            std::vector<int> data;
+            int current = 0;
+            std::generate_n(std::back_inserter(data), 100, [&current](){ return current++; });
+            grid<int> g {data, 10};
+
+            auto col1 = g.column_span(1);
+                    REQUIRE_EQ(col1.size(), 10);
+                    REQUIRE_EQ(*(col1.begin()), 1);
+                    REQUIRE_EQ(*(col1.begin() + 1), 11);
+                    REQUIRE_EQ(*(col1.begin() + 2), 21);
+                    REQUIRE_EQ(*(col1.begin() + 3), 31);
+                    REQUIRE_EQ(*(col1.begin() + 4), 41);
+                    REQUIRE_EQ(*(col1.begin() + 5), 51);
+                    REQUIRE_EQ(*(col1.begin() + 6), 61);
+                    REQUIRE_EQ(*(col1.begin() + 7), 71);
+                    REQUIRE_EQ(*(col1.begin() + 8), 81);
+                    REQUIRE_EQ(*(col1.begin() + 9), 91);
+            auto col1r = col1.reverse();
+                    REQUIRE_EQ(col1r.size(), 10);
+                    REQUIRE_EQ(*(col1r.begin()), 91);
+                    REQUIRE_EQ(*(col1r.begin() + 1), 81);
+                    REQUIRE_EQ(*(col1r.begin() + 2), 71);
+                    REQUIRE_EQ(*(col1r.begin() + 3), 61);
+                    REQUIRE_EQ(*(col1r.begin() + 4), 51);
+                    REQUIRE_EQ(*(col1r.begin() + 5), 41);
+                    REQUIRE_EQ(*(col1r.begin() + 6), 31);
+                    REQUIRE_EQ(*(col1r.begin() + 7), 21);
+                    REQUIRE_EQ(*(col1r.begin() + 8), 11);
+                    REQUIRE_EQ(*(col1r.begin() + 9), 1);
+            auto col1rr = col1r.reverse();
+                    REQUIRE_EQ(col1rr.size(), 10);
+                    REQUIRE_EQ(*(col1rr.begin()), 1);
+                    REQUIRE_EQ(*(col1rr.begin() + 1), 11);
+                    REQUIRE_EQ(*(col1rr.begin() + 2), 21);
+                    REQUIRE_EQ(*(col1rr.begin() + 3), 31);
+                    REQUIRE_EQ(*(col1rr.begin() + 4), 41);
+                    REQUIRE_EQ(*(col1rr.begin() + 5), 51);
+                    REQUIRE_EQ(*(col1rr.begin() + 6), 61);
+                    REQUIRE_EQ(*(col1rr.begin() + 7), 71);
+                    REQUIRE_EQ(*(col1rr.begin() + 8), 81);
+                    REQUIRE_EQ(*(col1rr.begin() + 9), 91);
+        }
+        TEST_CASE("day20:stride_span_reverse9" * doctest::description("Testing reversing stride_spans (column 9).")) {
+            std::vector<int> data;
+            int current = 0;
+            std::generate_n(std::back_inserter(data), 100, [&current](){ return current++; });
+            grid<int> g {data, 10};
+
+            auto col9 = g.column_span(9);
+                    REQUIRE_EQ(col9.size(), 10);
+                    REQUIRE_EQ(*(col9.begin()), 9);
+                    REQUIRE_EQ(*(col9.begin() + 1), 19);
+                    REQUIRE_EQ(*(col9.begin() + 2), 29);
+                    REQUIRE_EQ(*(col9.begin() + 3), 39);
+                    REQUIRE_EQ(*(col9.begin() + 4), 49);
+                    REQUIRE_EQ(*(col9.begin() + 5), 59);
+                    REQUIRE_EQ(*(col9.begin() + 6), 69);
+                    REQUIRE_EQ(*(col9.begin() + 7), 79);
+                    REQUIRE_EQ(*(col9.begin() + 8), 89);
+                    REQUIRE_EQ(*(col9.begin() + 9), 99);
+            auto col9r = col9.reverse();
+                    REQUIRE_EQ(col9r.size(), 10);
+                    REQUIRE_EQ(*(col9r.begin()), 99);
+                    REQUIRE_EQ(*(col9r.begin() + 1), 89);
+                    REQUIRE_EQ(*(col9r.begin() + 2), 79);
+                    REQUIRE_EQ(*(col9r.begin() + 3), 69);
+                    REQUIRE_EQ(*(col9r.begin() + 4), 59);
+                    REQUIRE_EQ(*(col9r.begin() + 5), 49);
+                    REQUIRE_EQ(*(col9r.begin() + 6), 39);
+                    REQUIRE_EQ(*(col9r.begin() + 7), 29);
+                    REQUIRE_EQ(*(col9r.begin() + 8), 19);
+                    REQUIRE_EQ(*(col9r.begin() + 9), 9);
+            auto col9rr = col9r.reverse();
+                    REQUIRE_EQ(col9rr.size(), 10);
+                    REQUIRE_EQ(*(col9rr.begin()), 9);
+                    REQUIRE_EQ(*(col9rr.begin() + 1), 19);
+                    REQUIRE_EQ(*(col9rr.begin() + 2), 29);
+                    REQUIRE_EQ(*(col9rr.begin() + 3), 39);
+                    REQUIRE_EQ(*(col9rr.begin() + 4), 49);
+                    REQUIRE_EQ(*(col9rr.begin() + 5), 59);
+                    REQUIRE_EQ(*(col9rr.begin() + 6), 69);
+                    REQUIRE_EQ(*(col9rr.begin() + 7), 79);
+                    REQUIRE_EQ(*(col9rr.begin() + 8), 89);
+                    REQUIRE_EQ(*(col9rr.begin() + 9), 99);
+        }
     }
 
 } /* namespace aoc2020 */
