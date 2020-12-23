@@ -122,3 +122,9 @@ Challenge time:  8.378ms
 ####Year 2020 - Day 20 - Challenge 2
 1989  
 Challenge time:  9.715ms
+####Year 2020 - Day 21 - Challenge 1
+2493  
+Challenge time:  575us
+####Year 2020 - Day 21 - Challenge 2
+kqv,jxx,zzt,dklgl,pmvfzk,tsnkknk,qdlpbt,tlgrhdh  
+Challenge time:  517us
