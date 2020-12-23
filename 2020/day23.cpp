@@ -39,17 +39,15 @@ namespace aoc2020 {
             return retval;
         }
 
-        template <std::size_t N>
         int incr_index(int val, int incr) {
-            auto next = (val + incr) % N;
+            auto next = (val + incr) % 9;
             while (next < 0) {
-                next += N;
+                next += 9;
             }
             return next;
         }
 
-        template <std::size_t N>
-        int forward(const std::array<cup, N>& cups, int current, std::size_t dist) {
+        int forward(const std::array<cup, 9>& cups, int current, std::size_t dist) {
             while (dist > 0) {
                 current = cups[current].next;
                 --dist;
@@ -57,8 +55,7 @@ namespace aoc2020 {
             return current;
         }
 
-        template <std::size_t N>
-        int backward(const std::array<cup, N>& cups, int current, std::size_t  dist) {
+        int backward(const std::array<cup, 9>& cups, int current, std::size_t  dist) {
             while (dist > 0) {
                 current = cups[current].prev;
                 --dist;
@@ -66,41 +63,21 @@ namespace aoc2020 {
             return current;
         }
 
-        template <std::size_t N>
-        void remove(std::array<cup, N>& cups, int current) {
+        void remove(std::array<cup, 9>& cups, int current) {
             cups[cups[current].prev].next = cups[current].next;
             cups[cups[current].next].prev = cups[current].prev;
             cups[current].next = -1;
             cups[current].prev = -1;
         }
 
-        template <std::size_t N>
-        void insert(std::array<cup, N>& cups, int current, int after) {
+        void insert(std::array<cup, 9>& cups, int current, int after) {
             cups[current].next = cups[after].next;
             cups[current].prev = after;
             cups[after].next = current;
             cups[cups[current].next].prev = current;
         }
 
-        template <std::size_t N, typename = std::enable_if_t<N >= INIT_CUPS.size(), void>>
-        std::array<cup, N> get_expanded_initial_state() {
-            auto init = get_initial_state();
-            if constexpr (N > INIT_CUPS.size()) {
-                std::array<cup, N> retval{};
-                std::copy(init.begin(), init.end(), retval.begin());
-                int last = INIT_CUPS[INIT_CUPS.size() - 1] - 1;
-                for (int i = INIT_CUPS.size(); i < N; ++i) {
-                    insert(retval, i, last);
-                }
-                return retval;
-            }
-            else {
-                return init;
-            }
-        }
-
-        template <std::size_t N>
-        int move(std::array<cup, N>& cups, int current) {
+        int move(std::array<cup, 9>& cups, int current) {
             std::array<int, 3> removed{};
             removed[0] = forward(cups, current, 1);
             removed[1] = forward(cups, removed[0], 1);
@@ -109,9 +86,9 @@ namespace aoc2020 {
             remove(cups, removed[1]);
             remove(cups, removed[2]);
 
-            auto dest = incr_index<N>(current, -1);
+            auto dest = incr_index(current, -1);
             while (dest == removed[0] || dest == removed[1] || dest == removed[2]) {
-                dest = incr_index<N>(dest, -1);
+                dest = incr_index(dest, -1);
             }
             insert(cups, removed[0], dest);
             insert(cups, removed[1], removed[0]);
@@ -119,8 +96,7 @@ namespace aoc2020 {
             return forward(cups, current, 1);
         }
 
-        template <std::size_t N>
-        std::string get_from(const std::array<cup, N>& cups, const int after) {
+        std::string get_from(const std::array<cup, 9>& cups, const int after) {
             std::stringstream rs;
             int current = cups[after].next;
             do {
@@ -148,12 +124,12 @@ namespace aoc2020 {
 
     */
     void solve_day_23_2(const std::filesystem::path& input_dir) {
-        auto cups = get_expanded_initial_state<1000000>();
+        auto cups = get_initial_state();
         int current = INIT_CUPS[0] - 1;
-        for (int i = 0; i < 10000000; ++i) {
+        for (int i = 0; i < 100; ++i) {
             current = move(cups, current);
         }
-        std::cout << '\t' << static_cast<int64_t>(forward(cups, 0, 1) + 1) * static_cast<int64_t>(forward(cups, 0, 2) + 1) << '\n';
+        std::cout << '\t' << 0 << '\n';
     }
 
     TEST_SUITE("day23" * doctest::description("Tests for day 23 challenges.")) {
