@@ -128,3 +128,9 @@ Challenge time:  575us
 ####Year 2020 - Day 21 - Challenge 2
 kqv,jxx,zzt,dklgl,pmvfzk,tsnkknk,qdlpbt,tlgrhdh  
 Challenge time:  517us
+####Year 2020 - Day 22 - Challenge 1
+33559  
+Challenge time:  10us
+####Year 2020 - Day 22 - Challenge 2
+32789  
+Challenge time:  795.101ms
