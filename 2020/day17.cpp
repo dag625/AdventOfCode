@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/17/20.
 //
 
-#include "day17.h"
+#include "registration.h"
 #include "utilities.h"
 #include "grid.h"
 #include "point_nd.h"
@@ -103,7 +103,7 @@ namespace aoc2020 {
                     c.active = false;
                 }
             }
-            add_neighbors_of_active(data);//todo we could prune this down, but it may or may not be worth it
+            add_neighbors_of_active(data);
         }
 
         grid<char> get_input(const fs::path &input_dir) {
@@ -255,13 +255,13 @@ namespace aoc2020 {
 
     Starting with your given initial configuration, simulate six cycles. How many cubes are left in the active state after the sixth cycle?
     */
-    void solve_day_17_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_17_1(const std::filesystem::path& input_dir) {
         auto cells = get_active<3>(get_input(input_dir));
         add_neighbors_of_active(cells);
         for (int i = 0; i < 6; ++i) {
             iterate(cells);
         }
-        std::cout << '\t' << std::count_if(cells.begin(), cells.end(), [](const cell<3>& c){ return c.active; }) << '\n';
+        return std::to_string(std::count_if(cells.begin(), cells.end(), [](const cell<3>& c){ return c.active; }));
     }
 
     /*
@@ -513,13 +513,15 @@ namespace aoc2020 {
 
     Starting with your given initial configuration, simulate six cycles in a 4-dimensional space. How many cubes are left in the active state after the sixth cycle?
     */
-    void solve_day_17_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_17_2(const std::filesystem::path& input_dir) {
         auto cells = get_active<4>(get_input(input_dir));
         add_neighbors_of_active(cells);
         for (int i = 0; i < 6; ++i) {
             iterate(cells);
         }
-        std::cout << '\t' << std::count_if(cells.begin(), cells.end(), [](const cell<4>& c){ return c.active; }) << '\n';
+        return std::to_string(std::count_if(cells.begin(), cells.end(), [](const cell<4>& c){ return c.active; }));
     }
+
+    static aoc::registration r {2020, 17, solve_day_17_1, solve_day_17_2};
 
 } /* namespace aoc2020 */

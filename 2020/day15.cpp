@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/15/20.
 //
 
-#include "day15.h"
+#include "registration.h"
 #include "span.h"
 
 #include <doctest/doctest.h>
@@ -112,8 +112,8 @@ namespace aoc2020 {
     Given the starting numbers 3,1,2, the 2020th number spoken is 1836.
     Given your starting numbers, what will be the 2020th number spoken?
     */
-    void solve_day_15_1(const std::filesystem::path&) {
-        std::cout << '\t' << play_until_vec(INPUT, 2020) << '\n';
+    std::string solve_day_15_1(const std::filesystem::path&) {
+        return std::to_string(play_until_vec(INPUT, 2020));
     }
 
     /*
@@ -128,9 +128,11 @@ namespace aoc2020 {
     Given 3,1,2, the 30000000th number spoken is 362.
     Given your starting numbers, what will be the 30000000th number spoken?
     */
-    void solve_day_15_2(const std::filesystem::path&) {
-        std::cout << '\t' << play_until_vec(INPUT, 30000000) << '\n';
+    std::string solve_day_15_2(const std::filesystem::path&) {
+        return std::to_string(play_until_vec(INPUT, 30000000));
     }
+
+    static aoc::registration r {2020, 15, solve_day_15_1, solve_day_15_2};
 
     TEST_SUITE("day15_orig" * doctest::description("Tests for day 15 challenges.")) {
         TEST_CASE("day15_orig:main_example" * doctest::description("Day 15 example with input (0,3,6).")) {

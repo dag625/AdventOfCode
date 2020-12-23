@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/14/20.
 //
 
-#include "day14.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <utility>
@@ -10,7 +10,6 @@
 #include <string_view>
 #include <charconv>
 #include <vector>
-#include <iostream>
 #include <unordered_map>
 #include <numeric>
 #include <cmath>
@@ -224,7 +223,7 @@ namespace aoc2020 {
 
     Execute the initialization program. What is the sum of all values left in memory after it completes?
     */
-    void solve_day_14_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_14_1(const std::filesystem::path& input_dir) {
         auto instructions = get_input(input_dir);
         decoder_v1 s;
         for (const auto& ins : instructions) {
@@ -232,7 +231,7 @@ namespace aoc2020 {
         }
         uint64_t sum = std::accumulate(s.memory.begin(), s.memory.end(), 0ULL,
                                        [](uint64_t acc, const std::pair<std::size_t, uint64_t>& v){ return acc + v.second; });
-        std::cout << '\t' << sum << '\n';
+        return std::to_string(sum);
     }
 
     /*
@@ -281,7 +280,7 @@ namespace aoc2020 {
 
     Execute the initialization program using an emulator for a version 2 decoder chip. What is the sum of all values left in memory after it completes?
     */
-    void solve_day_14_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_14_2(const std::filesystem::path& input_dir) {
         auto instructions = get_input(input_dir);
         decoder_v2 s;
         for (const auto& ins : instructions) {
@@ -289,7 +288,9 @@ namespace aoc2020 {
         }
         uint64_t sum = std::accumulate(s.memory.begin(), s.memory.end(), 0ULL,
                                        [](uint64_t acc, const std::pair<std::size_t, uint64_t>& v){ return acc + v.second; });
-        std::cout << '\t' << sum << '\n';
+        return std::to_string(sum);
     }
+
+    static aoc::registration r {2020, 14, solve_day_14_1, solve_day_14_2};
 
 } /* namespace aoc2020 */

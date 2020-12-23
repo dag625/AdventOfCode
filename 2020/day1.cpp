@@ -2,11 +2,10 @@
 // Created by Daniel Garcia on 12/1/20.
 //
 
-#include "day1.h"
+#include "registration.h"
 
 #include <vector>
 #include <cstdint>
-#include <fstream>
 #include <iostream>
 
 #include "utilities.h"
@@ -53,9 +52,9 @@ namespace aoc2020 {
         }
 
         template <typename F>
-        void solve_day_1(F func, const std::vector<int>& input) {
+        std::string solve_day_1(F func, const std::vector<int>& input) {
             auto val = func(input);
-            std::cout << '\t' << val << std::endl;
+            return std::to_string(val);
         }
 
     }
@@ -85,8 +84,8 @@ namespace aoc2020 {
 
     Of course, your expense report is much larger. Find the two entries that sum to 2020; what do you get if you multiply them together?
     */
-    void solve_day_1_1(const std::filesystem::path& input_dir) {
-        solve_day_1(solve_day_1_1_impl, get_input(input_dir));
+    std::string solve_day_1_1(const std::filesystem::path& input_dir) {
+        return solve_day_1(solve_day_1_1_impl, get_input(input_dir));
     }
 
     /*
@@ -96,8 +95,10 @@ namespace aoc2020 {
 
     In your expense report, what is the product of the three entries that sum to 2020?
     */
-    void solve_day_1_2(const std::filesystem::path& input_dir) {
-        solve_day_1(solve_day_1_2_impl, get_input(input_dir));
+    std::string solve_day_1_2(const std::filesystem::path& input_dir) {
+        return solve_day_1(solve_day_1_2_impl, get_input(input_dir));
     }
+
+    static registration r {2020, 1, solve_day_1_1, solve_day_1_2};
 
 } /* namespace aoc2020 */

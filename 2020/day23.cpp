@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/22/20.
 //
 
-#include "day23.h"
+#include "registration.h"
 
 #include <doctest/doctest.h>
 
@@ -189,13 +189,13 @@ namespace aoc2020 {
 
     Using your labeling, simulate 100 moves. What are the labels on the cups after cup 1?
     */
-    void solve_day_23_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_23_1(const std::filesystem::path& input_dir) {
         auto cups = get_initial_state();
         int current = INIT_CUPS[0] - 1;
         for (int i = 0; i < 100; ++i) {
             current = move(cups, current);
         }
-        std::cout << '\t' << get_from(cups, 0) << '\n';
+        return get_from(cups, 0);
     }
 
     /*
@@ -211,14 +211,16 @@ namespace aoc2020 {
 
     Determine which two cups will end up immediately clockwise of cup 1. What do you get if you multiply their labels together?
     */
-    void solve_day_23_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_23_2(const std::filesystem::path& input_dir) {
         auto cups = get_expanded_initial_state<1000000>();
         int current = INIT_CUPS[0] - 1;
         for (int i = 0; i < 10000000; ++i) {
             current = move(cups, current);
         }
-        std::cout << '\t' << static_cast<int64_t>(forward(cups, 0, 1) + 1) * static_cast<int64_t>(forward(cups, 0, 2) + 1) << '\n';
+        return std::to_string(static_cast<int64_t>(forward(cups, 0, 1) + 1) * static_cast<int64_t>(forward(cups, 0, 2) + 1));
     }
+
+    static aoc::registration r {2020, 23, solve_day_23_1, solve_day_23_2};
 
     TEST_SUITE("day23" * doctest::description("Tests for day 23 challenges.")) {
         using namespace std::string_view_literals;

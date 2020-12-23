@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/19/20.
 //
 
-#include "day19.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <doctest/doctest.h>
@@ -218,7 +218,7 @@ namespace aoc2020 {
 
     How many messages completely match rule 0?
     */
-    void solve_day_19_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_19_1(const std::filesystem::path& input_dir) {
         auto [rules, messages] = get_input(input_dir);
         int matching = 0;
         const auto& rule0 = rules.front();
@@ -227,7 +227,7 @@ namespace aoc2020 {
                 ++matching;
             }
         }
-        std::cout << '\t' << matching << '\n';
+        return std::to_string(matching);
     }
 
     /*
@@ -308,7 +308,7 @@ namespace aoc2020 {
     aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
     After updating rules 8 and 11, how many messages completely match rule 0?
     */
-    void solve_day_19_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_19_2(const std::filesystem::path& input_dir) {
         auto [rules, messages] = get_input(input_dir);
         //We're going to take the easy way out.  The only place the changed rules are used is rule 0.
         //So we have from the challenge:
@@ -332,8 +332,10 @@ namespace aoc2020 {
                 ++matching;
             }
         }
-        std::cout << '\t' << matching << '\n';
+        return std::to_string(matching);
     }
+
+    static aoc::registration r {2020, 19, solve_day_19_1, solve_day_19_2};
 
     TEST_SUITE("day19" * doctest::description("Tests for day 19 challenges.")) {
         using namespace std::string_literals;

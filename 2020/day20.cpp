@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/20/20.
 //
 
-#include "day20.h"
+#include "registration.h"
 #include "utilities.h"
 #include "grid.h"
 #include "stride_span.h"
@@ -75,18 +75,6 @@ namespace aoc2020 {
 
         bool operator==(const tile& a, int id) {
             return a.id == id;
-        }
-
-        struct tile_border {
-            int id = 0;
-            border side = border::top;
-        };
-
-        bool operator==(const tile_border& a, const tile_border& b) {
-            return std::tie(a.id, a.side) == std::tie(b.id, b.side);
-        }
-        bool operator< (const tile_border& a, const tile_border& b) {
-            return std::tie(a.id, a.side) <  std::tie(b.id, b.side);
         }
 
         border rotate(border from, int diff) {
@@ -600,7 +588,7 @@ namespace aoc2020 {
 
     Assemble the tiles into an image. What do you get if you multiply together the IDs of the four corner tiles?
     */
-    void solve_day_20_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_20_1(const std::filesystem::path& input_dir) {
         auto tiles = get_input(input_dir);
         int64_t acc = 1;
         find_matching_borders(tiles);
@@ -609,7 +597,7 @@ namespace aoc2020 {
                 acc *= t.id;
             }
         }
-        std::cout << '\t' << acc << '\n';
+        return std::to_string(acc);
     }
 
     /*
@@ -706,7 +694,7 @@ namespace aoc2020 {
 
     How many # are not part of a sea monster?
     */
-    void solve_day_20_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_20_2(const std::filesystem::path& input_dir) {
         auto tiles = get_input(input_dir);
         find_matching_borders(tiles);
         int i = 0;
@@ -718,8 +706,10 @@ namespace aoc2020 {
             std::cout << "Full grid:\n";
             full.display(std::cout);
         }
-        std::cout << '\t' << std::count_if(full.begin(), full.end(), [](char c){ return c == '#'; }) << '\n';
+        return std::to_string(std::count_if(full.begin(), full.end(), [](char c){ return c == '#'; }));
     }
+
+    static aoc::registration r {2020, 20, solve_day_20_1, solve_day_20_2};
 
     TEST_SUITE("day20" * doctest::description("Tests for day 20 challenges.")) {
         using namespace std::string_literals;

@@ -19,38 +19,38 @@ add_executable(AdventOfCode
         utilities.cpp
         utilities.h
         2020/day1.cpp
-        2020/day1.h
         2020/day2.cpp
-        2020/day2.h
         2020/day3.cpp
-        2020/day3.h
         2020/day4.cpp
-        2020/day4.h
         2020/day5.cpp
-        2020/day5.h
         2020/day6.cpp
-        2020/day6.h
         2020/day7.cpp
-        2020/day7.h
         2020/day8.cpp
-        2020/day8.h
         time_format.h
         2020/day9.cpp
-        2020/day9.h
         2020/day10.cpp
-        2020/day10.h
         2020/day11.cpp
-        2020/day11.h
         grid.cpp
         grid.h
         2020/day12.cpp
-        2020/day12.h
         2020/day13.cpp
-        2020/day13.h
         2020/day14.cpp
-        2020/day14.h
         2020/day15.cpp
-        2020/day15.h span.h arguments.h 2020/day16.cpp 2020/day16.h 2020/day17.cpp 2020/day17.h point.h point_nd.h 2020/day18.cpp 2020/day18.h 2020/day19.cpp 2020/day19.h 2020/day20.cpp 2020/day20.h stride_span.h 2020/day21.cpp 2020/day21.h 2020/day22.cpp 2020/day22.h 2020/day23.cpp 2020/day23.h)
+        span.h
+        arguments.h
+        2020/day16.cpp
+        2020/day17.cpp
+        point.h
+        point_nd.h
+        2020/day18.cpp
+        2020/day19.cpp
+        2020/day20.cpp
+        stride_span.h
+        2020/day21.cpp
+        2020/day22.cpp
+        2020/day23.cpp
+        challenge.cpp
+        challenge.h registration.cpp registration.h)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(AdventOfCode PRIVATE doctest)
 

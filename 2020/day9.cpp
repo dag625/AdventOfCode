@@ -2,13 +2,12 @@
 // Created by Daniel Garcia on 12/9/20.
 //
 
-#include "day9.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <cstdint>
 #include <charconv>
 #include <numeric>
-#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -130,8 +129,8 @@ namespace aoc2020 {
 
     The first step of attacking the weakness in the XMAS data is to find the first number in the list (after the preamble) which is not the sum of two of the 25 numbers before it. What is the first number that does not have this property?
     */
-    void solve_day_9_1(const std::filesystem::path& input_dir) {
-        std::cout << '\t' << find_first_invalid(get_input(input_dir)) << '\n';
+    std::string solve_day_9_1(const std::filesystem::path& input_dir) {
+        return std::to_string(find_first_invalid(get_input(input_dir)));
     }
 
     /*
@@ -165,9 +164,11 @@ namespace aoc2020 {
 
     What is the encryption weakness in your XMAS-encrypted list of numbers?
     */
-    void solve_day_9_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_9_2(const std::filesystem::path& input_dir) {
         auto data = get_input(input_dir);
-        std::cout << '\t' << find_sum_range(data, find_first_invalid(data)) << '\n';
+        return std::to_string(find_sum_range(data, find_first_invalid(data)));
     }
+
+    static aoc::registration r {2020, 9, solve_day_9_1, solve_day_9_2};
 
 } /* namespace aoc2020 */
