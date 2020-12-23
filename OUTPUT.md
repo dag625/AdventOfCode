@@ -139,4 +139,4 @@ Challenge time:  795.101ms
 Challenge time:  8us
 ####Year 2020 - Day 23 - Challenge 2
 442938711161  
-Challenge time:  294.273ms
+Challenge time:  191.274ms
