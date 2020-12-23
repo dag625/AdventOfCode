@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/12/20.
 //
 
-#include "day11.h"
+#include "registration.h"
 #include "utilities.h"
 #include "grid.h"
 
@@ -180,7 +180,7 @@ namespace aoc2020 {
 
     Simulate your seating area by applying the seating rules repeatedly until no seats change state. How many seats end up occupied?
     */
-    void solve_day_11_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_11_1(const std::filesystem::path& input_dir) {
         auto grid = get_input(input_dir);
         int num_changes = 1, num_iters = 0;
         while (num_changes > 0) {
@@ -190,7 +190,7 @@ namespace aoc2020 {
             ++num_iters;
             //std::cout << "Iteration " << num_iters << " (# Changes = " << num_changes << "):\n" << grid << '\n';
         }
-        std::cout << '\t' << num_occupied(grid) << '\n';
+        return std::to_string(num_occupied(grid));
     }
 
     /*
@@ -299,7 +299,7 @@ namespace aoc2020 {
 
     Given the new visibility method and the rule change for occupied seats becoming empty, once equilibrium is reached, how many seats end up occupied?
     */
-    void solve_day_11_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_11_2(const std::filesystem::path& input_dir) {
         auto grid = get_input(input_dir);
         int num_changes = 1, num_iters = 0;
         while (num_changes > 0) {
@@ -309,7 +309,9 @@ namespace aoc2020 {
             ++num_iters;
             //std::cout << "Iteration " << num_iters << " (# Changes = " << num_changes << "):\n" << grid << '\n';
         }
-        std::cout << '\t' << num_occupied(grid) << '\n';
+        return std::to_string(num_occupied(grid));
     }
+
+    static aoc::registration r {2020, 11, solve_day_11_1, solve_day_11_2};
 
 } /* namespace aoc2020 */

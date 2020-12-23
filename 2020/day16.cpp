@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/16/20.
 //
 
-#include "day16.h"
+#include "registration.h"
 #include "utilities.h"
 #include "grid.h"
 #include "span.h"
@@ -205,7 +205,7 @@ namespace aoc2020 {
 
     Consider the validity of the nearby tickets you scanned. What is your ticket scanning error rate?
     */
-    void solve_day_16_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_16_1(const std::filesystem::path& input_dir) {
         auto in = get_input(input_dir);
         int64_t sum = 0;
         for (auto tf : in.tickets) {
@@ -218,7 +218,7 @@ namespace aoc2020 {
             }
             sum += a;
         }
-        std::cout << '\t' << sum << '\n';
+        return std::to_string(sum);
     }
 
     /*
@@ -243,7 +243,7 @@ namespace aoc2020 {
 
     Once you work out which field is which, look for the six fields on your ticket that start with the word departure. What do you get if you multiply those six values together?
     */
-    void solve_day_16_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_16_2(const std::filesystem::path& input_dir) {
         using namespace std::string_view_literals;
         auto in = get_input(input_dir);
         for (std::size_t row = 0; row < in.tickets.num_rows();) {
@@ -272,7 +272,9 @@ namespace aoc2020 {
                 acc *= in.tickets[0][i];
             }
         }
-        std::cout << '\t' << acc << '\n';
+        return std::to_string(acc);
     }
+
+    static aoc::registration r {2020, 16, solve_day_16_1, solve_day_16_2};
 
 } /* namespace aoc2020 */

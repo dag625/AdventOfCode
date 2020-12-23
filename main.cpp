@@ -1,145 +1,15 @@
 #include <iostream>
 #include <filesystem>
 #include <string>
-#include <utility>
 #include <algorithm>
-#include <chrono>
-#include <array>
 
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
 
-#include "time_format.h"
 #include "arguments.h"
-
-#include "2020/day1.h"
-#include "2020/day2.h"
-#include "2020/day3.h"
-#include "2020/day4.h"
-#include "2020/day5.h"
-#include "2020/day6.h"
-#include "2020/day7.h"
-#include "2020/day8.h"
-#include "2020/day9.h"
-#include "2020/day10.h"
-#include "2020/day11.h"
-#include "2020/day12.h"
-#include "2020/day13.h"
-#include "2020/day14.h"
-#include "2020/day15.h"
-#include "2020/day16.h"
-#include "2020/day17.h"
-#include "2020/day18.h"
-#include "2020/day19.h"
-#include "2020/day20.h"
-#include "2020/day21.h"
-#include "2020/day22.h"
-#include "2020/day23.h"
+#include "challenge.h"
 
 namespace fs = std::filesystem;
-
-namespace {
-
-    using challenge_function = void (*)(const std::filesystem::path&);
-
-    struct challenge {
-        int year;
-        int day;
-        int num;
-        challenge_function function;
-
-        constexpr challenge(int y, int d, int c, challenge_function f) : year{y}, day{d}, num{c}, function{f} {}
-
-        [[nodiscard]] bool matches(std::optional<int> ryear, std::optional<int> rday, std::optional<int> rnum) const {
-            if (!ryear.has_value()) {
-                return true;
-            }
-            else if (ryear == year) {
-                if (!rday.has_value()) {
-                    return true;
-                } else if (rday == day) {
-                    if (!rnum.has_value() || rnum == num) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        void run_challenge(const fs::path& input_dir) const noexcept {
-            try {
-                function(input_dir);
-            }
-            catch (const std::exception& e) {
-                std::cerr << '\t' << str() << " failed due to an exception:  " << e.what() << '\n';
-            }
-            catch (...) {
-                std::cerr << '\t' << str() << " failed due to an unknown exception.\n";
-            }
-        }
-
-        [[nodiscard]] std::string str() const {
-            std::stringstream ss;
-            ss << "Year " << year << " - Day " << day << " - Challenge " << num;
-            return ss.str();
-        }
-    };
-
-    constexpr auto challenge_solutions = std::array{
-            challenge{2020, 1, 1, aoc2020::solve_day_1_1},
-            challenge{2020, 1, 2, aoc2020::solve_day_1_2},
-            challenge{2020, 2, 1, aoc2020::solve_day_2_1},
-            challenge{2020, 2, 2, aoc2020::solve_day_2_2},
-            challenge{2020, 3, 1, aoc2020::solve_day_3_1},
-            challenge{2020, 3, 2, aoc2020::solve_day_3_2},
-            challenge{2020, 4, 1, aoc2020::solve_day_4_1},
-            challenge{2020, 4, 2, aoc2020::solve_day_4_2},
-            challenge{2020, 5, 1, aoc2020::solve_day_5_1},
-            challenge{2020, 5, 2, aoc2020::solve_day_5_2},
-            challenge{2020, 6, 1, aoc2020::solve_day_6_1},
-            challenge{2020, 6, 2, aoc2020::solve_day_6_2},
-            challenge{2020, 7, 1, aoc2020::solve_day_7_1},
-            challenge{2020, 7, 2, aoc2020::solve_day_7_2},
-            challenge{2020, 8, 1, aoc2020::solve_day_8_1},
-            challenge{2020, 8, 2, aoc2020::solve_day_8_2},
-            challenge{2020, 9, 1, aoc2020::solve_day_9_1},
-            challenge{2020, 9, 2, aoc2020::solve_day_9_2},
-            challenge{2020, 10, 1, aoc2020::solve_day_10_1},
-            challenge{2020, 10, 2, aoc2020::solve_day_10_2},
-            challenge{2020, 11, 1, aoc2020::solve_day_11_1},
-            challenge{2020, 11, 2, aoc2020::solve_day_11_2},
-            challenge{2020, 12, 1, aoc2020::solve_day_12_1},
-            challenge{2020, 12, 2, aoc2020::solve_day_12_2},
-            challenge{2020, 13, 1, aoc2020::solve_day_13_1},
-            challenge{2020, 13, 2, aoc2020::solve_day_13_2},
-            challenge{2020, 14, 1, aoc2020::solve_day_14_1},
-            challenge{2020, 14, 2, aoc2020::solve_day_14_2},
-            challenge{2020, 15, 1, aoc2020::solve_day_15_1},
-            challenge{2020, 15, 2, aoc2020::solve_day_15_2},
-            challenge{2020, 16, 1, aoc2020::solve_day_16_1},
-            challenge{2020, 16, 2, aoc2020::solve_day_16_2},
-            challenge{2020, 17, 1, aoc2020::solve_day_17_1},
-            challenge{2020, 17, 2, aoc2020::solve_day_17_2},
-            challenge{2020, 18, 1, aoc2020::solve_day_18_1},
-            challenge{2020, 18, 2, aoc2020::solve_day_18_2},
-            challenge{2020, 19, 1, aoc2020::solve_day_19_1},
-            challenge{2020, 19, 2, aoc2020::solve_day_19_2},
-            challenge{2020, 20, 1, aoc2020::solve_day_20_1},
-            challenge{2020, 20, 2, aoc2020::solve_day_20_2},
-            challenge{2020, 21, 1, aoc2020::solve_day_21_1},
-            challenge{2020, 21, 2, aoc2020::solve_day_21_2},
-            challenge{2020, 22, 1, aoc2020::solve_day_22_1},
-            challenge{2020, 22, 2, aoc2020::solve_day_22_2},
-            challenge{2020, 23, 1, aoc2020::solve_day_23_1},
-            challenge{2020, 23, 2, aoc2020::solve_day_23_2}
-    };
-
-}
 
 int non_test_main(int argc, char** argv) {
     using namespace std::string_view_literals;
@@ -162,17 +32,7 @@ int non_test_main(int argc, char** argv) {
         return 0;
     }
 
-    const auto start = std::chrono::system_clock::now();
-    for (const auto &c : challenge_solutions) {
-        if (c.matches(year, day, chal)) {
-            const auto cstart = std::chrono::system_clock::now();
-            std::cout << c.str() << '\n';
-            c.run_challenge(input_dir);
-            std::cout << "\tChallenge time:  " << (std::chrono::system_clock::now() - cstart) << '\n';
-        }
-    }
-    auto dur = std::chrono::system_clock::now() - start;
-    std::cout << "Finished solutions in:  " << dur << '\n';
+    aoc::challenges::list().run_all(year, day, chal, input_dir);
     return 0;
 }
 

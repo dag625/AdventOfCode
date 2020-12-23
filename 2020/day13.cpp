@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/13/20.
 //
 
-#include "day13.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <iostream>
@@ -72,14 +72,11 @@ namespace aoc2020 {
         }
 
         bool verify_part_2(const std::vector<bus>& buses, int64_t t) {
-            const int64_t m = std::accumulate(buses.begin(), buses.end(), 1LL, [](int64_t acc, bus b){ return acc *= b.id; });
-            //std::cout << "Upper bound = " << m << '\n';
             bool good = true;
             for (auto b : buses) {
                 if (t % b.id != b.idx) {
                     good = false;
                 }
-                //std::cout << "Bus #" << b.idx << " (ID = " << b.id << ") has remainder " << t % b.id << ".\n";
             }
             return good;
         }
@@ -164,7 +161,7 @@ namespace aoc2020 {
 
     What is the ID of the earliest bus you can take to the airport multiplied by the number of minutes you'll need to wait for that bus?
     */
-    void solve_day_13_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_13_1(const std::filesystem::path& input_dir) {
         auto schedule = get_input(input_dir);
         std::vector<int> wait;
         wait.reserve(schedule.bus_ids.size());
@@ -172,7 +169,7 @@ namespace aoc2020 {
                        [t = schedule.current_time](bus b){ return b.id - (t % b.id); });
         auto min_wait = std::min_element(wait.begin(), wait.end());
         auto idx = std::distance(wait.begin(), min_wait);
-        std::cout << '\t' << *min_wait * schedule.bus_ids[idx].id << '\n';
+        return std::to_string(*min_wait * schedule.bus_ids[idx].id);
     }
 
     /*
@@ -237,10 +234,12 @@ namespace aoc2020 {
 
     What is the earliest timestamp such that all of the listed bus IDs depart at offsets matching their positions in the list?
     */
-    void solve_day_13_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_13_2(const std::filesystem::path& input_dir) {
         auto schedule = get_input(input_dir);
         verify_part_2(schedule.bus_ids, find_crt_solution(schedule.bus_ids));
-        std::cout << '\t' << find_crt_solution(schedule.bus_ids) << '\n';
+        return std::to_string(find_crt_solution(schedule.bus_ids));
     }
+
+    static aoc::registration r {2020, 13, solve_day_13_1, solve_day_13_2};
 
 } /* namespace aoc2020 */

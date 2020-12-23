@@ -2,11 +2,10 @@
 // Created by Daniel Garcia on 12/22/20.
 //
 
-#include "day22.h"
+#include "registration.h"
 
 #include <doctest/doctest.h>
 
-#include <iostream>
 #include <deque>
 #include <ostream>
 #include <array>
@@ -272,8 +271,8 @@ namespace aoc2020 {
 
     Play the small crab in a game of Combat using the two decks you just dealt. What is the winning player's score?
     */
-    void solve_day_22_1(const std::filesystem::path& input_dir) {
-        std::cout << '\t' << play_game_1() << '\n';
+    std::string solve_day_22_1(const std::filesystem::path& input_dir) {
+        return std::to_string(play_game_1());
     }
 
     /*
@@ -541,12 +540,14 @@ namespace aoc2020 {
 
     Defend your honor as Raft Captain by playing the small crab in a game of Recursive Combat using the same two decks as before. What is the winning player's score?
     */
-    void solve_day_22_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_22_2(const std::filesystem::path& input_dir) {
         auto [p1_wins, score] = play_game_recursively(
                 {PLAYER_1_INIT.begin(), PLAYER_1_INIT.end()},
                 {PLAYER_2_INIT.begin(), PLAYER_2_INIT.end()});
-        std::cout << '\t' << score << '\n';
+        return std::to_string(score);
     }
+
+    static aoc::registration r {2020, 22, solve_day_22_1, solve_day_22_2};
 
     TEST_SUITE("day22" * doctest::description("Tests for day 22 challenges.")) {
         using namespace std::string_view_literals;

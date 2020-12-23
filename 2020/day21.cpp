@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/22/20.
 //
 
-#include "day21.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <doctest/doctest.h>
@@ -128,7 +128,7 @@ namespace aoc2020 {
 
     Determine which ingredients cannot possibly contain any of the allergens in your list. How many times do any of those ingredients appear?
     */
-    void solve_day_21_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_21_1(const std::filesystem::path& input_dir) {
         const auto foods = get_input(input_dir);
         std::vector<allergen_info> allergens = get_allergen_info(foods);
         std::vector<std::string_view> unsafe_ingredients;
@@ -144,7 +144,7 @@ namespace aoc2020 {
                 return std::find(unsafe_ingredients.begin(), unsafe_ingredients.end(), in) == unsafe_ingredients.end();
             });
         }
-        std::cout << '\t' << safe_count << '\n';
+        return std::to_string(safe_count);
     }
 
     /*
@@ -159,7 +159,7 @@ namespace aoc2020 {
 
     Time to stock your raft with supplies. What is your canonical dangerous ingredient list?
     */
-    void solve_day_21_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_21_2(const std::filesystem::path& input_dir) {
         const auto foods = get_input(input_dir);
         std::vector<allergen_info> allergens = get_allergen_info(foods);
 
@@ -175,8 +175,10 @@ namespace aoc2020 {
         }
 
         std::sort(allergens.begin(), allergens.end());
-        std::cout << '\t' << aoc::join(allergens.begin(), allergens.end(), ',', [](const allergen_info& ai){ return ai.ingredients.front(); }) << '\n';
+        return aoc::join(allergens.begin(), allergens.end(), ',', [](const allergen_info& ai){ return ai.ingredients.front(); });
     }
+
+    static aoc::registration r {2020, 21, solve_day_21_1, solve_day_21_2};
 
     TEST_SUITE("day21" * doctest::description("Tests for day 20 challenges.")) {
         using namespace std::string_view_literals;

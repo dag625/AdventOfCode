@@ -2,13 +2,13 @@
 // Created by Daniel Garcia on 12/7/20.
 //
 
-#include "day7.h"
+#include "registration.h"
 #include "utilities.h"
+
 #include <string>
 #include <string_view>
 #include <vector>
 #include <regex>
-#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -39,7 +39,6 @@ namespace aoc2020 {
             std::string name = m1[1].str();
 
             std::vector<bag_requirement> reqs;
-            int start = 0;
             const auto mend = std::regex_iterator<std::string::const_iterator>{};
             for (auto it = std::regex_iterator{s.begin(), s.end(), re2}; it != mend; ++it) {
                 if (it->size() < 3) {
@@ -118,8 +117,8 @@ namespace aoc2020 {
 
     How many bag colors can eventually contain at least one shiny gold bag? (The list of rules is quite long; make sure you get all of it.)
     */
-    void solve_day_7_1(const std::filesystem::path& input_dir) {
-        std::cout << '\t' << get_ancestors(get_input(input_dir), "shiny gold").size() << '\n';
+    std::string solve_day_7_1(const std::filesystem::path& input_dir) {
+        return std::to_string(get_ancestors(get_input(input_dir), "shiny gold").size());
     }
 
     /*
@@ -148,8 +147,10 @@ namespace aoc2020 {
 
     How many individual bags are required inside your single shiny gold bag?
     */
-    void solve_day_7_2(const std::filesystem::path& input_dir) {
-        std::cout << '\t' << count_descendants(get_input(input_dir), "shiny gold") << '\n';
+    std::string solve_day_7_2(const std::filesystem::path& input_dir) {
+        return std::to_string(count_descendants(get_input(input_dir), "shiny gold"));
     }
+
+    static aoc::registration r {2020, 7, solve_day_7_1, solve_day_7_2};
 
 } /* namespace aoc2020 */

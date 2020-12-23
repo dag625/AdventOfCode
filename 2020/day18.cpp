@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/18/20.
 //
 
-#include "day18.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <doctest/doctest.h>
@@ -235,12 +235,12 @@ namespace aoc2020 {
     ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2 becomes 13632.
     Before you can help with the homework, you need to understand it yourself. Evaluate the expression on each line of the homework; what is the sum of the resulting values?
     */
-    void solve_day_18_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_18_1(const std::filesystem::path& input_dir) {
         auto input = get_input(input_dir);
         std::for_each(input.begin(), input.end(), [](node::ptr& n){ balance<no_precedence>(n); });
-        std::cout << '\t' << std::accumulate(input.begin(), input.end(), 0ll, [](int64_t acc, const node::ptr& n){
+        return std::to_string(std::accumulate(input.begin(), input.end(), 0ll, [](int64_t acc, const node::ptr& n){
             return acc + evaluate(n);
-        }) << '\n';
+        }));
     }
 
     /*
@@ -265,13 +265,15 @@ namespace aoc2020 {
     ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2 becomes 23340.
     What do you get if you add up the results of evaluating the homework problems using these new rules?
     */
-    void solve_day_18_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_18_2(const std::filesystem::path& input_dir) {
         auto input = get_input(input_dir);
         std::for_each(input.begin(), input.end(), [](node::ptr& n){ balance<add_precedence>(n); });
-        std::cout << '\t' << std::accumulate(input.begin(), input.end(), 0ll, [](int64_t acc, const node::ptr& n){
+        return std::to_string(std::accumulate(input.begin(), input.end(), 0ll, [](int64_t acc, const node::ptr& n){
             return acc + evaluate(n);
-        }) << '\n';
+        }));
     }
+
+    static aoc::registration r {2020, 18, solve_day_18_1, solve_day_18_2};
 
     TEST_SUITE("day18" * doctest::description("Tests for day 18 challenges.")) {
         using namespace std::string_view_literals;

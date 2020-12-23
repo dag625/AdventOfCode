@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/8/20.
 //
 
-#include "day8.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <iostream>
@@ -145,9 +145,9 @@ namespace aoc2020 {
 
     Your puzzle answer was 2025.
     */
-    void solve_day_8_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_8_1(const std::filesystem::path& input_dir) {
         auto instructions = get_input(input_dir);
-        std::cout << '\t' << accumulate(instructions).first << '\n';
+        return std::to_string(accumulate(instructions).first);
     }
 
     /*
@@ -185,9 +185,11 @@ namespace aoc2020 {
 
     Fix the program so that it terminates normally by changing exactly one jmp (to nop) or nop (to jmp). What is the value of the accumulator after the program terminates?
     */
-    void solve_day_8_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_8_2(const std::filesystem::path& input_dir) {
         auto instructions = get_input(input_dir);
-        std::cout << '\t' << fix_loop(instructions) << '\n';
+        return std::to_string(fix_loop(instructions));
     }
+
+    static aoc::registration r {2020, 8, solve_day_8_1, solve_day_8_2};
 
 } /* namespace aoc2020 */

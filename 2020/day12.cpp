@@ -2,7 +2,7 @@
 // Created by Daniel Garcia on 12/13/20.
 //
 
-#include "day12.h"
+#include "registration.h"
 #include "utilities.h"
 #include "grid.h"
 
@@ -193,13 +193,13 @@ namespace aoc2020 {
 
     Figure out where the navigation instructions lead. What is the Manhattan distance between that location and the ship's starting position?
     */
-    void solve_day_12_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_12_1(const std::filesystem::path& input_dir) {
         auto instructions = get_input(input_dir);
         course c {{0, 0}, direction::East};
         for (const auto& ins : instructions) {
             c += ins;
         }
-        std::cout << '\t' << abs(c.pos.x) + abs(c.pos.y) << '\n';
+        return std::to_string(abs(c.pos.x) + abs(c.pos.y));
     }
 
     /*
@@ -227,14 +227,16 @@ namespace aoc2020 {
 
     Figure out where the navigation instructions actually lead. What is the Manhattan distance between that location and the ship's starting position?
     */
-    void solve_day_12_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_12_2(const std::filesystem::path& input_dir) {
         auto instructions = get_input(input_dir);
         waypoint_course c {{0, 0},
                            {-1, 10}};
         for (const auto& ins : instructions) {
             c += ins;
         }
-        std::cout << '\t' << abs(c.pos.x) + abs(c.pos.y) << '\n';
+        return std::to_string(abs(c.pos.x) + abs(c.pos.y));
     }
+
+    static aoc::registration r {2020, 12, solve_day_12_1, solve_day_12_2};
 
 } /* namespace aoc2020 */

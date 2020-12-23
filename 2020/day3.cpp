@@ -2,15 +2,13 @@
 // Created by Daniel Garcia on 12/3/20.
 //
 
-#include "day3.h"
+#include "registration.h"
 
 #include "utilities.h"
 #include "grid.h"
 
-#include <vector>
 #include <string>
 #include <algorithm>
-#include <iostream>
 #include <numeric>
 #include <cstdint>
 #include <array>
@@ -109,9 +107,9 @@ namespace aoc2020 {
 
     Starting at the top-left corner of your map and following a slope of right 3 and down 1, how many trees would you encounter?
     */
-    void solve_day_3_1(const fs::path& input_dir) {
+    std::string solve_day_3_1(const fs::path& input_dir) {
         const auto map = get_input(input_dir);
-        std::cout << '\t' << num_trees_in_path(map, top_left(), {1, 3}) << std::endl;
+        return std::to_string(num_trees_in_path(map, top_left(), {1, 3}));
     }
 
     /*
@@ -128,12 +126,14 @@ namespace aoc2020 {
 
     What do you get if you multiply together the number of trees encountered on each of the listed slopes?
     */
-    void solve_day_3_2(const fs::path& input_dir) {
+    std::string solve_day_3_2(const fs::path& input_dir) {
         const auto map = get_input(input_dir);
         const auto pos = top_left();
         const velocity vels[] = { {1, 1}, {1, 3}, {1, 5}, {1, 7}, {2, 1} };
-        std::cout << '\t' << std::accumulate(std::begin(vels), std::end(vels), 1LL,
-                                             [pos, &map](int64_t acc, velocity vel){ return acc * num_trees_in_path(map, pos, vel); }) << std::endl;
+        return std::to_string(std::accumulate(std::begin(vels), std::end(vels), 1LL,
+                                             [pos, &map](int64_t acc, velocity vel){ return acc * num_trees_in_path(map, pos, vel); }));
     }
+
+    static registration r {2020, 3, solve_day_3_1, solve_day_3_2};
 
 } /* namespace aoc2020 */

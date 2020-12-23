@@ -2,13 +2,12 @@
 // Created by Daniel Garcia on 12/5/20.
 //
 
-#include "day5.h"
+#include "registration.h"
 #include "utilities.h"
 
 #include <cstdint>
 #include <string>
 #include <string_view>
-#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -99,9 +98,9 @@ namespace aoc2020 {
     BBFFBBFRLL: row 102, column 4, seat ID 820.
     As a sanity check, look through your list of boarding passes. What is the highest seat ID on a boarding pass?
     */
-    void solve_day_5_1(const fs::path& input_dir) {
+    std::string solve_day_5_1(const fs::path& input_dir) {
         auto seats = get_input(input_dir);
-        std::cout << '\t' << seats.back().seat_id() << '\n';
+        return std::to_string(seats.back().seat_id());
     }
 
     /*
@@ -113,7 +112,7 @@ namespace aoc2020 {
 
     What is the ID of your seat?
     */
-    void solve_day_5_2(const fs::path& input_dir) {
+    std::string solve_day_5_2(const fs::path& input_dir) {
         auto seats = get_input(input_dir);
         auto next_id = seats.front().seat_id();
         for (const auto s : seats) {
@@ -122,7 +121,9 @@ namespace aoc2020 {
             }
             ++next_id;
         }
-        std::cout << '\t' << next_id << '\n';
+        return std::to_string(next_id);
     }
+
+    static aoc::registration r {2020, 5, solve_day_5_1, solve_day_5_2};
 
 } /* namespace aoc2020 */

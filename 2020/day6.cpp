@@ -2,11 +2,9 @@
 // Created by Daniel Garcia on 12/6/20.
 //
 
-#include "day6.h"
+#include "registration.h"
 #include "utilities.h"
 
-#include <cstdint>
-#include <iostream>
 #include <numeric>
 #include <bitset>
 #include <algorithm>
@@ -97,14 +95,14 @@ namespace aoc2020 {
 
     For each group, count the number of questions to which anyone answered "yes". What is the sum of those counts?
     */
-    void solve_day_6_1(const fs::path& input_dir) {
+    std::string solve_day_6_1(const fs::path& input_dir) {
         auto input = get_input(input_dir);
         std::vector<answers> group_answers;
         group_answers.reserve(input.size());
         std::transform(input.begin(), input.end(), std::back_inserter(group_answers), net_of_group);
         auto sum = std::accumulate(group_answers.begin(), group_answers.end(), 0ull,
                                    [](std::size_t acc, answers a){ return acc + a.count(); });
-        std::cout << '\t' << sum << '\n';
+        return std::to_string(sum);
     }
 
     /*
@@ -140,14 +138,16 @@ namespace aoc2020 {
 
     For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
     */
-    void solve_day_6_2(const fs::path& input_dir) {
+    std::string solve_day_6_2(const fs::path& input_dir) {
         auto input = get_input(input_dir);
         std::vector<answers> group_answers;
         group_answers.reserve(input.size());
         std::transform(input.begin(), input.end(), std::back_inserter(group_answers), all_of_group);
         auto sum = std::accumulate(group_answers.begin(), group_answers.end(), 0ull,
                                    [](std::size_t acc, answers a){ return acc + a.count(); });
-        std::cout << '\t' << sum << '\n';
+        return std::to_string(sum);
     }
+
+    static aoc::registration r {2020, 6, solve_day_6_1, solve_day_6_2};
 
 } /* namespace aoc2020 */

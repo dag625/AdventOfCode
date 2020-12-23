@@ -2,13 +2,11 @@
 // Created by Daniel Garcia on 12/2/20.
 //
 
-#include "day2.h"
+#include "registration.h"
 
 #include <vector>
 #include <string>
-#include <fstream>
 #include <algorithm>
-#include <iostream>
 #include <regex>
 
 #include "utilities.h"
@@ -21,7 +19,7 @@ namespace aoc2020 {
 
     namespace {
 
-        std::regex entry_regex {"^\\s*(\\d+)-(\\d+)\\s+(\\w):\\s+(\\w+)\\s*$"};
+        std::regex entry_regex {R"(^\s*(\d+)-(\d+)\s+(\w):\s+(\w+)\s*$)"};
 
         struct password_entry {
             int min;
@@ -31,8 +29,8 @@ namespace aoc2020 {
         };
 
         password_entry parse(const std::string& s) {
-            int min = 0, max = 0;
-            char ch = '\0';
+            int min, max;
+            char ch;
             std::string pw;
             std::match_results<std::string::const_iterator> match;
             if (std::regex_match(s, match, entry_regex, std::regex_constants::match_not_null) && match.size() == 5) {
@@ -76,9 +74,9 @@ namespace aoc2020 {
         }
 
         template <typename F>
-        void solve_day_2(F func, const std::vector<password_entry>& input) {
+        std::string solve_day_2(F func, const std::vector<password_entry>& input) {
             auto val = func(input);
-            std::cout << '\t' << val << std::endl;
+            return std::to_string(val);
         }
 
     }
@@ -103,8 +101,8 @@ namespace aoc2020 {
 
     How many passwords are valid according to their policies?
     */
-    void solve_day_2_1(const fs::path& input_dir) {
-        solve_day_2(solve_day_2_1_impl, get_input(input_dir));
+    std::string solve_day_2_1(const fs::path& input_dir) {
+        return solve_day_2(solve_day_2_1_impl, get_input(input_dir));
     }
 
     /*
@@ -121,8 +119,10 @@ namespace aoc2020 {
     2-9 c: ccccccccc is invalid: both position 2 and position 9 contain c.
     How many passwords are valid according to the new interpretation of the policies?
     */
-    void solve_day_2_2(const fs::path& input_dir) {
-        solve_day_2(solve_day_2_2_impl, get_input(input_dir));
+    std::string solve_day_2_2(const fs::path& input_dir) {
+        return solve_day_2(solve_day_2_2_impl, get_input(input_dir));
     }
+
+    static registration r {2020, 2, solve_day_2_1, solve_day_2_2};
 
 } /* namespace aoc2020 */

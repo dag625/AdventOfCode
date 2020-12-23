@@ -2,16 +2,13 @@
 // Created by Daniel Garcia on 12/4/20.
 //
 
-#include "day4.h"
+#include "registration.h"
 
-#include <cstdint>
-#include <string>
 #include <string_view>
 #include <algorithm>
 #include <numeric>
 #include <regex>
 #include <fstream>
-#include <iostream>
 #include <charconv>
 
 namespace fs = std::filesystem;
@@ -159,8 +156,9 @@ namespace aoc2020 {
 
             [[nodiscard]] bool is_valid(bool allow_credentials, bool check_fields) const noexcept {
                 auto types = std::accumulate(fields.begin(), fields.end(), field_type::none, [check_fields](field_type acc, const field& f){
-                    if (acc == field_type::invalid || f.type == field_type::invalid) { return field_type::invalid; }
-                    else if (check_fields && !f.is_valid()) { return field_type::invalid; }
+                    if (acc == field_type::invalid || f.type == field_type::invalid || (check_fields && !f.is_valid())) {
+                        return field_type::invalid;
+                    }
                     return acc | f.type;
                 });
                 return types == field_type::all_passport || (allow_credentials && types == field_type::all_credential);
@@ -252,12 +250,12 @@ namespace aoc2020 {
 
     Count the number of valid passports - those that have all required fields. Treat cid as optional. In your batch file, how many passports are valid?
      */
-    void solve_day_4_1(const fs::path& input_dir) {
+    std::string solve_day_4_1(const fs::path& input_dir) {
         auto ids = get_input(input_dir);
         auto num_valid = std::count_if(ids.begin(), ids.end(), [](const id& i){
             return i.is_valid(true, false);
         });
-        std::cout << '\t' << num_valid << '\n';
+        return std::to_string(num_valid);
     }
 
     /*
@@ -325,13 +323,14 @@ namespace aoc2020 {
     iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
     Count the number of valid passports - those that have all required fields and valid values. Continue to treat cid as optional. In your batch file, how many passports are valid?
     */
-    void solve_day_4_2(const fs::path& input_dir) {
+    std::string solve_day_4_2(const fs::path& input_dir) {
         auto ids = get_input(input_dir);
         auto num_valid = std::count_if(ids.begin(), ids.end(), [](const id& i){
             return i.is_valid(true, true);
         });
-        std::cout << '\t' << num_valid << '\n';
+        return std::to_string(num_valid);
     }
 
+    static aoc::registration r {2020, 4, solve_day_4_1, solve_day_4_2};
 
 } /* namespace aoc2020 */
