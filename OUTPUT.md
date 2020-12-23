@@ -134,3 +134,9 @@ Challenge time:  10us
 ####Year 2020 - Day 22 - Challenge 2
 32789  
 Challenge time:  795.101ms
+####Year 2020 - Day 23 - Challenge 1
+24987653  
+Challenge time:  8us
+####Year 2020 - Day 23 - Challenge 2
+442938711161  
+Challenge time:  294.273ms
