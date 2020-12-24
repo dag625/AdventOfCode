@@ -50,7 +50,7 @@ add_executable(AdventOfCode
         2020/day22.cpp
         2020/day23.cpp
         challenge.cpp
-        challenge.h registration.cpp registration.h)
+        challenge.h registration.cpp registration.h 2020/day24.cpp)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(AdventOfCode PRIVATE doctest)
 

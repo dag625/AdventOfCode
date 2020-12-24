@@ -61,6 +61,10 @@ namespace aoc {
         return a.x != b.x || a.y != b.y;
     }
 
+    inline bool operator<(position a, position b) noexcept {
+        return std::tie(a.x, a.y) < std::tie(b.x, b.y);
+    }
+
     inline position top_left() noexcept {
         return {0, 0};
     }
