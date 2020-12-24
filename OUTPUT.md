@@ -140,3 +140,9 @@ Challenge time:  5us
 ####Year 2020 - Day 23 - Challenge 2
 442938711161  
 Challenge time:  199.462ms
+####Year 2020 - Day 24 - Challenge 1
+341  
+Challenge time:  732us
+####Year 2020 - Day 24 - Challenge 2
+3700  
+Challenge time:  239.716ms
