@@ -5,6 +5,9 @@
 #ifndef ADVENTOFCODE_POINT_H
 #define ADVENTOFCODE_POINT_H
 
+#include <tuple>
+#include <iterator>
+
 namespace aoc {
 
     struct velocity {
