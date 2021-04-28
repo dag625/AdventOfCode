@@ -139,6 +139,17 @@ namespace aoc {
         return input;
     }
 
+    std::string read_file(const fs::path& file) {
+        if (!fs::exists(file)) {
+            throw std::runtime_error{"Can't read lines from file which doesn't exist."};
+        }
+        else if (!fs::is_regular_file(file)) {
+            throw std::runtime_error{"Can't read lines from file which isn't a regular file."};
+        }
+        std::ifstream in {file};
+        return {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
+    }
+
     TEST_SUITE("utilities" * doctest::description("Tests for utility functions.")) {
         using namespace std::string_view_literals;
         TEST_CASE("utilities:split1" * doctest::description("Tests for split() functions.")) {
