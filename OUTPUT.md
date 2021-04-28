@@ -2,6 +2,30 @@
 Sample (formatted) output of a run of the application.  The times are 
 ballpark and are fairly noisy in practice (+/- 20% probably).  The biggest
 use is that this is a record of the correct answers (in case I go experimenting).
+####Year 2015 - Day 1 - Challenge 1
+74  
+Challenge time:  5us
+####Year 2015 - Day 1 - Challenge 2
+1795  
+Challenge time:  2us
+####Year 2015 - Day 2 - Challenge 1
+1598415  
+Challenge time:  1.455ms
+####Year 2015 - Day 2 - Challenge 2
+3812909  
+Challenge time:  476us
+####Year 2015 - Day 3 - Challenge 1
+2572  
+Challenge time:  1.191ms
+####Year 2015 - Day 3 - Challenge 2
+2631  
+Challenge time:  635us
+####Year 2015 - Day 4 - Challenge 1
+254575  
+Challenge time:  24.934ms
+####Year 2015 - Day 4 - Challenge 2
+1038736  
+Challenge time:  98.482ms
 ####Year 2020 - Day 1 - Challenge 1
 1010299  
 Challenge time:  97us
