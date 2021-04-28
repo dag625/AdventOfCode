@@ -6,7 +6,6 @@
 #include "utilities.h"
 #include "point.h"
 #include "hash_functions.h"
-#include "grid.h"
 
 #include <doctest/doctest.h>
 

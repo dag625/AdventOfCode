@@ -14,6 +14,8 @@ FetchContent_MakeAvailable(doctest)
 
 include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
 
+find_package(OpenSSL REQUIRED)
+
 add_executable(AdventOfCode
         main.cpp
         utilities.cpp
@@ -50,9 +52,19 @@ add_executable(AdventOfCode
         2020/day22.cpp
         2020/day23.cpp
         challenge.cpp
-        challenge.h registration.cpp registration.h 2020/day24.cpp 2020/day25.cpp 2015/day1.cpp 2015/day2.cpp utility_templates.h 2015/day3.cpp hash_functions.cpp hash_functions.h)
+        challenge.h
+        registration.cpp
+        registration.h
+        2020/day24.cpp
+        2020/day25.cpp
+        2015/day1.cpp
+        2015/day2.cpp
+        utility_templates.h
+        2015/day3.cpp
+        hash_functions.cpp
+        hash_functions.h 2015/day4.cpp)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries(AdventOfCode PRIVATE doctest)
+target_link_libraries(AdventOfCode PRIVATE doctest OpenSSL::SSL)
 
 enable_testing()
 doctest_discover_tests(AdventOfCode)
