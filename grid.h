@@ -32,6 +32,8 @@ namespace aoc {
         }
 
     public:
+        grid(std::size_t num_rows, std::size_t num_cols) :
+                m_data(num_rows * num_cols), m_num_cols{num_cols}, m_num_rows{num_rows} {}
         grid(std::vector<T> data, std::size_t row_len) :
                 m_data{check_data(std::move(data), row_len)}, m_num_cols{row_len}, m_num_rows{m_data.size() / m_num_cols} {}
 
