@@ -75,6 +75,28 @@ namespace aoc {
         return join(std::begin(c), std::end(c), join_ch, func);
     }
 
+    template <typename T>
+    T opt_or(std::optional<T> opt_val, T&& default_val) {
+        if (opt_val) {
+            return std::move(*opt_val);
+        }
+        else {
+            return std::forward(default_val);
+        }
+    }
+
+    template <typename T>
+    std::string opt_or_str(std::optional<T> opt_val, std::string_view default_val) {
+        std::stringstream str;
+        if (opt_val) {
+            str << *opt_val;
+        }
+        else {
+            str << default_val;
+        }
+        return str.str();
+    }
+
 } /* namespace aoc */
 
 #endif //ADVENTOFCODE2020_UTILITIES_H
