@@ -65,7 +65,9 @@ add_executable(AdventOfCode
         hash_functions.h
         2015/day4.cpp
         2015/day5.cpp
-        2015/day6.cpp parse.h)
+        2015/day6.cpp
+        parse.h
+        2015/day7.cpp)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(AdventOfCode PRIVATE doctest OpenSSL::SSL)
 
