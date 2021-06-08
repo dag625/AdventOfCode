@@ -65,6 +65,8 @@ namespace {
         [[nodiscard]] bool unchanged() const {
             return prev_value.has_value() == value.has_value() && (!prev_value.has_value() || *prev_value == *value);
         }
+        bool operator<(const gate& g) const noexcept { return dest < g.dest; }
+        bool operator<(const std::string& d) const noexcept { return dest < d; }
     };
 
     std::regex regex_input {R"(^(\d+) -> ([a-z]+)$)"};
@@ -106,7 +108,7 @@ namespace {
     }
 
     std::optional<uint16_t> get_last(const std::vector<gate>& gates, const std::string& src) {
-        auto found = std::find_if(gates.begin(), gates.end(), [&src](const gate& g){ return g.dest == src; });
+        auto found = std::lower_bound(gates.begin(), gates.end(), src);
         if (found != gates.end()) {
             return found->prev_value;
         }
@@ -201,6 +203,7 @@ namespace {
         std::vector<gate> retval;
         retval.reserve(lines.size());
         std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse);
+        std::sort(retval.begin(), retval.end());
         return retval;
     }
 
