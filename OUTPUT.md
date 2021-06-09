@@ -26,6 +26,42 @@ Challenge time:  24.934ms
 ####Year 2015 - Day 4 - Challenge 2
 1038736  
 Challenge time:  98.482ms
+####Year 2015 - Day 5 - Challenge 1
+255  
+Challenge time:  452us
+####Year 2015 - Day 5 - Challenge 2
+55  
+Challenge time:  311us
+####Year 2015 - Day 6 - Challenge 1
+377891  
+Challenge time:  3.868ms
+####Year 2015 - Day 6 - Challenge 2
+14110788  
+Challenge time:  3.450ms
+####Year 2015 - Day 7 - Challenge 1
+956  
+Challenge time:  8.605ms
+####Year 2015 - Day 7 - Challenge 2
+40149  
+Challenge time:  10.274ms
+####Year 2015 - Day 8 - Challenge 1
+1371  
+Challenge time:  160us
+####Year 2015 - Day 8 - Challenge 2
+2117  
+Challenge time:  121us
+####Year 2015 - Day 9 - Challenge 1
+207  
+Challenge time:  24.483ms
+####Year 2015 - Day 9 - Challenge 2
+804  
+Challenge time:  22.082ms
+####Year 2015 - Day 10 - Challenge 1
+329356  
+Challenge time:  14.087ms
+####Year 2015 - Day 10 - Challenge 2
+4666278  
+Challenge time:  205.206ms
 ####Year 2020 - Day 1 - Challenge 1
 1010299  
 Challenge time:  97us
