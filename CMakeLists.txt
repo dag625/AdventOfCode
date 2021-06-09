@@ -12,6 +12,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(doctest)
 
+FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.9.1
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
 
 find_package(OpenSSL REQUIRED)
@@ -67,9 +74,14 @@ add_executable(AdventOfCode
         2015/day5.cpp
         2015/day6.cpp
         parse.h
-        2015/day7.cpp 2015/day8.cpp 2015/day9.cpp 2015/day10.cpp)
+        2015/day7.cpp
+        2015/day8.cpp
+        2015/day9.cpp
+        2015/day10.cpp
+        2015/day11.cpp
+        2015/day12.cpp)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries(AdventOfCode PRIVATE doctest OpenSSL::SSL)
+target_link_libraries(AdventOfCode PRIVATE doctest nlohmann_json OpenSSL::SSL)
 
 enable_testing()
 doctest_discover_tests(AdventOfCode)
