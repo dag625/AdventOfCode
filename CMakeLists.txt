@@ -80,7 +80,7 @@ add_executable(AdventOfCode
         2015/day10.cpp
         2015/day11.cpp
         2015/day12.cpp
-        2015/day13.cpp)
+        2015/day13.cpp 2015/day14.cpp)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(AdventOfCode PRIVATE doctest nlohmann_json OpenSSL::SSL)
 
