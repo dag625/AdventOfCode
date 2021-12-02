@@ -114,7 +114,17 @@ namespace {
     Consider sums of a three-measurement sliding window. How many sums are larger than the previous sum?
     */
     std::string part_2(const std::filesystem::path& input_dir) {
-        return {};
+        const auto depths = get_input(input_dir);
+        const auto end = depths.end() - 2;
+        int last = std::numeric_limits<int>::max(), count = 0;
+        for (auto current = depths.begin(); current != end; ++current) {
+            auto sum = *current + *(current + 1) + *(current + 2);
+            if (sum > last) {
+                ++count;
+            }
+            last = sum;
+        }
+        return std::to_string(count);
     }
 
     aoc::registration r {2021, 1, part_1, part_2};
