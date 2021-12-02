@@ -29,7 +29,7 @@ namespace {
                 }
             }
         }
-        return {s.size(), contents.size() - sub};
+        return {static_cast<int>(s.size()), static_cast<int>(contents.size() - sub)};
     }
 
     std::pair<int, int> get_expanded_lengths(const std::string_view s) {
@@ -39,7 +39,7 @@ namespace {
                 ++add;
             }
         }
-        return {s.size(), s.size() + add};
+        return {static_cast<int>(s.size()), static_cast<int>(s.size() + add)};
     }
 
     std::vector<std::string> get_input(const std::filesystem::path& input_dir) {

@@ -3,25 +3,9 @@ project(AdventOfCode)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include(FetchContent)
-
-FetchContent_Declare(
-        doctest
-        GIT_REPOSITORY https://github.com/onqtam/doctest.git
-        GIT_TAG 2.4.2
-)
-FetchContent_MakeAvailable(doctest)
-
-FetchContent_Declare(
-        nlohmann_json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.9.1
-)
-FetchContent_MakeAvailable(nlohmann_json)
-
-include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
-
 find_package(OpenSSL REQUIRED)
+
+include(doctest/cmake/doctest.cmake)
 
 add_executable(AdventOfCode
         main.cpp
@@ -80,9 +64,9 @@ add_executable(AdventOfCode
         2015/day10.cpp
         2015/day11.cpp
         2015/day12.cpp
-        2015/day13.cpp 2015/day14.cpp)
+        2015/day13.cpp 2015/day14.cpp 2021/day1.cpp)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries(AdventOfCode PRIVATE doctest nlohmann_json OpenSSL::SSL)
+target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL)
 
 enable_testing()
 doctest_discover_tests(AdventOfCode)

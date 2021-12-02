@@ -65,7 +65,7 @@ namespace {
         std::atomic<bool> found = false;
         std::atomic<uint64_t> value = 0;
         for (int i = 1; i <= num_threads; ++i) {
-            threads.emplace_back([i, crit, &value, &found](){
+            threads.emplace_back([i, crit, &value, &found, num_threads](){
                 for (uint64_t val = i; !found.load() || value.load() > val; val += num_threads) {
                     if (crit(calculate_value(val))) {
                         found.store(true);
