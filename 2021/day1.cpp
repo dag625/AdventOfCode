@@ -115,14 +115,12 @@ namespace {
     */
     std::string part_2(const std::filesystem::path& input_dir) {
         const auto depths = get_input(input_dir);
-        const auto end = depths.end() - 2;
-        int last = std::numeric_limits<int>::max(), count = 0;
+        const auto end = depths.end() - 3;
+        int count = 0;
         for (auto current = depths.begin(); current != end; ++current) {
-            auto sum = *current + *(current + 1) + *(current + 2);
-            if (sum > last) {
+            if (*(current + 3) > *current) {
                 ++count;
             }
-            last = sum;
         }
         return std::to_string(count);
     }
