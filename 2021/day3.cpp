@@ -96,7 +96,7 @@ namespace {
         std::array<int, INPUT_LEN> counts{};
         for (const auto& s : input) {
             for (int i = 0; i < INPUT_LEN; ++i) {
-                counts[i] += s[i] == '1' ? 1 : 0;
+                counts[i] += s[i] - '0';
             }
         }
         const int num = static_cast<int>(input.size()) / 2;
