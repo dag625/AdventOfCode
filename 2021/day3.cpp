@@ -29,16 +29,21 @@ namespace {
 
     template <typename P>
     void find_bit_criteria(const std::vector<std::string>& data, std::string& prefix, const char tie, P use_ones) {
+        auto one_count = 0;
         auto range = data |
-                     std::views::filter([&prefix](const std::string& s){ return s.starts_with(prefix); });
+                     std::views::filter([&prefix, &one_count](const std::string& s){
+                         bool retval = s.starts_with(prefix);
+                         if (retval) {
+                             one_count += static_cast<int>(s[prefix.size()] - '0');
+                         }
+                         return retval;
+                     });
         const auto num = std::ranges::distance(range);
         if (num == 1) {
             prefix = range.front();
             return;
         }
 
-        const auto one_count = std::ranges::count_if(range,
-                                                     [idx = prefix.size()](const std::string& s){ return s[idx] == '1'; });
         if (use_ones(one_count, num)) {
             prefix += '1';
         }
