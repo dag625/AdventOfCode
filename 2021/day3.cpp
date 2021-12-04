@@ -33,7 +33,7 @@ namespace {
         auto range = data |
                      std::views::filter([&prefix, &one_count](const std::string& s){
                          bool retval = s.starts_with(prefix);
-                         if (retval) {
+                         if (retval && prefix.size() < s.size()) {
                              one_count += static_cast<int>(s[prefix.size()] - '0');
                          }
                          return retval;
