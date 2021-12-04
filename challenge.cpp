@@ -19,7 +19,7 @@ namespace aoc {
                 std::cout << "Year " << c.year << " - Day " << c.day << " - Challenge " << c.num << '\n';
                 const auto start = std::chrono::system_clock::now();
                 std::cout << '\t' << (c.func)(input_dir) << '\n';
-                std::cout << "\tChallenge time:  " << (std::chrono::system_clock::now() - start) << '\n';
+                std::cout << "\tChallenge time:  " << time_to_string(std::chrono::system_clock::now() - start) << '\n';
             }
             catch (const std::exception& e) {
                 std::cerr << "\tChallenge for Year " << c.year << " - Day " << c.day << " - Challenge " << c.num <<
@@ -108,7 +108,7 @@ namespace aoc {
         const auto start = std::chrono::system_clock::now();
         std::for_each(begin, end, [&input_dir](const challenge& c) noexcept { run_challenge(input_dir, c); });
         auto dur = std::chrono::system_clock::now() - start;
-        std::cout << "Finished solutions in:  " << dur << '\n';
+        std::cout << "Finished solutions in:  " << time_to_string(dur) << '\n';
     }
 
 } /* namespace aoc */

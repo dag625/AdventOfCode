@@ -6,14 +6,14 @@
 #define ADVENTOFCODE_TIME_FORMAT_H
 
 #include <chrono>
-#include <ostream>
+#include <sstream>
 #include <iomanip>
 
-namespace std::chrono {
+namespace aoc {
 
     template <typename Rep, typename Period>
-    std::ostream& operator<<(std::ostream& os, std::chrono::duration<Rep, Period> v) {
-        auto fill_char = os.fill();
+    std::string time_to_string(std::chrono::duration<Rep, Period> v) {
+        std::stringstream os;
         os << std::setfill('0');
         if (v > std::chrono::hours{24}) {
             auto days = std::chrono::duration_cast<std::chrono::duration<long, std::ratio<86400>>>(v);
@@ -67,19 +67,23 @@ namespace std::chrono {
             else if (ms.count() > 0) {
                 if (!havePeriod) {
                     os << '.';
+                    havePeriod = true;
                 }
                 os << std::setw(3) << ms.count();
             }
             auto rem = std::chrono::duration_cast<std::chrono::nanoseconds>(v).count();
             if (rem > 0) {
+                if (!havePeriod) {
+                    os << ".";
+                    havePeriod = true;
+                }
                 os << std::setw(3) << rem;
             }
         }
         if (!haveTime) {
             os << units;
         }
-        os.fill(fill_char);
-        return os;
+        return os.str();
     }
 
 } /* namespace aoc */
