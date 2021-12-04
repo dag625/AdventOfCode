@@ -8,7 +8,6 @@
 #include <iostream>
 #include <string_view>
 #include <array>
-#include <algorithm>
 #include <ranges>
 
 #include "utilities.h"

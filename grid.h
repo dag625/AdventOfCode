@@ -118,8 +118,8 @@ namespace aoc {
             position_iterator& operator+=(int n) noexcept { m_idx += n; return *this; }
             position_iterator& operator-=(int n) noexcept { m_idx -= n; return *this; }
 
-            position_iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return *this; }
-            position_iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return *this; }
+            position_iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return retval; }
+            position_iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return retval; }
             position operator[](int n) const { return *(*this + n); }
 
             difference_type operator-(const position_iterator& rhs) const noexcept { if (m_grid != rhs.m_grid) { return 0; } return m_idx - rhs.m_idx; }
@@ -171,8 +171,12 @@ namespace aoc {
             const T* data() const { return m_begin; }
         };
 
-        grid_row operator[](std::size_t idx) noexcept  { return grid_row{m_data.data() + idx * m_num_cols, m_num_cols}; }
-        [[nodiscard]] const grid_row operator[](std::size_t idx) const noexcept  { return grid_row{const_cast<char*>(m_data.data() + idx * m_num_cols), m_num_cols}; }
+        grid_row row(std::size_t idx) noexcept  { return grid_row{m_data.data() + idx * m_num_cols, m_num_cols}; }
+        [[nodiscard]] const grid_row row(std::size_t idx) const noexcept { return grid_row{const_cast<char*>(m_data.data() + idx * m_num_cols), m_num_cols}; }
+
+        grid_row operator[](std::size_t idx) noexcept  { return row(idx); }
+        [[nodiscard]] const grid_row operator[](std::size_t idx) const noexcept  { return row(idx); }
+
 
         T& at(std::size_t row, std::size_t col) {
             if (row >= m_num_rows) {
@@ -280,8 +284,8 @@ namespace aoc {
                 iterator& operator+=(int n) noexcept { m_idx += n; return *this; }
                 iterator& operator-=(int n) noexcept { m_idx -= n; return *this; }
 
-                iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return *this; }
-                iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return *this; }
+                iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return retval; }
+                iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return retval; }
                 T& operator[](int n) const { return *(*this + n); }
 
                 difference_type operator-(const position_iterator& rhs) const noexcept { if (m_grid != rhs.m_grid) { return 0; } return m_idx - rhs.m_idx; }
