@@ -40,6 +40,10 @@ namespace aoc {
         }
     };
 
+    inline velocity to_vel(position p) noexcept {
+        return {p.x, p.y};
+    }
+
     inline position operator+(position a, position b) noexcept {
         return {a.x + b.x, a.y + b.y};
     }
