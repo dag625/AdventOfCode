@@ -10,6 +10,7 @@
 #include <string_view>
 #include <ranges>
 #include <regex>
+#include <set>
 
 #include "utilities.h"
 #include "point.h"
@@ -27,11 +28,12 @@ namespace {
 
     struct point {
         position pos;
-        int count = 1;
+        mutable int count = 1;
 
         point(position p) : pos{std::move(p)} {}
 
-        bool operator<(const point& rhs) const noexcept { return pos < rhs.pos; }
+        bool operator==(const point& rhs) const noexcept { return pos == rhs.pos; }
+        bool operator< (const point& rhs) const noexcept { return pos <  rhs.pos; }
     };
 
     bool operator<(const point& lhs, const position& rhs) noexcept {
@@ -40,6 +42,14 @@ namespace {
 
     bool operator<(const position& lhs, const point& rhs) noexcept {
         return lhs < rhs.pos;
+    }
+
+    bool operator==(const point& lhs, const position& rhs) noexcept {
+        return lhs.pos == rhs;
+    }
+
+    bool operator==(const position& lhs, const point& rhs) noexcept {
+        return lhs == rhs.pos;
     }
 
     velocity get_line_unit_vel(const line& l) {
@@ -73,6 +83,41 @@ namespace {
             return {{std::stoi(results[1].str()), std::stoi(results[2].str())}, {std::stoi(results[3].str()), std::stoi(results[4].str())}};
         });
         return retval;
+    }
+
+    int64_t find_multi_points(const std::vector<line>& lines) {
+        std::vector<point> points;
+        points.reserve(200000);
+        for (const auto& l : lines) {
+            const auto vel = get_line_unit_vel(l);
+            for (auto pos = l.start; pos != l.stop + vel; pos += vel) {
+                const auto found = std::lower_bound(points.begin(), points.end(), pos);
+                if (found == points.end() || found->pos != pos) {
+                    points.emplace(found, pos);
+                }
+                else {
+                    ++found->count;
+                }
+            }
+        }
+        return std::ranges::count_if(points, [](const point& p){ return p.count > 1; });
+    }
+
+    int64_t find_multi_points_set(const std::vector<line>& lines) {
+        std::set<point> points;
+        for (const auto& l : lines) {
+            const auto vel = get_line_unit_vel(l);
+            for (auto pos = l.start; pos != l.stop + vel; pos += vel) {
+                const auto found = points.find(pos);
+                if (found == points.end()) {
+                    points.emplace(pos);
+                }
+                else {
+                    ++found->count;
+                }
+            }
+        }
+        return std::ranges::count_if(points, [](const point& p){ return p.count > 1; });
     }
 
     /*
@@ -116,21 +161,7 @@ namespace {
     Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
     */
     std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = horizontal_and_vertical_only(get_input(input_dir));
-        std::vector<point> points;
-        for (const auto& l : input) {
-            const auto vel = get_line_unit_vel(l);
-            for (auto pos = l.start; pos != l.stop + vel; pos += vel) {
-                const auto found = std::lower_bound(points.begin(), points.end(), pos);
-                if (found == points.end() || found->pos != pos) {
-                    points.emplace(found, pos);
-                }
-                else {
-                    ++found->count;
-                }
-            }
-        }
-        return std::to_string(std::ranges::count_if(points, [](const point& p){ return p.count > 1; }));
+        return std::to_string(find_multi_points_set(horizontal_and_vertical_only(get_input(input_dir))));
     }
 
     /*
@@ -158,21 +189,7 @@ namespace {
     Consider all of the lines. At how many points do at least two lines overlap?
     */
     std::string part_2(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
-        std::vector<point> points;
-        for (const auto& l : input) {
-            const auto vel = get_line_unit_vel(l);
-            for (auto pos = l.start; pos != l.stop + vel; pos += vel) {
-                const auto found = std::lower_bound(points.begin(), points.end(), pos);
-                if (found == points.end() || found->pos != pos) {
-                    points.emplace(found, pos);
-                }
-                else {
-                    ++found->count;
-                }
-            }
-        }
-        return std::to_string(std::ranges::count_if(points, [](const point& p){ return p.count > 1; }));
+        return std::to_string(find_multi_points_set(get_input(input_dir)));
     }
 
     aoc::registration r {2021, 5, part_1, part_2};
