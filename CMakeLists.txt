@@ -64,7 +64,7 @@ add_executable(AdventOfCode
         2015/day10.cpp
         2015/day11.cpp
         2015/day12.cpp
-        2015/day13.cpp 2015/day14.cpp 2021/day1.cpp 2021/day2.cpp 2021/day3.cpp 2021/day4.cpp 2021/day5.cpp)
+        2015/day13.cpp 2015/day14.cpp 2021/day1.cpp 2021/day2.cpp 2021/day3.cpp 2021/day4.cpp 2021/day5.cpp 2021/day6.cpp)
 target_include_directories(AdventOfCode PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL)
 
