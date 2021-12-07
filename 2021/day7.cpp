@@ -73,8 +73,7 @@ namespace {
     std::string part_1(const std::filesystem::path& input_dir) {
         auto input = get_input(input_dir);
         std::ranges::sort(input);
-        std::vector<int> fuel;
-        fuel.resize(input.size());
+        std::vector<int> fuel (input.size());
         for (int i = 0; i < input.size(); ++i) {
             const auto dest = input[i];
             fuel[i] = std::accumulate(input.begin(), input.end(), 0, [dest](int tot, int pos){ return tot + abs(dest - pos); });
@@ -107,8 +106,7 @@ namespace {
     std::string part_2(const std::filesystem::path& input_dir) {
         auto input = get_input(input_dir);
         std::ranges::sort(input);
-        std::vector<int> fuel;
-        fuel.resize(input.size());
+        std::vector<int> fuel (input.size());
         for (int i = 0; i < input.size(); ++i) {
             const auto dest = input[i];
             fuel[i] = std::accumulate(input.begin(), input.end(), 0, [dest](int tot, int pos){ const auto n = abs(dest - pos); return tot + (n * (n + 1)) / 2; });
