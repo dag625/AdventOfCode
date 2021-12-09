@@ -87,6 +87,11 @@ namespace aoc {
 
     static_assert(std::size(STANDARD_DIRECTIONS) == 8, "Invalid number of 2D neighbors.");
 
+    constexpr velocity CARDINAL_DIRECTIONS[] = {{1,  0},
+                                                {0,  -1},
+                                                {0,  1},
+                                                {-1, 0}};
+
     struct velocity3d : public velocity {
         int dz = 0;
     };
