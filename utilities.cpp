@@ -5,8 +5,12 @@
 #include "utilities.h"
 
 #include <doctest/doctest.h>
+#include <fmt/core.h>
+#include <cmrc/cmrc.hpp>
 
 #include <fstream>
+
+CMRC_DECLARE(aoc);
 
 namespace fs = std::filesystem;
 
@@ -124,30 +128,36 @@ namespace aoc {
     }
 
     std::vector<std::string> read_file_lines(const fs::path& file) {
-        if (!fs::exists(file)) {
-            throw std::runtime_error{"Can't read lines from file which doesn't exist."};
+        const auto path = file.generic_string();
+        const auto rc = cmrc::aoc::get_filesystem();
+        if (!rc.exists(path)) {
+            throw std::runtime_error{fmt::format("Can't read lines from resource '{}' which doesn't exist.", path)};
         }
-        else if (!fs::is_regular_file(file)) {
-            throw std::runtime_error{"Can't read lines from file which isn't a regular file."};
-        }
-        std::string line;
+        const auto f = rc.open(path);
         std::vector<std::string> input;
-        std::ifstream in {file};
-        while (std::getline(in, line)) {
-            input.push_back(std::move(trim(line)));
+        auto current = f.begin(), start = current;
+        const auto end = f.end();
+        for (; current != end; ++current) {
+            if (*current == '\n') {
+                input.emplace_back(start, current);
+                if (!input.back().empty() && input.back().back() == '\r') {
+                    input.back() = input.back().substr(0, input.back().size() - 1);
+                }
+                start = current + 1;
+            }
         }
+        input.emplace_back(start, current);
         return input;
     }
 
     std::string read_file(const fs::path& file) {
-        if (!fs::exists(file)) {
-            throw std::runtime_error{"Can't read lines from file which doesn't exist."};
+        const auto path = file.string();
+        const auto rc = cmrc::aoc::get_filesystem();
+        if (!rc.exists(path)) {
+            throw std::runtime_error{fmt::format("Can't read from resource '{}' which doesn't exist.", path)};
         }
-        else if (!fs::is_regular_file(file)) {
-            throw std::runtime_error{"Can't read lines from file which isn't a regular file."};
-        }
-        std::ifstream in {file};
-        return {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
+        const auto f = rc.open(path);
+        return {f.begin(), f.end()};
     }
 
     TEST_SUITE("utilities" * doctest::description("Tests for utility functions.")) {

@@ -13,11 +13,10 @@ namespace fs = std::filesystem;
 
 int non_test_main(int argc, char** argv) {
     using namespace std::string_view_literals;
-    fs::path input_dir;
+    fs::path input_dir{"inputs"};//Leave this be to avoid having to change code everywhere, and to provide the required prefix.
     bool have_required = false, run_challenges = true;
     std::optional<int> year, day, chal;
     parse_arguments(argc, argv)
-            .add('i', "input_dir"sv, input_dir)
             .add_flag( "run"sv, run_challenges)
             .add_opt("year"sv, year)
             .add_opt("day"sv, day)

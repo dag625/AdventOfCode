@@ -6,8 +6,54 @@ set(CMAKE_CXX_STANDARD 23)
 find_package(OpenSSL REQUIRED)
 
 include(doctest/cmake/doctest.cmake)
+include(CMakeRC.cmake)
 
 add_subdirectory("fmt-8.0.1")
+
+cmrc_add_resource_library(AoCInputs NAMESPACE aoc
+        inputs/2015/day_2_input.txt
+        inputs/2015/day_3_input.txt
+        inputs/2015/day_5_input.txt
+        inputs/2015/day_6_input.txt
+        inputs/2015/day_7_input.txt
+        inputs/2015/day_8_input.txt
+        inputs/2015/day_9_input.txt
+        inputs/2015/day_12_input.txt
+        inputs/2015/day_13_input.txt
+        inputs/2015/day_14_input.txt
+        inputs/2020/day_1_input.txt
+        inputs/2020/day_2_input.txt
+        inputs/2020/day_3_input.txt
+        inputs/2020/day_4_input.txt
+        inputs/2020/day_5_input.txt
+        inputs/2020/day_6_input.txt
+        inputs/2020/day_7_input.txt
+        inputs/2020/day_8_input.txt
+        inputs/2020/day_9_input.txt
+        inputs/2020/day_10_input.txt
+        inputs/2020/day_11_input.txt
+        inputs/2020/day_12_input.txt
+        inputs/2020/day_13_input.txt
+        inputs/2020/day_14_input.txt
+        inputs/2020/day_16_input.txt
+        inputs/2020/day_17_input.txt
+        inputs/2020/day_18_input.txt
+        inputs/2020/day_19_input.txt
+        inputs/2020/day_20_input.txt
+        inputs/2020/day_21_input.txt
+        inputs/2020/day_24_input.txt
+        inputs/2021/day_1_input.txt
+        inputs/2021/day_2_input.txt
+        inputs/2021/day_3_input.txt
+        inputs/2021/day_4_input.txt
+        inputs/2021/day_5_input.txt
+        inputs/2021/day_6_input.txt
+        inputs/2021/day_7_input.txt
+        inputs/2021/day_8_input.txt
+        inputs/2021/day_9_input.txt
+        inputs/2021/day_10_input.txt
+        inputs/2021/day_11_input.txt
+        inputs/2021/day_12_input.txt)
 
 add_executable(AdventOfCode
         main.cpp
@@ -84,7 +130,7 @@ add_executable(AdventOfCode
         2021/day12.cpp)
 target_include_directories(AdventOfCode PRIVATE "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/boost/include")
 target_compile_definitions(AdventOfCode PRIVATE BOOST_IOSTREAMS_NO_LIB)
-target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL fmt)
+target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL fmt AoCInputs)
 
 enable_testing()
 doctest_discover_tests(AdventOfCode)
