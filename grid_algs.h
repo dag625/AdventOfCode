@@ -15,7 +15,9 @@ namespace aoc {
 
     int grid_pos_distance(const position a, const position b) {
         const auto v = b - a;
-        return static_cast<int>(std::round(std::sqrt(v.x * v.x + v.y * v.y)));
+        //The performance impact between the two distances below is negligable for the uses so far.
+        return static_cast<int>(std::round(std::sqrt(v.x * v.x + v.y * v.y)));//Triangular distance
+        //return v.x + v.y;//"Manhattan" distance
     }
 
     template <typename T>
@@ -74,6 +76,7 @@ namespace aoc {
             m_heap{},
             m_grid{g.num_rows(), g.num_cols()}
         {
+            m_heap.reserve(m_grid.size());
             check_and_update(start, start, 0, heuristic_func(g, start, stop));
         }
 
