@@ -63,6 +63,22 @@ namespace aoc {
             return retval;
         }
 
+        [[nodiscard]] std::vector<position> cardinal_neighbors(position p) const  {
+            std::vector<position> retval;
+            retval.reserve(std::size(CARDINAL_DIRECTIONS));
+            for (auto v : CARDINAL_DIRECTIONS) {
+                auto np = p + v;
+                if (in(np)) {
+                    retval.push_back(np);
+                }
+            }
+            return retval;
+        }
+
+        [[nodiscard]] std::vector<position> neighbors(position p, bool cardinal_only) const  {
+            return cardinal_only ? cardinal_neighbors(p) : neighbors(p);
+        }
+
         [[nodiscard]] bool in(position p) const noexcept {
             return p.x >= 0 && p.x < m_num_rows &&
                 p.y >= 0 && p.y < m_num_cols;
