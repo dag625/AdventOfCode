@@ -21,6 +21,17 @@ namespace {
     //Input:  target area: x=185..221, y=-122..-74
     constexpr position TARGET_TOP_LEFT {185, -74};
     constexpr position TARGET_BOTTOM_RIGHT {221, -122};
+    /*
+     * There are target areas where this doesn't apply, e.g.:  x=352..377, y=-49..-30
+     * The issue is the x-range doesn't contain any triangular numbers, so the v_x can't
+     * be equal to 0 inside this range, which is an assumption in coming to this solution.
+     * Because of this the intercept with the highest peak must have some horizontal
+     * velocity which constrains the starting vertical velocities.
+     *
+     * It is also true that if the x range contains the triangular numbers starting with
+     * T_n and n is larger than the bottom of the intercept range this will not work as
+     * the trajectory will always fall below the intercept range before hitting it.
+     */
     constexpr int MAX_DY_0 = -(TARGET_BOTTOM_RIGHT.y + 1);
 
     bool is_in(const position p, const position tl, const position br) noexcept {
