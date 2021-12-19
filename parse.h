@@ -17,9 +17,9 @@ namespace aoc {
             throw std::runtime_error{"Cannot parse empty string."};
         }
         T val{};
-        auto res = std::from_chars(s.data(), s.data() + s.size(), val, base);
-        if (res.ec != std::errc{}) {
-            throw std::system_error{std::make_error_code(res.ec)};
+        const auto res = std::from_chars(s.data(), s.data() + s.size(), val, base);
+        if (const auto ec = std::make_error_code(res.ec); ec) {
+            throw std::system_error{ec};
         }
         return val;
     }

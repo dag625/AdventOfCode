@@ -15,21 +15,29 @@ namespace aoc {
     std::string time_to_string(std::chrono::duration<Rep, Period> v) {
         std::stringstream os;
         os << std::setfill('0');
+        bool haveDays = false;
         if (v > std::chrono::hours{24}) {
             auto days = std::chrono::duration_cast<std::chrono::duration<long, std::ratio<86400>>>(v);
             v -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(days);
             os << days.count() << " days";
+            haveDays = true;
         }
         bool haveTime = false;
         if (v > std::chrono::hours{1}) {
             auto hours = std::chrono::duration_cast<std::chrono::hours>(v);
             v -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(hours);
+            if (haveDays) {
+                os << ' ';
+            }
             os << hours.count() << ":";
             haveTime = true;
         }
         if (haveTime || v > std::chrono::minutes{1}) {
             auto mins = std::chrono::duration_cast<std::chrono::minutes>(v);
             v -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(mins);
+            if (haveTime) {
+                os << std::setw(2) << std::setfill('0');
+            }
             os << mins.count() << ":";
             haveTime = true;
         }
@@ -38,6 +46,9 @@ namespace aoc {
         if (haveTime || v > std::chrono::seconds{1}) {
             auto secs = std::chrono::duration_cast<std::chrono::seconds>(v);
             v -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(secs);
+            if (haveTime) {
+                os << std::setw(2) << std::setfill('0');
+            }
             os << secs.count();
             units = "s";
         }
