@@ -93,9 +93,13 @@ target_include_directories(AdventOfCode PRIVATE "${CMAKE_CURRENT_LIST_DIR}" "${C
 target_compile_definitions(AdventOfCode PRIVATE BOOST_IOSTREAMS_NO_LIB)
 target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL fmt)
 
+#This is a fix for the 2021 day 19 compile time matrix generation.
 if (MSVC)
-    #This is a fix for the 2021 day 19 compile time matrix generation.
     target_compile_options(AdventOfCode PRIVATE "/constexpr:steps67108864")
+elseif(GCC)
+    target_compile_options(AdventOfCode PRIVATE "-fconstexpr-ops-limit=67108864")
+elseif(CLANG)
+    target_compile_options(AdventOfCode PRIVATE "-fconstexpr-steps=67108864")
 endif()
 
 enable_testing()

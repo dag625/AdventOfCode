@@ -223,7 +223,19 @@ namespace {
         int matches = 1;
 
         offset_info(vector_3d off) : offset{off} {}
+
+        bool operator<(const offset_info& rhs) const noexcept {
+            return offset < rhs.offset;
+        }
     };
+
+    bool operator<(const offset_info& a, const vector_3d& b) noexcept {
+        return a.offset < b;
+    }
+
+    bool operator<(const vector_3d& a, const offset_info& b) noexcept {
+        return a < b.offset;
+    }
 
     std::vector<vector_3d> multiply_all(const matrix_3d& m, const std::vector<vector_3d>& orig) {
         std::vector<vector_3d> retval;
@@ -251,7 +263,7 @@ namespace {
             for (const auto& rp : ref.beacons) {
                 for (const auto& sp : oped) {
                     const auto offset = rp - sp;
-                    auto found = std::lower_bound(info.begin(), info.end(), offset, [](const offset_info& i, const vector_3d& o) { return i.offset < o; });
+                    auto found = std::lower_bound(info.begin(), info.end(), offset);
                     if (found != info.end() && found->offset == offset) {
                         if (++found->matches >= MIN_BEACONS_TO_MATCH) {
                             return std::pair{*ref.offset + *ref.transform * found->offset, *ref.transform * op};
