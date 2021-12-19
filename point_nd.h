@@ -96,6 +96,13 @@ namespace aoc {
         return retval;
     }
 
+    /* Specializations for Performance: */
+
+    template <>
+    inline point<3> operator-(const point<3>& a, const vector<3>& b) {
+        return {a[0] - b[0], a[1] - b[1], a[2] - b[2]};
+    }
+
 } /* namespace aoc */
 
 #endif //ADVENTOFCODE_POINT_ND_H

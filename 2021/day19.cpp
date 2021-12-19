@@ -28,36 +28,34 @@ namespace {
     using vector_3d = point<3>;
 
     class matrix_3d {
-        std::array<int, 9> m_data{};
     public:
-        template <typename... Args>
-        constexpr matrix_3d(Args&&... args) noexcept : m_data{std::forward<Args>(args)...} {}
+        std::array<int, 9> data{};
 
         [[nodiscard]] constexpr vector_3d mul_left(const vector_3d& rhs) const noexcept {
-            return {(m_data[0] * rhs[0] + m_data[1] * rhs[1] + m_data[2] * rhs[2]),
-                    (m_data[3] * rhs[0] + m_data[4] * rhs[1] + m_data[5] * rhs[2]),
-                    (m_data[6] * rhs[0] + m_data[7] * rhs[1] + m_data[8] * rhs[2])};
+            return {(data[0] * rhs[0] + data[1] * rhs[1] + data[2] * rhs[2]),
+                    (data[3] * rhs[0] + data[4] * rhs[1] + data[5] * rhs[2]),
+                    (data[6] * rhs[0] + data[7] * rhs[1] + data[8] * rhs[2])};
         }
 
         [[nodiscard]] constexpr vector_3d mul_right(const vector_3d& lhs) const noexcept {
-            return {(m_data[0] * lhs[0] + m_data[3] * lhs[1] + m_data[6] * lhs[2]),
-                    (m_data[1] * lhs[0] + m_data[4] * lhs[1] + m_data[7] * lhs[2]),
-                    (m_data[2] * lhs[0] + m_data[5] * lhs[1] + m_data[8] * lhs[2])};
+            return {(data[0] * lhs[0] + data[3] * lhs[1] + data[6] * lhs[2]),
+                    (data[1] * lhs[0] + data[4] * lhs[1] + data[7] * lhs[2]),
+                    (data[2] * lhs[0] + data[5] * lhs[1] + data[8] * lhs[2])};
         }
 
         [[nodiscard]] constexpr matrix_3d mul_left(const matrix_3d& rhs) const noexcept {
             return {
-                    (m_data[0] * rhs.m_data[0] + m_data[1] * rhs.m_data[3] + m_data[2] * rhs.m_data[6]),
-                    (m_data[0] * rhs.m_data[1] + m_data[1] * rhs.m_data[4] + m_data[2] * rhs.m_data[7]),
-                    (m_data[0] * rhs.m_data[2] + m_data[1] * rhs.m_data[5] + m_data[2] * rhs.m_data[8]),
+                    (data[0] * rhs.data[0] + data[1] * rhs.data[3] + data[2] * rhs.data[6]),
+                    (data[0] * rhs.data[1] + data[1] * rhs.data[4] + data[2] * rhs.data[7]),
+                    (data[0] * rhs.data[2] + data[1] * rhs.data[5] + data[2] * rhs.data[8]),
 
-                    (m_data[3] * rhs.m_data[0] + m_data[4] * rhs.m_data[3] + m_data[5] * rhs.m_data[6]),
-                    (m_data[3] * rhs.m_data[1] + m_data[4] * rhs.m_data[4] + m_data[5] * rhs.m_data[7]),
-                    (m_data[3] * rhs.m_data[2] + m_data[4] * rhs.m_data[5] + m_data[5] * rhs.m_data[8]),
+                    (data[3] * rhs.data[0] + data[4] * rhs.data[3] + data[5] * rhs.data[6]),
+                    (data[3] * rhs.data[1] + data[4] * rhs.data[4] + data[5] * rhs.data[7]),
+                    (data[3] * rhs.data[2] + data[4] * rhs.data[5] + data[5] * rhs.data[8]),
 
-                    (m_data[6] * rhs.m_data[0] + m_data[7] * rhs.m_data[3] + m_data[8] * rhs.m_data[6]),
-                    (m_data[6] * rhs.m_data[1] + m_data[7] * rhs.m_data[4] + m_data[8] * rhs.m_data[7]),
-                    (m_data[6] * rhs.m_data[2] + m_data[7] * rhs.m_data[5] + m_data[8] * rhs.m_data[8])
+                    (data[6] * rhs.data[0] + data[7] * rhs.data[3] + data[8] * rhs.data[6]),
+                    (data[6] * rhs.data[1] + data[7] * rhs.data[4] + data[8] * rhs.data[7]),
+                    (data[6] * rhs.data[2] + data[7] * rhs.data[5] + data[8] * rhs.data[8])
             };
         }
 
@@ -66,12 +64,12 @@ namespace {
         }
 
         constexpr bool operator==(const matrix_3d& rhs) const noexcept {
-            return std::ranges::equal(m_data, rhs.m_data);
+            return std::ranges::equal(data, rhs.data);
         }
 
         constexpr bool operator<(const matrix_3d& rhs) const noexcept {
-            const auto res = std::ranges::mismatch(m_data, rhs.m_data);
-            if (res.in1 == m_data.end()) {
+            const auto res = std::ranges::mismatch(data, rhs.data);
+            if (res.in1 == data.end()) {
                 return false;
             }
             else {
@@ -88,15 +86,15 @@ namespace {
                 fmt_str = "{:>3}{:>3}{:>3}\n{:>3}{:>3}{:>3}\n{:>3}{:>3}{:>3}";
             }
             return fmt::format(fmt_str,
-                               m_data[0],
-                               m_data[1],
-                               m_data[2],
-                               m_data[3],
-                               m_data[4],
-                               m_data[5],
-                               m_data[6],
-                               m_data[7],
-                               m_data[8]);
+                               data[0],
+                               data[1],
+                               data[2],
+                               data[3],
+                               data[4],
+                               data[5],
+                               data[6],
+                               data[7],
+                               data[8]);
         }
     };
 
@@ -113,7 +111,7 @@ namespace {
     }
 
     constexpr bool operator==(const vector_3d& lhs, const vector_3d& rhs) noexcept {
-        return std::ranges::equal(lhs, rhs);
+        return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2];
     }
 
     constexpr bool operator<(const vector_3d& lhs, const vector_3d& rhs) noexcept {
@@ -126,7 +124,7 @@ namespace {
         }
     }
 
-    constexpr std::vector<matrix_3d> calculate_rot_and_refl_combos() {
+    consteval auto calculate_rot_and_refl_combos() {
         constexpr matrix_3d rotations[] = {
                 { 1, 0, 0,   0, 1, 0,   0, 0, 1},
 
@@ -161,17 +159,26 @@ namespace {
                 {-1, 0, 0,   0,-1, 0,   0, 0, -1}
         };
 
-        std::vector<matrix_3d> retval;
+        std::vector<matrix_3d> scratch;
         for (const auto& rot1 : rotations) {
             for (const auto& rot2 : rotations) {
                 for (const auto &refl: reflections) {
-                    retval.push_back(rot1 * rot2 * refl);
-                    retval.push_back(refl * rot1 * rot2);
+                    scratch.push_back(rot1 * rot2 * refl);
+                    scratch.push_back(refl * rot1 * rot2);
                 }
             }
         }
-        std::sort(retval.begin(), retval.end());
-        retval.erase(std::unique(retval.begin(), retval.end()), retval.end());
+        std::sort(scratch.begin(), scratch.end());
+        scratch.erase(std::unique(scratch.begin(), scratch.end()), scratch.end());
+        std::array<matrix_3d, 48> retval;
+        if (scratch.size() != retval.size()) {
+            //This will cause a compiler error if the size of the array doesn't match the size of the scratch vector.
+            //It's a bit of a hack (you need to know how big things are before you have this be a compile-time only
+            //function) but it's a useful optimization, and there's no way to return a dynamically sized (at compile
+            //time) buffer/array/list/vector as of C++20.
+            throw std::exception{};
+        }
+        std::copy_n(scratch.begin(), retval.size(), retval.begin());
         return retval;
     }
 
@@ -197,15 +204,15 @@ namespace {
 
     std::vector<scanner> get_input(const fs::path& input_dir) {
         const auto lines = read_file_lines(input_dir / "2021" / "day_19_input.txt");
-        std::regex re {R"(--- scanner (\d+) ---)"};
         const auto end = lines.end();
         std::vector<scanner> retval;
+        retval.reserve(32);
         for (auto current = lines.begin(); current != end; ++current) {
-            std::smatch match;
-            if (std::regex_match(*current, match, re)) {
+            if (current->starts_with("--- scanner ")) {
+                const auto num_str = std::string_view{ *current }.substr(12);
                 auto last = current;
                 while (last != end && !last->empty()) { ++last; }
-                retval.push_back(parse_scanner(parse<int>(match[1].str()), current + 1, last));
+                retval.push_back(parse_scanner(parse<int>(num_str), current + 1, last));
             }
         }
         return retval;
@@ -218,6 +225,13 @@ namespace {
         offset_info(vector_3d off) : offset{off} {}
     };
 
+    std::vector<vector_3d> multiply_all(const matrix_3d& m, const std::vector<vector_3d>& orig) {
+        std::vector<vector_3d> retval;
+        retval.reserve(orig.size());
+        std::transform(orig.begin(), orig.end(), std::back_inserter(retval), [&m](const vector_3d& v) { return m * v; });
+        return retval;
+    }
+
     /**
      * Return an offset O and transformation T such that:
      * p_s0 = T*p_s + O
@@ -228,21 +242,23 @@ namespace {
      * So we want to return T_r*T_s and O_r+T_r*O_s.
      */
     std::optional<std::pair<vector_3d, matrix_3d>> find_relationship(const scanner& ref, const scanner& s) {
-        const auto ops = calculate_rot_and_refl_combos();
+        constexpr auto ops = calculate_rot_and_refl_combos();
+        std::vector<offset_info> info;
+        info.reserve(ref.beacons.size() * s.beacons.size());
         for (const auto& op : ops) {
-            const auto oped = s.beacons | std::views::transform([&op](const vector_3d& v){ return op * v; }) | to<std::vector<vector_3d>>();
-            std::vector<offset_info> info;
+            info.clear();
+            const auto oped = multiply_all(op, s.beacons);
             for (const auto& rp : ref.beacons) {
                 for (const auto& sp : oped) {
                     const auto offset = rp - sp;
-                    auto found = std::find_if(info.begin(), info.end(), [&offset](const offset_info& i){ return i.offset == offset; });
-                    if (found != info.end()) {
+                    auto found = std::lower_bound(info.begin(), info.end(), offset, [](const offset_info& i, const vector_3d& o) { return i.offset < o; });
+                    if (found != info.end() && found->offset == offset) {
                         if (++found->matches >= MIN_BEACONS_TO_MATCH) {
                             return std::pair{*ref.offset + *ref.transform * found->offset, *ref.transform * op};
                         }
                     }
                     else {
-                        info.emplace_back(offset);
+                        info.emplace(found, offset);
                     }
                 }
             }
