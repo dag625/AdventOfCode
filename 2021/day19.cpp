@@ -9,13 +9,13 @@
 
 #include <vector>
 #include <array>
-#include <regex>
+#include <utility>
 #include <set>
 
 #include "utilities.h"
 #include "ranges.h"
-#include "point_nd.h"
 #include "parse.h"
+#include "point_nd.h"
 
 namespace fs = std::filesystem;
 
@@ -63,6 +63,10 @@ namespace {
             return lhs.mul_left(*this);
         }
 
+        constexpr matrix_3d operator-() const noexcept {
+            return {-data[0], -data[1], -data[2], -data[3], -data[4], -data[5], -data[6], -data[7], -data[8]};
+        }
+
         constexpr bool operator==(const matrix_3d& rhs) const noexcept {
             return std::ranges::equal(data, rhs.data);
         }
@@ -77,24 +81,32 @@ namespace {
             }
         }
 
-        [[nodiscard]] std::string display(bool one_line = false) const {
-            const char* fmt_str = nullptr;
+        [[nodiscard]] std::string display(int field_width = 3, bool one_line = false) const {
             if (one_line) {
-                fmt_str = "[[{}, {}, {}], [{}, {}, {}], [{}, {}, {}]]";
+                return fmt::format("[[{}, {}, {}], [{}, {}, {}], [{}, {}, {}]]",
+                                   data[0],
+                                   data[1],
+                                   data[2],
+                                   data[3],
+                                   data[4],
+                                   data[5],
+                                   data[6],
+                                   data[7],
+                                   data[8]);
             }
             else {
-                fmt_str = "{:>3}{:>3}{:>3}\n{:>3}{:>3}{:>3}\n{:>3}{:>3}{:>3}";
+                return fmt::format("{1:>{0}}{2:>{0}}{3:>{0}}\n{4:>{0}}{5:>{0}}{6:>{0}}\n{7:>{0}}{8:>{0}}{9:>{0}}",
+                                   field_width,
+                                   data[0],
+                                   data[1],
+                                   data[2],
+                                   data[3],
+                                   data[4],
+                                   data[5],
+                                   data[6],
+                                   data[7],
+                                   data[8]);
             }
-            return fmt::format(fmt_str,
-                               data[0],
-                               data[1],
-                               data[2],
-                               data[3],
-                               data[4],
-                               data[5],
-                               data[6],
-                               data[7],
-                               data[8]);
         }
     };
 
@@ -110,10 +122,36 @@ namespace {
         return lhs.mul_left(rhs);
     }
 
+    constexpr vector_3d operator+(const vector_3d& lhs, const vector_3d& rhs) noexcept {
+        return {lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]};
+    }
+
+    constexpr vector_3d operator-(const vector_3d& lhs, const vector_3d& rhs) noexcept {
+        return {lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]};
+    }
+
+    constexpr int operator*(const vector_3d& lhs, const vector_3d& rhs) noexcept {
+        return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
+    }
+
+    constexpr matrix_3d operator+(const matrix_3d& lhs, const matrix_3d& rhs) noexcept {
+        return {lhs.data[0] + rhs.data[0], lhs.data[1] + rhs.data[1], lhs.data[2] + rhs.data[2],
+                lhs.data[3] + rhs.data[3], lhs.data[4] + rhs.data[4], lhs.data[5] + rhs.data[5],
+                lhs.data[6] + rhs.data[6], lhs.data[7] + rhs.data[7], lhs.data[8] + rhs.data[8]};
+    }
+
+    constexpr matrix_3d operator-(const matrix_3d& lhs, const matrix_3d& rhs) noexcept {
+        return {lhs.data[0] - rhs.data[0], lhs.data[1] - rhs.data[1], lhs.data[2] - rhs.data[2],
+                lhs.data[3] - rhs.data[3], lhs.data[4] - rhs.data[4], lhs.data[5] - rhs.data[5],
+                lhs.data[6] - rhs.data[6], lhs.data[7] - rhs.data[7], lhs.data[8] - rhs.data[8]};
+    }
+
+    template <typename T>
     constexpr bool operator==(const vector_3d& lhs, const vector_3d& rhs) noexcept {
         return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2];
     }
 
+    template <typename T>
     constexpr bool operator<(const vector_3d& lhs, const vector_3d& rhs) noexcept {
         const auto res = std::ranges::mismatch(lhs, rhs);
         if (res.in1 == lhs.end()) {
@@ -182,14 +220,45 @@ namespace {
         return retval;
     }
 
+    struct fingerprint {
+        uint64_t fp;
+        int idx_a;
+        int idx_b;
+
+        fingerprint(uint64_t f, int a, int b) : fp{f}, idx_a{a}, idx_b{b} {}
+
+        bool operator<(const fingerprint& rhs) const noexcept {
+            return fp < rhs.fp;
+        }
+    };
+
     struct scanner {
         int id = -1;
         std::vector<vector_3d> beacons;
+        std::vector<fingerprint> fingerprints;
         std::optional<vector_3d> offset;
         std::optional<matrix_3d> transform;
     };
 
-    scanner parse_scanner(int id, std::vector<std::string>::const_iterator current, const std::vector<std::string>::const_iterator last) {
+    uint64_t get_fingerprint(const vector_3d& a, const vector_3d& b) noexcept {
+        const auto d = a - b;
+        return d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
+    }
+
+    std::vector<fingerprint> fingerprints_from_beacons(const std::vector<vector_3d>& beacons) {
+        const auto bsize = beacons.size();
+        std::vector<fingerprint> fps;
+        fps.reserve(bsize * (bsize - 1) / 2);
+        for (int i = 0; i < bsize; ++i) {
+            for (int j = i + 1; j < bsize; ++j) {
+                fps.emplace_back(get_fingerprint(beacons[i], beacons[j]), i, j);
+            }
+        }
+        std::sort(fps.begin(), fps.end());
+        return fps;
+    }
+
+    scanner parse_scanner(int id, std::vector<std::string>::const_iterator current, const std::vector<std::string>::const_iterator& last) {
         std::vector<vector_3d> beacons;
         beacons.reserve(std::distance(current, last));
         for (; current != last; ++current) {
@@ -199,7 +268,8 @@ namespace {
                     to<std::vector<int>>();
             beacons.push_back({nums[0], nums[1], nums[2]});
         }
-        return {id, std::move(beacons)};
+        auto fps = fingerprints_from_beacons(beacons);
+        return {id, std::move(beacons), std::move(fps)};
     }
 
     std::vector<scanner> get_input(const fs::path& input_dir) {
@@ -254,6 +324,69 @@ namespace {
      * So we want to return T_r*T_s and O_r+T_r*O_s.
      */
     std::optional<std::pair<vector_3d, matrix_3d>> find_relationship(const scanner& ref, const scanner& s) {
+        constexpr auto ops = calculate_rot_and_refl_combos();
+        std::vector<offset_info> info;
+        info.reserve(ref.beacons.size() * s.beacons.size());
+        for (const auto& op : ops) {
+            info.clear();
+            const auto oped = multiply_all(op, s.beacons);
+            for (const auto& rp : ref.beacons) {
+                for (const auto& sp : oped) {
+                    const auto offset = rp - sp;
+                    auto found = std::lower_bound(info.begin(), info.end(), offset);
+                    if (found != info.end() && found->offset == offset) {
+                        if (++found->matches >= MIN_BEACONS_TO_MATCH) {
+                            return std::pair{*ref.offset + *ref.transform * found->offset, *ref.transform * op};
+                        }
+                    }
+                    else {
+                        info.emplace(found, offset);
+                    }
+                }
+            }
+        }
+        return std::nullopt;
+    }
+
+    matrix_3d rotation_from_vectors(const vector_3d& from, const vector_3d& to) noexcept
+    {
+        constexpr auto ops = calculate_rot_and_refl_combos();
+        for (const auto& op : ops) {
+            const auto tr = op * from;
+            if (tr == to) {
+                return op;
+            }
+        }
+        return {1, 0, 0,    0, 1, 0,    0, 0, 1};
+    }
+
+    /**
+     * Alternate solution suggested by https://www.reddit.com/r/adventofcode/comments/rjpf7f/2021_day_19_solution
+     * to use the differences between all the points for a scanner as a fingerprint.  The distances between two
+     * beacons will be the same despite any translations, reflections, or rotations.  We can use this to find two
+     * scanners which share points (though we are assuming that the distances are fairly unique!).
+     *
+     * From that point we can reconstruct the rotation/reflection matrix and then calculate the offset.
+     */
+    std::optional<std::pair<vector_3d, matrix_3d>> find_relationship_fp(const scanner& ref, const scanner& s) {
+        std::vector<std::pair<int, int>> matches;
+        for (int ri = 0, si = 0; ri < ref.fingerprints.size() && si < s.fingerprints.size();) {
+            if (ref.fingerprints[ri].fp == s.fingerprints[si].fp) {
+                matches.emplace_back(ri, si);
+                ++ri;
+                ++si;
+            }
+            else if (ref.fingerprints[ri].fp < s.fingerprints[si].fp) {
+                ++ri;
+            }
+            else {
+                ++si;
+            }
+        }
+        if (matches.size() < (MIN_BEACONS_TO_MATCH * (MIN_BEACONS_TO_MATCH - 1)) / 2) {
+            return std::nullopt;
+        }
+
         constexpr auto ops = calculate_rot_and_refl_combos();
         std::vector<offset_info> info;
         info.reserve(ref.beacons.size() * s.beacons.size());
@@ -643,7 +776,7 @@ namespace {
             const auto start_t = std::chrono::system_clock::now();
             for (auto& scan : input | std::views::filter([](const scanner& s){ return !s.offset; })) {
                 for (const auto& ref : input | std::views::filter([](const scanner& s){ return s.offset.has_value(); })) {
-                    const auto diff = find_relationship(ref, scan);
+                    const auto diff = find_relationship_fp(ref, scan);
                     if (diff) {
                         scan.offset = diff->first;
                         scan.transform = diff->second;
@@ -674,7 +807,7 @@ namespace {
             const auto start_t = std::chrono::system_clock::now();
             for (auto& scan : input | std::views::filter([](const scanner& s){ return !s.offset; })) {
                 for (const auto& ref : input | std::views::filter([](const scanner& s){ return s.offset.has_value(); })) {
-                    const auto diff = find_relationship(ref, scan);
+                    const auto diff = find_relationship_fp(ref, scan);
                     if (diff) {
                         scan.offset = diff->first;
                         scan.transform = diff->second;
@@ -756,10 +889,12 @@ namespace {
                             {553,889,-390}
                     }}
             };
+            input.front().fingerprints = fingerprints_from_beacons(input.front().beacons);
+            input.back().fingerprints = fingerprints_from_beacons(input.back().beacons);
             input.front().offset = {0, 0, 0};
             input.front().transform = { 1, 0, 0,   0, 1, 0,   0, 0, 1};
             auto points = input.front().beacons | to<std::set<vector_3d>>();
-            const auto diff = find_relationship(input.front(), input.back());
+            const auto diff = find_relationship_fp(input.front(), input.back());
             if (diff) {
                 input.back().offset = diff->first;
                 input.back().transform = diff->second;
@@ -769,6 +904,25 @@ namespace {
             }
             REQUIRE(input.back().offset.has_value());
             REQUIRE_EQ(*input.back().offset, vector_3d{68,-1246,-43});
+        }
+        TEST_CASE("2021_day19:find_matrix") {
+            matrix_3d rot1 = {0,-1, 0,   1, 0, 0,   0, 0, 1},
+                rot2 = {1, 0, 0,   0, 0, 1,   0,-1, 0},
+                refl = { 1, 0, 0,   0,-1, 0,   0, 0, 1},
+                exp = rot1 * rot2 * refl;
+            vector_3d x1 = {10, -6, 37},
+                    x2 = {-1, 12, 9},
+                    x3 = {-5, -6, -7},
+                    y1 = exp * x1,
+                    y2 = exp * x2,
+                    y3 = exp * x3;
+            const auto act1 = rotation_from_vectors(x1, y1);
+            const auto act2 = rotation_from_vectors(x2, y2);
+            const auto act3 = rotation_from_vectors(x3, y3);
+            fmt::print("Actual:\n{}\nExpected:\n{}\n", act1.display(6), exp.display(6));
+            fmt::print("Actual:\n{}\nExpected:\n{}\n", act2.display(6), exp.display(6));
+            fmt::print("Actual:\n{}\nExpected:\n{}\n", act3.display(6), exp.display(6));
+            REQUIRE_EQ(act1, act2);
         }
     }
 
