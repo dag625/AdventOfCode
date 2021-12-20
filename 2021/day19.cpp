@@ -369,10 +369,17 @@ namespace {
      * From that point we can reconstruct the rotation/reflection matrix and then calculate the offset.
      */
     std::optional<std::pair<vector_3d, matrix_3d>> find_relationship_fp(const scanner& ref, const scanner& s) {
-        std::vector<std::pair<int, int>> matches;
+        int count = 0;
+        std::vector<vector_3d> rm, sm;
+        rm.reserve(ref.beacons.size());
+        sm.reserve(s.beacons.size());
         for (int ri = 0, si = 0; ri < ref.fingerprints.size() && si < s.fingerprints.size();) {
             if (ref.fingerprints[ri].fp == s.fingerprints[si].fp) {
-                matches.emplace_back(ri, si);
+                rm.push_back(ref.beacons[ref.fingerprints[ri].idx_a]);
+                rm.push_back(ref.beacons[ref.fingerprints[ri].idx_b]);
+                sm.push_back(s.beacons[s.fingerprints[si].idx_a]);
+                sm.push_back(s.beacons[s.fingerprints[si].idx_b]);
+                ++count;
                 ++ri;
                 ++si;
             }
@@ -383,17 +390,21 @@ namespace {
                 ++si;
             }
         }
-        if (matches.size() < (MIN_BEACONS_TO_MATCH * (MIN_BEACONS_TO_MATCH - 1)) / 2) {
+        if (count < (MIN_BEACONS_TO_MATCH * (MIN_BEACONS_TO_MATCH - 1)) / 2) {
             return std::nullopt;
         }
+        std::sort(rm.begin(), rm.end());
+        rm.erase(std::unique(rm.begin(), rm.end()), rm.end());
+        std::sort(sm.begin(), sm.end());
+        sm.erase(std::unique(sm.begin(), sm.end()), sm.end());
 
         constexpr auto ops = calculate_rot_and_refl_combos();
         std::vector<offset_info> info;
-        info.reserve(ref.beacons.size() * s.beacons.size());
+        info.reserve(rm.size() * sm.size());
         for (const auto& op : ops) {
             info.clear();
-            const auto oped = multiply_all(op, s.beacons);
-            for (const auto& rp : ref.beacons) {
+            const auto oped = multiply_all(op, sm);
+            for (const auto& rp : rm) {
                 for (const auto& sp : oped) {
                     const auto offset = rp - sp;
                     auto found = std::lower_bound(info.begin(), info.end(), offset);
