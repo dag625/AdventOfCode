@@ -15,6 +15,7 @@
 
 #include "point.h"
 #include "stride_span.h"
+#include "ranges.h"
 
 namespace aoc {
 
@@ -95,6 +96,34 @@ namespace aoc {
         [[nodiscard]] auto end() const noexcept { return m_data.end(); }
 
         [[nodiscard]] auto size() const noexcept { return m_data.size(); }
+
+        [[nodiscard]] grid<T> expand(int add_to_edge, T fill_val) const {
+            grid<T> retval {num_rows() + 2*add_to_edge, num_cols() + 2*add_to_edge};
+            velocity to_add{add_to_edge, add_to_edge};
+            for (auto pos : list_positions()) {
+                retval[pos + to_add] = at(pos);
+            }
+            for (int i = 0; i < add_to_edge; ++i) {
+                for (auto& v : retval.row_span(i)) {
+                    v = fill_val;
+                }
+                for (auto& v : retval.row_span(retval.num_rows() - 1 - i)) {
+                    v = fill_val;
+                }
+                for (auto& v : retval.column_span(i)) {
+                    v = fill_val;
+                }
+                for (auto& v : retval.column_span(retval.num_cols() - 1 - i)) {
+                    v = fill_val;
+                }
+            }
+            return retval;
+        }
+
+        template<typename U, std::invocable<T> F>
+        [[nodiscard]] grid<U> map(F map_func) {
+            return grid<U>{m_data | std::views::transform(map_func) | to<std::vector<U>>(), num_cols()};
+        }
 
         friend class position_iterator;
         class position_iterator {
@@ -325,11 +354,11 @@ namespace aoc {
         [[nodiscard]] stride_span<const T> column_span(std::size_t col) const noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
         [[nodiscard]] stride_span<const T> const_column_span(std::size_t col) noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
 
-        void display(std::ostream& os, std::optional<position> marked = std::nullopt) const {
+        void display(std::ostream& os, std::optional<position> marked = std::nullopt, int col_width = 8) const {
             std::size_t idx = 0;
             os << std::setw(6) << std::left << (idx / m_num_cols);
             for (auto p : list_positions()) {
-                os << std::setw(8) << std::right;
+                os << std::setw(col_width) << std::right;
                 if (marked && *marked == p) {
                     os << 'X';
                 }
@@ -351,7 +380,7 @@ namespace aoc {
     grid<char> to_grid(const std::vector<std::string>& lines);
 
     template <>
-    inline void grid<char>::display(std::ostream &os, std::optional<position> marked) const {
+    inline void grid<char>::display(std::ostream &os, std::optional<position> marked, int) const {
         std::size_t idx = 0;
         auto hdr_height = static_cast<int>(std::ceil(log10(m_num_cols)));
         for (std::size_t row = 0; row < hdr_height; ++row) {
