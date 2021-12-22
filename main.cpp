@@ -14,11 +14,12 @@ namespace fs = std::filesystem;
 int non_test_main(int argc, char** argv) {
     using namespace std::string_view_literals;
     fs::path input_dir;
-    bool have_required = false, run_challenges = true;
+    bool have_required = false, run_challenges = true, use_markdown_output_fmt = false;
     std::optional<int> year, day, chal;
     parse_arguments(argc, argv)
             .add('i', "input_dir"sv, input_dir)
             .add_flag( "run"sv, run_challenges)
+            .add_flag( "md"sv, use_markdown_output_fmt)
             .add_opt("year"sv, year)
             .add_opt("day"sv, day)
             .add_opt("challenge"sv, chal)
@@ -32,7 +33,7 @@ int non_test_main(int argc, char** argv) {
         return 0;
     }
 
-    aoc::challenges::list().run_all(year, day, chal, input_dir);
+    aoc::challenges::list().run_all(year, day, chal, input_dir, use_markdown_output_fmt);
     return 0;
 }
 

@@ -31,7 +31,7 @@ namespace aoc {
         static challenges& list();
 
         void add(int y, int d, int n, challenge::function f) noexcept;
-        void run_all(std::optional<int> y, std::optional<int> d, std::optional<int> n, const std::filesystem::path& input_dir) const noexcept;
+        void run_all(std::optional<int> y, std::optional<int> d, std::optional<int> n, const std::filesystem::path& input_dir, bool use_markdown_output_fmt = false) const noexcept;
     };
 
 } /* namespace aoc */

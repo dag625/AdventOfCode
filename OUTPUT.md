@@ -206,3 +206,135 @@ Challenge time:  732us
 ####Year 2020 - Day 24 - Challenge 2
 3700  
 Challenge time:  239.716ms
+####Year 2021 - Day 1 - Challenge 1
+1564\
+Challenge time:  1.018ms
+####Year 2021 - Day 1 - Challenge 2
+1611\
+Challenge time:  1.653600ms
+####Year 2021 - Day 2 - Challenge 1
+1561344\
+Challenge time:  830.200us
+####Year 2021 - Day 2 - Challenge 2
+1848454425\
+Challenge time:  569.700us
+####Year 2021 - Day 3 - Challenge 1
+3969000\
+Challenge time:  1.510ms
+####Year 2021 - Day 3 - Challenge 2
+4267809\
+Challenge time:  1.339600ms
+####Year 2021 - Day 4 - Challenge 1
+65325\
+Challenge time:  2.725800ms
+####Year 2021 - Day 4 - Challenge 2
+4624\
+Challenge time:  5.332300ms
+####Year 2021 - Day 5 - Challenge 1
+4873\
+Challenge time:  36.737ms
+####Year 2021 - Day 5 - Challenge 2
+19472\
+Challenge time:  55.493900ms
+####Year 2021 - Day 6 - Challenge 1
+380612\
+Challenge time:  431.600us
+####Year 2021 - Day 6 - Challenge 2
+1710166656900\
+Challenge time:  413.500us
+####Year 2021 - Day 7 - Challenge 1
+356958\
+Challenge time:  611.400us
+####Year 2021 - Day 7 - Challenge 2
+105461913\
+Challenge time:  712.200us
+####Year 2021 - Day 8 - Challenge 1
+245\
+Challenge time:  1.348500ms
+####Year 2021 - Day 8 - Challenge 2
+983026\
+Challenge time:  1.373700ms
+####Year 2021 - Day 9 - Challenge 1
+585\
+Challenge time:  747.600us
+####Year 2021 - Day 9 - Challenge 2
+827904\
+Challenge time:  975.700us
+####Year 2021 - Day 10 - Challenge 1
+343863\
+Challenge time:  608.100us
+####Year 2021 - Day 10 - Challenge 2
+2924734236\
+Challenge time:  565.300us
+####Year 2021 - Day 11 - Challenge 1
+1725\
+Challenge time:  827.100us
+####Year 2021 - Day 11 - Challenge 2
+308\
+Challenge time:  1.479ms
+####Year 2021 - Day 12 - Challenge 1
+4413\
+Challenge time:  1.106700ms
+####Year 2021 - Day 12 - Challenge 2
+118803\
+Challenge time:  17.884900ms
+####Year 2021 - Day 13 - Challenge 1
+610\
+Challenge time:  9.533900ms
+####Year 2021 - Day 13 - Challenge 2
+PZFJHRFZ\
+Challenge time:  18.333800ms
+####Year 2021 - Day 14 - Challenge 1
+2712\
+Challenge time:  732.500us
+####Year 2021 - Day 14 - Challenge 2
+8336623059567\
+Challenge time:  956.300us
+####Year 2021 - Day 15 - Challenge 1
+363\
+Challenge time:  4.658800ms
+####Year 2021 - Day 15 - Challenge 2
+2835\
+Challenge time:  170.320200ms
+####Year 2021 - Day 16 - Challenge 1
+981\
+Challenge time:  371.800us
+####Year 2021 - Day 16 - Challenge 2
+299227024091\
+Challenge time:  316.400us
+####Year 2021 - Day 17 - Challenge 1
+7381\
+Challenge time:  319.600us
+####Year 2021 - Day 17 - Challenge 2
+3019\
+Challenge time:  2.454100ms
+####Year 2021 - Day 18 - Challenge 1
+3869\
+Challenge time:  2.059400ms
+####Year 2021 - Day 18 - Challenge 2
+4671\
+Challenge time:  30.389500ms
+####Year 2021 - Day 19 - Challenge 1
+381\
+Challenge time:  5.996600ms
+####Year 2021 - Day 19 - Challenge 2
+12201\
+Challenge time:  6.333500ms
+####Year 2021 - Day 20 - Challenge 1
+4873\
+Challenge time:  2.205ms
+####Year 2021 - Day 20 - Challenge 2
+16394\
+Challenge time:  120.790700ms
+####Year 2021 - Day 21 - Challenge 1
+711480\
+Challenge time:  846.800us
+####Year 2021 - Day 21 - Challenge 2
+265845890886828\
+Challenge time:  35.795100ms
+####Year 2021 - Day 22 - Challenge 1
+607657\
+Challenge time:  7.896ms
+####Year 2021 - Day 22 - Challenge 2
+1187742789778677\
+Challenge time:  17.024600ms
