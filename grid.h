@@ -52,6 +52,22 @@ namespace aoc {
             return p;
         }
 
+        [[nodiscard]] position wrap_any(position p) const noexcept {
+            while (p.x < 0) {
+                p.x += m_num_rows;
+            }
+            while (p.x >= m_num_rows) {
+                p.x -= m_num_rows;
+            }
+            while (p.y < 0) {
+                p.y += m_num_cols;
+            }
+            while (p.y >= m_num_cols) {
+                p.y -= m_num_cols;
+            }
+            return p;
+        }
+
         [[nodiscard]] std::vector<position> neighbors(position p) const  {
             std::vector<position> retval;
             retval.reserve(std::size(STANDARD_DIRECTIONS));
