@@ -35,6 +35,26 @@ namespace aoc {
         return retval;
     }
 
+    //Dot/inner product
+    template <std::size_t D>
+    int64_t operator*(const point<D>& a, const vector<D>& b) {
+        int64_t retval = 0;
+        for (std::size_t i = 0; i < D; ++i) {
+            retval += a[i] * b[i];
+        }
+        return retval;
+    }
+
+    //Scale
+    template <std::size_t D>
+    point<D> operator*(const point<D>& a, const int b) {
+        point<D> retval{};
+        for (std::size_t i = 0; i < D; ++i) {
+            retval[i] = a[i] * b;
+        }
+        return retval;
+    }
+
     template <std::size_t D, typename = std::enable_if_t<(D >= 2), void>>
     point<D> from_flat(int x, int y) {
         point<D> retval{};
@@ -88,6 +108,76 @@ namespace aoc {
                 }
             }
             if (all0) {
+                continue;
+            }
+            retval[idx] = p;
+            ++idx;
+        }
+        return retval;
+    }
+
+    template <std::size_t D>
+    constexpr std::size_t NUM_CARDINALS = NUM_CARDINALS<D-1> + 2;
+
+    template <>
+    constexpr std::size_t NUM_CARDINALS<1> = 2;
+
+    template <std::size_t D>
+    constexpr std::array<vector<D>, NUM_NEIGHBORS<D>> get_cardinal_directions() {
+        std::array<vector<D>, NUM_CARDINALS<D>> retval{};
+        auto cube = get_unit_cube<D>();
+        std::size_t idx = 0;
+        for (const auto& p : cube) {
+            int num_non_zero = 0;
+            for (const auto v : p) {
+                if (v != 0) {
+                    ++num_non_zero;
+                }
+            }
+            if (num_non_zero != 1) {
+                continue;
+            }
+            retval[idx] = p;
+            ++idx;
+        }
+        return retval;
+    }
+
+    template <std::size_t D>
+    constexpr std::size_t count_count_preserving_directions() {
+        std::size_t retval = 0;
+        auto cube = get_unit_cube<D>();
+        for (const auto& p : cube) {
+            int count = 0;
+            int abs = 0;
+            for (const auto v : p) {
+                count += v;
+                abs += (v < 0 ? -v : v);
+            }
+            if (count != 0 || abs == 0) {
+                continue;
+            }
+            ++retval;
+        }
+        return retval;
+    }
+
+    template <std::size_t D>
+    constexpr std::size_t NUM_COUNT_PRESERVING_DIRS = count_count_preserving_directions<4>();
+
+    template <std::size_t D>
+    constexpr std::array<vector<D>, NUM_COUNT_PRESERVING_DIRS<D>> get_count_preserving_directions() {
+        std::array<vector<D>, NUM_COUNT_PRESERVING_DIRS<D>> retval{};
+        auto cube = get_unit_cube<D>();
+        std::size_t idx = 0;
+        for (const auto& p : cube) {
+            int count = 0;
+            int abs = 0;
+            for (const auto v : p) {
+                count += v;
+                abs += (v < 0 ? -v : v);
+            }
+            if (count != 0 || abs == 0) {
                 continue;
             }
             retval[idx] = p;
