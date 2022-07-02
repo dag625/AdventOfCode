@@ -18,7 +18,7 @@ Unknown arguments specified
 
 The licenses for these are listed below.
 
-###License for Doctest 2.4.5
+### License for Doctest 2.4.5
 
 The MIT License (MIT)
 
@@ -43,7 +43,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-###License for JSON for Modern C++ 3.10.4
+### License for JSON for Modern C++ 3.10.4
 
 MIT License
 

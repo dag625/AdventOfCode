@@ -117,6 +117,16 @@ namespace {
         }
     }
 
+    const gate& get(const std::vector<gate>& gates, const std::string& dest) {
+        auto found = std::lower_bound(gates.begin(), gates.end(), dest);
+        if (found != gates.end() && found->dest == dest) {
+            return *found;
+        }
+        else {
+            throw std::runtime_error{"Failed to find gate."};
+        }
+    }
+
     std::optional<uint16_t> evaluate(std::vector<gate>& gates, const input& op) {
         return op.value;
     }
@@ -279,23 +289,24 @@ namespace {
             gates.emplace_back("g", shift{"y", 2, true});
             gates.emplace_back("h", not_op{"x"});
             gates.emplace_back("i", not_op{"y"});
+            std::sort(gates.begin(), gates.end(), [](const gate& a, const gate& b){ return a.dest < b.dest; });
             std::for_each(gates.begin(), gates.end(), [&gates](auto& g){ iterate_until_static(gates, g.dest); });
-            REQUIRE(gates[0].value.has_value());
-            REQUIRE_EQ(gates[0].value.value(), 123);
-            REQUIRE(gates[1].value.has_value());
-            REQUIRE_EQ(gates[1].value.value(), 456);
-            REQUIRE(gates[2].value.has_value());
-            REQUIRE_EQ(gates[2].value.value(), 72);
-            REQUIRE(gates[3].value.has_value());
-            REQUIRE_EQ(gates[3].value.value(), 507);
-            REQUIRE(gates[4].value.has_value());
-            REQUIRE_EQ(gates[4].value.value(), 492);
-            REQUIRE(gates[5].value.has_value());
-            REQUIRE_EQ(gates[5].value.value(), 114);
-            REQUIRE(gates[6].value.has_value());
-            REQUIRE_EQ(gates[6].value.value(), 65412);
-            REQUIRE(gates[7].value.has_value());
-            REQUIRE_EQ(gates[7].value.value(), 65079);
+            REQUIRE(get(gates, "x").value.has_value());
+            REQUIRE_EQ(get(gates, "x").value.value(), 123);
+            REQUIRE(get(gates, "y").value.has_value());
+            REQUIRE_EQ(get(gates, "y").value.value(), 456);
+            REQUIRE(get(gates, "d").value.has_value());
+            REQUIRE_EQ(get(gates, "d").value.value(), 72);
+            REQUIRE(get(gates, "e").value.has_value());
+            REQUIRE_EQ(get(gates, "e").value.value(), 507);
+            REQUIRE(get(gates, "f").value.has_value());
+            REQUIRE_EQ(get(gates, "f").value.value(), 492);
+            REQUIRE(get(gates, "g").value.has_value());
+            REQUIRE_EQ(get(gates, "g").value.value(), 114);
+            REQUIRE(get(gates, "h").value.has_value());
+            REQUIRE_EQ(get(gates, "h").value.value(), 65412);
+            REQUIRE(get(gates, "i").value.has_value());
+            REQUIRE_EQ(get(gates, "i").value.value(), 65079);
         }
         TEST_CASE("2015_day7:test1") {
             std::vector<gate> gates;
