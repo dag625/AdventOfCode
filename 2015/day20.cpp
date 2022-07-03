@@ -137,8 +137,8 @@ namespace {
 
     aoc::registration r{2015, 20, part_1, part_2};
 
-//    TEST_SUITE("2022_day02") {
-//        TEST_CASE("2022_day02:example") {
+//    TEST_SUITE("2015_day20") {
+//        TEST_CASE("2015_day20:example") {
 //
 //        }
 //    }
