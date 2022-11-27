@@ -223,7 +223,7 @@ namespace {
                 }
             }
         }
-        return std::to_string(max_cost);//356
+        return std::to_string(max_cost);
     }
 
     aoc::registration r{2015, 21, part_1, part_2};
