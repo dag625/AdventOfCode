@@ -24,6 +24,14 @@ namespace aoc {
         return val;
     }
 
+    template <typename T>
+    T parse_allow_plus(std::string_view s, int base = 10) {
+        if (s.starts_with('+')) {
+            s.remove_prefix(1);
+        }
+        return parse<T>(s, base);
+    }
+
 } /* namespace aoc */
 
 #endif //ADVENTOFCODE_PARSE_H
