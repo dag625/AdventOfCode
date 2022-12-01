@@ -20,16 +20,16 @@ namespace {
 
     using namespace aoc;
 
-    std::vector<std::vector<int>> get_input(const fs::path &input_dir) {
+    std::vector<int> get_input(const fs::path &input_dir) {
         const auto lines = read_file_lines(input_dir / "2022" / "day_1_input.txt");
-        std::vector<std::vector<int>> retval;
+        std::vector<int> retval;
         retval.emplace_back();
         for (const auto& s : lines) {
             if (s.empty()) {
                 retval.emplace_back();
                 continue;
             }
-            retval.back().push_back(parse<int>(s));
+            retval.back() += parse<int>(s);
         }
         return retval;
     }
@@ -77,9 +77,8 @@ namespace {
         const auto input = get_input(input_dir);
         int best = 0;
         for (const auto& elf : input) {
-            const auto cals = std::accumulate(elf.begin(), elf.end(), 0);
-            if (cals > best) {
-                best = cals;
+            if (elf > best) {
+                best = elf;
             }
         }
         return std::to_string(best);
@@ -99,9 +98,8 @@ namespace {
         const auto input = get_input(input_dir);
         std::array<int, 3> best{};
         for (const auto& elf : input) {
-            const auto cals = std::accumulate(elf.begin(), elf.end(), 0);
-            if (cals > best[0]) {
-                best[0] = cals;
+            if (elf > best[0]) {
+                best[0] = elf;
                 std::sort(best.begin(), best.end());
             }
         }
