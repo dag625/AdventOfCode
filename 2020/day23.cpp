@@ -10,6 +10,8 @@
 #include <array>
 #include <sstream>
 
+#include "heap_array.h"
+
 namespace fs = std::filesystem;
 
 namespace aoc2020 {
@@ -54,7 +56,22 @@ namespace aoc2020 {
         }
 
         template <std::size_t N>
+        int forward(const aoc::heap_array<cup, N>& cups, int current, std::size_t dist) {
+            while (dist > 0) {
+                current = cups[current].next;
+                --dist;
+            }
+            return current;
+        }
+
+        template <std::size_t N>
         void remove(std::array<cup, N>& cups, int previous, int current) {
+            cups[previous].next = cups[current].next;
+            cups[current].next = -1;
+        }
+
+        template <std::size_t N>
+        void remove(aoc::heap_array<cup, N>& cups, int previous, int current) {
             cups[previous].next = cups[current].next;
             cups[current].next = -1;
         }
@@ -65,11 +82,17 @@ namespace aoc2020 {
             cups[after].next = current;
         }
 
+        template <std::size_t N>
+        void insert(aoc::heap_array<cup, N>& cups, int current, int after) {
+            cups[current].next = cups[after].next;
+            cups[after].next = current;
+        }
+
         template <std::size_t N, typename = std::enable_if_t<N >= INIT_CUPS.size(), void>>
-        std::array<cup, N> get_expanded_initial_state() {
+        aoc::heap_array<cup, N> get_expanded_initial_state() {
             auto init = get_initial_state();
             if constexpr (N > INIT_CUPS.size()) {
-                std::array<cup, N> retval{};
+                aoc::heap_array<cup, N> retval{};
                 std::copy(init.begin(), init.end(), retval.begin());
                 int last = INIT_CUPS[INIT_CUPS.size() - 1] - 1;
                 for (int i = INIT_CUPS.size(); i < N; ++i) {
@@ -85,6 +108,26 @@ namespace aoc2020 {
 
         template <std::size_t N>
         int move(std::array<cup, N>& cups, int current) {
+            std::array<int, 3> removed{};
+            removed[0] = forward(cups, current, 1);
+            removed[1] = forward(cups, removed[0], 1);
+            removed[2] = forward(cups, removed[1], 1);
+            remove(cups, current, removed[0]);
+            remove(cups, current, removed[1]);
+            remove(cups, current, removed[2]);
+
+            auto dest = incr_index<N>(current, -1);
+            while (dest == removed[0] || dest == removed[1] || dest == removed[2]) {
+                dest = incr_index<N>(dest, -1);
+            }
+            insert(cups, removed[0], dest);
+            insert(cups, removed[1], removed[0]);
+            insert(cups, removed[2], removed[1]);
+            return forward(cups, current, 1);
+        }
+
+        template <std::size_t N>
+        int move(aoc::heap_array<cup, N>& cups, int current) {
             std::array<int, 3> removed{};
             removed[0] = forward(cups, current, 1);
             removed[1] = forward(cups, removed[0], 1);

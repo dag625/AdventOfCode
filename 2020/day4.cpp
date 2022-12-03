@@ -176,9 +176,9 @@ namespace aoc2020 {
             while (std::regex_search(start, end, matches, re)) {
                 fields.push_back({parse_type(matches[1].str()), matches[2].str()});
                 start = matches[0].second;
-                if (auto next = matches[0].second + 1;
-                        matches[0].second == end ||
-                        (next != end && *next == '\n'))
+                if (auto next = matches[0].second;
+                        next == end ||
+                        ((next + 1) != end && *(next + 1) == '\n'))
                 {
                     ids.emplace_back();
                     ids.back().fields.reserve(8);

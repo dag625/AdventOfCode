@@ -262,6 +262,9 @@ namespace aoc2020 {
             for (std::size_t row = 0; row < num_tiles_1d; ++row) {
                 build_row(retval, row, 0, num_chars_1d, *row_start, left, flip, tiles);
                 const auto& next_info = row_start->neighbors[static_cast<std::size_t>(down)];
+                if (!next_info.has_value()) {
+                    continue;
+                }
                 int prev_id = row_start->id;
                 row_start = std::find(tiles.begin(), tiles.end(), next_info->id);
                 std::size_t from = 0;
