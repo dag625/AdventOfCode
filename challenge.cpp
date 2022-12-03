@@ -45,7 +45,7 @@ namespace aoc {
         void run_challenge(const std::filesystem::path& input_dir, const challenge& c, bool md_fmt) {
             try {
                 if (md_fmt) {
-                    std::cout << "####";
+                    std::cout << "#### ";
                 }
                 std::cout << "Year " << c.year << " - Day " << c.day << " - Challenge " << c.num << md_newline{md_fmt, true};
                 const auto start = std::chrono::system_clock::now();
@@ -140,7 +140,7 @@ namespace aoc {
         std::for_each(begin, end, [&input_dir, use_markdown_output_fmt](const challenge& c) noexcept { run_challenge(input_dir, c, use_markdown_output_fmt); });
         auto dur = std::chrono::system_clock::now() - start;
         if (use_markdown_output_fmt) {
-            std::cout << "####";
+            std::cout << "#### ";
         }
         std::cout << "Finished solutions in:  " << time_to_string(dur) << '\n';
     }
