@@ -38,6 +38,7 @@ namespace {
                 return c;
             }
         }
+        return 0;
     }
 
     int priority(char c) {
