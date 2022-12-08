@@ -233,7 +233,7 @@ namespace aoc {
         };
 
         grid_row row(std::size_t idx) noexcept  { return grid_row{m_data.data() + idx * m_num_cols, m_num_cols}; }
-        [[nodiscard]] const grid_row row(std::size_t idx) const noexcept { return grid_row{const_cast<char*>(m_data.data() + idx * m_num_cols), m_num_cols}; }
+        [[nodiscard]] const grid_row row(std::size_t idx) const noexcept { return grid_row{const_cast<T*>(m_data.data() + idx * m_num_cols), m_num_cols}; }
 
         grid_row operator[](std::size_t idx) noexcept  { return row(idx); }
         [[nodiscard]] const grid_row operator[](std::size_t idx) const noexcept  { return row(idx); }
@@ -293,8 +293,8 @@ namespace aoc {
             //grid_col(const grid_row&) = delete;
             //grid_col(grid_row&&) = delete;
 
-            T& operator[](std::size_t idx) noexcept  { return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
-            [[nodiscard]] T operator[](std::size_t idx) const noexcept  { return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
+            T& operator[](std::size_t idx) noexcept  { return *(m_grid->m_data.data() + m_col_num + idx * m_grid->m_num_cols); }
+            [[nodiscard]] T operator[](std::size_t idx) const noexcept  { return *(m_grid->m_data.data() + m_col_num + idx * m_grid->m_num_cols); }
 
             T& at(std::size_t idx) { if (idx >= m_grid->m_num_cols) { throw std::out_of_range{"Index out of range."}; } return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
             [[nodiscard]] T at(std::size_t idx) const { if (idx >= m_grid->m_num_cols) { throw std::out_of_range{"Index out of range."}; } return *(m_grid->m_data + m_col_num + idx * m_grid->m_num_cols); }
@@ -361,7 +361,7 @@ namespace aoc {
         };
 
         [[nodiscard]] grid_col column(std::size_t col) noexcept { return {this, col}; }
-        [[nodiscard]] const grid_col column(std::size_t col) const noexcept { return {this, col}; }
+        [[nodiscard]] const grid_col column(std::size_t col) const noexcept { return {const_cast<grid*>(this), col}; }
 
         [[nodiscard]] stride_span<T> row_span(std::size_t row) noexcept { return {m_data, static_cast<typename stride_span<T>::length>(num_cols()), row * num_cols()}; }
         [[nodiscard]] stride_span<const T> row_span(std::size_t row) const noexcept { return {m_data, static_cast<typename stride_span<const T>::length>(num_cols()), row * num_cols()}; }
