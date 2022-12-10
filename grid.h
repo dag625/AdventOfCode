@@ -369,6 +369,7 @@ namespace aoc {
         [[nodiscard]] stride_span<T> column_span(std::size_t col) noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
         [[nodiscard]] stride_span<const T> column_span(std::size_t col) const noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
         [[nodiscard]] stride_span<const T> const_column_span(std::size_t col) noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
+        [[nodiscard]] stride_span<const T> const_column_span(std::size_t col) const noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
 
         void display(std::ostream& os, std::optional<position> marked = std::nullopt, int col_width = 8) const {
             std::size_t idx = 0;
