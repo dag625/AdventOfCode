@@ -13,7 +13,7 @@
 
 namespace aoc {
 
-    int grid_pos_distance(const position a, const position b) {
+    inline int grid_pos_distance(const position a, const position b) {
         const auto v = b - a;
         //The performance impact between the two distances below is negligable for the uses so far.
         return static_cast<int>(std::round(std::sqrt(v.x * v.x + v.y * v.y)));//Triangular distance
@@ -25,12 +25,12 @@ namespace aoc {
         return grid_pos_distance(a, b);
     }
 
-    auto operator<=>(const position& lhs, const position& rhs) noexcept {
+    inline auto operator<=>(const position& lhs, const position& rhs) noexcept {
         return std::tie(lhs.x, lhs.y) <=> std::tie(rhs.x, rhs.y);
     }
 
     template <class F, typename T>
-    concept cost_function = std::regular_invocable<F, const grid<T>&, position> && std::convertible_to<std::invoke_result_t<F, const grid<T>&, position>, int64_t>;
+    concept cost_function = std::regular_invocable<F, const grid<T>&, position, position> && std::convertible_to<std::invoke_result_t<F, const grid<T>&, position, position>, int64_t>;
 
     template <class F, typename T>
     concept heuristic_function = std::regular_invocable<F, const grid<T>&, position, position> && std::convertible_to<std::invoke_result_t<F, const grid<T>&, position, position>, int64_t>;
@@ -129,7 +129,7 @@ namespace aoc {
             }
             info.pop();
             for (const auto n : g.neighbors(current.pos, cardinal_neighbors_only)) {
-                const auto cost = cost_func(g, n) + info.score(current.pos);
+                const auto cost = cost_func(g, current.pos, n) + info.score(current.pos);
                 const auto h_cost = heuristic_func(g, n, stop);
                 info.check_and_update(n, current.pos, cost, h_cost);
             }
@@ -139,7 +139,7 @@ namespace aoc {
 
     template <std::integral T, heuristic_function<T> HF = decltype(&grid_pos_distance_heuristic<T>)>
     std::optional<grid_a_star_result>  grid_a_star(const grid<T>& g, const position start, const position stop, bool cardinal_neighbors_only = true, HF heuristic_func = grid_pos_distance_heuristic<T>) {
-        return grid_a_star(g, start, stop, [](const auto& gg, const auto pos){ return gg[pos]; }, cardinal_neighbors_only, heuristic_func);
+        return grid_a_star(g, start, stop, [](const auto& gg, const auto current_pos, const auto check_pos){ return gg[check_pos]; }, cardinal_neighbors_only, heuristic_func);
     }
 
 } /* namespace aoc */
