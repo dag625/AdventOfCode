@@ -33,6 +33,9 @@ add_executable(AdventOfCode
         point_nd.h
         parse.h
         heap_array.h
+        letters.cpp
+        letters.h
+        grid_dijkstra.h
         2020/day1.cpp
         2020/day2.cpp
         2020/day3.cpp
@@ -109,7 +112,20 @@ add_executable(AdventOfCode
         2015/day24.cpp
         2015/day25.cpp
         2022/day1.cpp
-        2022/day2.cpp 2022/day3.cpp 2022/day4.cpp 2022/day5.cpp 2022/day6.cpp 2022/day7.cpp 2022/day8.cpp 2022/day9.cpp 2022/day10.cpp letters.cpp letters.h 2022/day11.cpp 2022/day12.cpp grid_dijkstra.h grid_dijkstra.h 2022/day13.cpp 2022/day14.cpp 2022/day15.cpp)
+        2022/day2.cpp
+        2022/day3.cpp
+        2022/day4.cpp
+        2022/day5.cpp
+        2022/day6.cpp
+        2022/day7.cpp
+        2022/day8.cpp
+        2022/day9.cpp
+        2022/day10.cpp
+        2022/day11.cpp
+        2022/day12.cpp
+        2022/day13.cpp
+        2022/day14.cpp
+        2022/day15.cpp)
 target_include_directories(AdventOfCode PRIVATE "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/boost/include")
 target_compile_definitions(AdventOfCode PRIVATE BOOST_IOSTREAMS_NO_LIB)
 target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL fmt)
