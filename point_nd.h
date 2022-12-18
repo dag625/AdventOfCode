@@ -124,7 +124,7 @@ namespace aoc {
 
     template <std::size_t D>
     constexpr std::array<vector<D>, NUM_NEIGHBORS<D>> get_cardinal_directions() {
-        std::array<vector<D>, NUM_CARDINALS<D>> retval{};
+        std::array<vector<D>, NUM_NEIGHBORS<D>> retval{};
         auto cube = get_unit_cube<D>();
         std::size_t idx = 0;
         for (const auto& p : cube) {
