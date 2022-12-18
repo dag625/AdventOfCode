@@ -41,10 +41,10 @@ namespace {
         return retval;
     }
 
-    bool can_get_free(const std::vector<point_3d>& input, const point_3d& start) {
+    std::vector<point_3d> find_air(const std::vector<point_3d>& input) {
         const auto dirs = get_cardinal_directions<3>();
-        std::vector<point_3d> queue, checked;
-        queue.push_back(start);
+        std::vector<point_3d> retval, queue, checked;
+        queue.push_back({MIN_FREE, MIN_FREE, MIN_FREE});
         while (!queue.empty()) {
             const auto p = queue.front();
             queue.erase(queue.begin());
@@ -56,21 +56,25 @@ namespace {
                 checked.insert(done, p);
             }
 
-            for (const auto &d: dirs) {
+            for (const auto& d : dirs) {
                 const auto n = p + d;
-                const auto found = std::lower_bound(input.begin(), input.end(), n);
-                if (found == input.end() || *found != n) {
-                    if (n[0] == MIN_FREE || n[0] == MAX_FREE ||
-                        n[1] == MIN_FREE || n[1] == MAX_FREE ||
-                        n[2] == MIN_FREE || n[2] == MAX_FREE) {
-                        return true;
-                    } else {
-                        queue.push_back(n);
+                if (n[0] < MIN_FREE || n[0] > MAX_FREE ||
+                    n[1] < MIN_FREE || n[1] > MAX_FREE ||
+                    n[2] < MIN_FREE || n[2] > MAX_FREE)
+                {
+                    continue;
+                }
+                const auto found_in = std::lower_bound(input.begin(), input.end(), n);
+                if (found_in == input.end() || *found_in != n) {
+                    queue.push_back(n);
+                    const auto found_out = std::lower_bound(retval.begin(), retval.end(), n);
+                    if (found_out == retval.end() || *found_out != n) {
+                        retval.insert(found_out, n);
                     }
                 }
             }
         }
-        return false;
+        return retval;
     }
 
     /*
@@ -132,14 +136,18 @@ namespace {
     */
     std::string part_2(const std::filesystem::path &input_dir) {
         const auto input = get_input(input_dir);
+        const auto air = find_air(input);
         const auto dirs = get_cardinal_directions<3>();
         int free_faces = 0;
         for (const auto& p : input) {
             for (const auto& d : dirs) {
                 const auto n = p + d;
                 const auto found = std::lower_bound(input.begin(), input.end(), n);
-                if ((found == input.end() || *found != n) && can_get_free(input, n)) {
-                    ++free_faces;
+                if ((found == input.end() || *found != n)) {
+                    const auto is_air = std::lower_bound(air.begin(), air.end(), n);
+                    if (is_air != air.end() && n == *is_air) {
+                        ++free_faces;
+                    }
                 }
             }
         }
