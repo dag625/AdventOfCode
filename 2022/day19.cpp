@@ -62,9 +62,8 @@ namespace {
         std::array<resource, 4> resources{};
         int minute = 24;
 
-        struct init{};
         status() = default;
-        explicit status(init) { resources[ORE_R_IDX].rate = 1; }
+        explicit status(int start_minutes) : minute{start_minutes} { resources[ORE_R_IDX].rate = 1; }
 
         std::strong_ordering operator<=>(const status& rhs) const noexcept {
             const auto rval = std::lexicographical_compare_three_way(resources.begin(), resources.end(),
@@ -85,61 +84,57 @@ namespace {
         }
     }
 
-    std::optional<status> check_build(const blueprint& bp, const status& current, const int idx) {
-        status next = current;
-        if (idx == NONE_R_IDX) {
-            --next.minute;
-            if (next.minute <= 0) {
-                return std::nullopt;
-            }
-            mine(next);
-            return next;
-        }
-        int time_to_build = -1;
-        bool missing_resource = false;
-        for (int i = 0; i < bp[idx].size(); ++i) {
-            if (bp[idx][i] != 0) {
-                int time_for_res = -1;
-                if (current.resources[i].rate > 0) {
-                    if (current.resources[i].total >= bp[idx][i]) {
-                        time_for_res = 1;
-                    }
-                    else {
-                        const int needed = bp[idx][i] - current.resources[i].total;
-                        const auto res = std::div(needed, current.resources[i].rate);
-                        time_for_res = res.quot + (res.rem > 0 ? 1 : 0);
+    int time_to_build(const blueprint& bp, const status& current, const int idx) {
+        int longest = -1;
+        for (int r = 0; r < bp[idx].size(); ++r) {
+            if (bp[idx][r] != 0) {
+                if (current.resources[r].rate == 0) {
+                    return -1;
+                }
+                else if (current.resources[r].total >= bp[idx][r]) {
+                    if (longest < 0) {
+                        longest = 0;
                     }
                 }
                 else {
-                    missing_resource = true;
-                    break;
+                    const int needed = bp[idx][r] - current.resources[r].total;
+                    const auto div = std::div(needed, current.resources[r].rate);
+                    const auto time = div.quot + (div.rem != 0 ? 1 : 0);
+                    if (time > longest) {
+                        longest = time;
+                    }
                 }
-                if (time_for_res >= 0 && time_for_res > time_to_build) {
-                    time_to_build = time_for_res;
-                }
             }
         }
-        if (!missing_resource && (next.minute - time_to_build) > 0) {
-            next.minute -= time_to_build;
-            for (int i = 0; i < time_to_build; ++i) {
-                mine(next);
-            }
-            ++next.resources[idx].rate;
-            for (int i = 0; i < bp[idx].size(); ++i) {
-                next.resources[i].total -= bp[idx][i];
-            }
-            return next;
+        return longest;
+    }
+
+    void build(const blueprint& bp, status& current, const int idx) {
+        for (int r = 0; r < bp[idx].size(); ++r) {
+            current.resources[r].total -= bp[idx][r];
         }
-        else if (!missing_resource) {
-            while (next.minute > 0) {
-                mine(next);
-                --next.minute;
-            }
-            return next;
-        }
-        else {
+    }
+
+    std::optional<status> check_build(const blueprint& bp, const status& current, const int idx) {
+        auto next = current;
+        const auto ttb = time_to_build(bp, next, idx);
+        if (ttb < 0) {
             return std::nullopt;
         }
+        else if (ttb > 0) {
+            next.minute -= ttb;
+            for (int i = 0; i < ttb; ++i) {
+                mine(next);
+            }
+        }
+        build(bp, next, idx);
+        mine(next);
+        --next.minute;
+        if (next.minute < 0) {
+            return std::nullopt;
+        }
+        ++next.resources[idx].rate;
+        return next;
     }
 
     int check_recursive_impl(const blueprint& bp, const status& current, std::map<status, int>& cache, const std::array<int, 3>& max_r, const int other_best, const int num_minutes) {
@@ -151,19 +146,23 @@ namespace {
             return 0;
         }
         int best = 0;
-        for (int i = NONE_R_IDX; i >= 0; --i) {
+        bool any_last = false;
+        for (int i = GEO_R_IDX; i >= 0; --i) {
             if (i < GEO_R_IDX && current.resources[i].rate >= max_r[i]) {
                 continue;
             }
             auto r = check_build(bp, current, i);
             if (r) {
+                any_last = true;
                 if (r->minute == 0) {
                     const int geo = r->resources[GEO_R_IDX].total;
+                    fmt::print("{:4}{:5}:  {:2} - {:2} - {:2} - {:2}\n", geo, "", r->resources[0].rate, r->resources[1].rate, r->resources[2].rate, r->resources[3].rate);
                     if (geo > best) {
                         best = geo;
                     }
                 }
                 else {
+                    fmt::print("*{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", r->resources[3].total, r->minute, r->resources[0].rate, r->resources[1].rate, r->resources[2].rate, r->resources[3].rate);
                     const int res = check_recursive_impl(bp, *r, cache, max_r, std::max(best, other_best), num_minutes);
                     if (res > best) {
                         best = res;
@@ -171,12 +170,21 @@ namespace {
                 }
             }
         }
+        if (!any_last) {
+            auto check = current;
+            while (check.minute > 0) {
+                mine(check);
+                --check.minute;
+            }
+            best = check.resources[GEO_R_IDX].total;
+            fmt::print("-{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", check.resources[3].total, check.minute, check.resources[0].rate, check.resources[1].rate, check.resources[2].rate, check.resources[3].rate);
+        }
         cache[current] = best;
         return best;
     }
 
     int check_recursive(const blueprint& bp, const int num_minutes) {
-        status start {status::init{}};
+        status start {num_minutes};
         std::array<int, 3> max_r{};
         max_r[ORE_M_IDX] = std::max_element(bp.begin(), bp.end(), [](const std::array<int, 3>& a, const std::array<int, 3>& b){ return a[ORE_R_IDX] < b[ORE_R_IDX]; })->at(0);
         max_r[CLAY_M_IDX] = bp[OBSDN_R_IDX][CLAY_M_IDX];
@@ -193,9 +201,12 @@ namespace {
         auto input = get_input(input_dir);
         int result = 0;
         for (int id = 1; id <= input.size(); ++id) {
-            result += check_recursive(input[id - 1], 24) * id;
+            const auto res = check_recursive(input[id - 1], 24);
+            result += res * id;
+            fmt::print("\n{} = {}\n\n***********************************************************************************\n\n", id, res);
         }
         return std::to_string(result);
+        //1045 too low
     }
 
     /*
@@ -220,6 +231,7 @@ namespace {
             for (int id = 1; id <= input.size(); ++id) {
                 const auto res = check_recursive(input[id - 1], 24);
                 result += res * id;
+                fmt::print("\n{} = {}\n\n***********************************************************************************\n\n", id, res);
             }
             CHECK_EQ(result, 33);
         }
