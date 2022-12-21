@@ -160,13 +160,13 @@ namespace {
                 any_last = true;
                 if (r->minute == 0) {
                     const int geo = r->resources[GEO_R_IDX].total;
-                    fmt::print("{:4}{:5}:  {:2} - {:2} - {:2} - {:2}\n", geo, "", r->resources[0].rate, r->resources[1].rate, r->resources[2].rate, r->resources[3].rate);
+                    //fmt::print("{:4}{:5}:  {:2} - {:2} - {:2} - {:2}\n", geo, "", r->resources[0].rate, r->resources[1].rate, r->resources[2].rate, r->resources[3].rate);
                     if (geo > best) {
                         best = geo;
                     }
                 }
                 else {
-                    fmt::print("*{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", r->resources[3].total, r->minute, r->resources[0].rate, r->resources[1].rate, r->resources[2].rate, r->resources[3].rate);
+                    //fmt::print("*{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", r->resources[3].total, r->minute, r->resources[0].rate, r->resources[1].rate, r->resources[2].rate, r->resources[3].rate);
                     const int res = check_recursive_impl(bp, *r, max_r, std::max(best, other_best), num_minutes);
                     if (res > best) {
                         best = res;
@@ -181,7 +181,7 @@ namespace {
                 --check.minute;
             }
             best = check.resources[GEO_R_IDX].total;
-            fmt::print("-{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", check.resources[3].total, check.minute, check.resources[0].rate, check.resources[1].rate, check.resources[2].rate, check.resources[3].rate);
+            //fmt::print("-{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", check.resources[3].total, check.minute, check.resources[0].rate, check.resources[1].rate, check.resources[2].rate, check.resources[3].rate);
         }
         return best;
     }
@@ -208,16 +208,21 @@ namespace {
             fmt::print("\n{} = {}\n\n***********************************************************************************\n\n", id, res);
         }
         return std::to_string(result);
-        //1045 too low
     }
 
     /*
 
     */
     std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
-
-        return std::to_string(-1);
+        auto input = get_input(input_dir);
+        int result = 1;
+        for (int id = 1; id <= 3; ++id) {
+            const auto res = check_recursive(input[id - 1], 32);
+            result *= res;
+            fmt::print("\n{} = {}\n\n***********************************************************************************\n\n", id, res);
+        }
+        return std::to_string(result);
+        //9360 too low
     }
 
     aoc::registration r{2022, 19, part_1, part_2};
