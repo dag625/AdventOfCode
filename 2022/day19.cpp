@@ -70,7 +70,15 @@ namespace {
                                                            rhs.resources.begin(), rhs.resources.end(),
                                                            [](const resource& a, const resource& b){ return a.rate <=> b.rate; });
             if (rval == std::strong_ordering::equal) {
-                return minute <=> rhs.minute;
+                const auto tval = std::lexicographical_compare_three_way(resources.begin(), resources.end(),
+                                                                         rhs.resources.begin(), rhs.resources.end(),
+                                                                         [](const resource& a, const resource& b){ return a.total <=> b.total; });
+                if (tval == std::strong_ordering::equal) {
+                    return minute <=> rhs.minute;
+                }
+                else {
+                    return tval;
+                }
             }
             else {
                 return rval;
@@ -137,11 +145,7 @@ namespace {
         return next;
     }
 
-    int check_recursive_impl(const blueprint& bp, const status& current, std::map<status, int>& cache, const std::array<int, 3>& max_r, const int other_best, const int num_minutes) {
-        const auto found = cache.find(current);
-        if (found != cache.end()) {
-            return found->second;
-        }
+    int check_recursive_impl(const blueprint& bp, const status& current, const std::array<int, 3>& max_r, const int other_best, const int num_minutes) {
         if (other_best > current.resources[GEO_R_IDX].total + (current.minute * current.minute + current.minute) / 2) {
             return 0;
         }
@@ -163,7 +167,7 @@ namespace {
                 }
                 else {
                     fmt::print("*{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", r->resources[3].total, r->minute, r->resources[0].rate, r->resources[1].rate, r->resources[2].rate, r->resources[3].rate);
-                    const int res = check_recursive_impl(bp, *r, cache, max_r, std::max(best, other_best), num_minutes);
+                    const int res = check_recursive_impl(bp, *r, max_r, std::max(best, other_best), num_minutes);
                     if (res > best) {
                         best = res;
                     }
@@ -179,7 +183,6 @@ namespace {
             best = check.resources[GEO_R_IDX].total;
             fmt::print("-{:3} ({:2}):  {:2} - {:2} - {:2} - {:2}\n", check.resources[3].total, check.minute, check.resources[0].rate, check.resources[1].rate, check.resources[2].rate, check.resources[3].rate);
         }
-        cache[current] = best;
         return best;
     }
 
@@ -189,8 +192,7 @@ namespace {
         max_r[ORE_M_IDX] = std::max_element(bp.begin(), bp.end(), [](const std::array<int, 3>& a, const std::array<int, 3>& b){ return a[ORE_R_IDX] < b[ORE_R_IDX]; })->at(0);
         max_r[CLAY_M_IDX] = bp[OBSDN_R_IDX][CLAY_M_IDX];
         max_r[OBSDN_M_IDX] = bp[GEO_R_IDX][OBSDN_M_IDX];
-        std::map<status, int> cache;
-        const auto retval = check_recursive_impl(bp, start, cache, max_r, 0, num_minutes);
+        const auto retval = check_recursive_impl(bp, start, max_r, 0, num_minutes);
         return retval;
     }
 
