@@ -233,7 +233,7 @@ namespace {
                 "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.",
                 "Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian."
             };
-            auto input = lines | std::views::transform(parse_blueprint) | to<std::vector<blueprint>>();;
+            auto input = lines | std::views::transform(parse_blueprint) | to<std::vector<blueprint>>();
             int result = 0;
             for (int id = 1; id <= input.size(); ++id) {
                 const auto res = check_recursive(input[id - 1], 24);
@@ -241,6 +241,47 @@ namespace {
                 fmt::print("\n{} = {}\n\n***********************************************************************************\n\n", id, res);
             }
             CHECK_EQ(result, 33);
+
+            input = lines | std::views::transform(parse_blueprint) | to<std::vector<blueprint>>();
+            const auto res1 = check_recursive(input[0], 32);
+            CHECK_EQ(res1, 56);
+            const auto res2 = check_recursive(input[1], 32);
+            CHECK_EQ(res2, 62);
+        }
+
+        TEST_CASE("2022_day19:build_time") {
+            std::vector<std::string> lines {
+                    "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.",
+                    "Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian."
+            };
+            const auto bp = lines | std::views::transform(parse_blueprint) | to<std::vector<blueprint>>();
+            status current{24};
+            const auto r1 = time_to_build(bp[0], current, ORE_R_IDX);
+            CHECK_EQ(r1, 4);
+
+            const auto r2 = time_to_build(bp[1], current, ORE_R_IDX);
+            CHECK_EQ(r2, 2);
+
+            const auto r3 = time_to_build(bp[0], current, CLAY_R_IDX);
+            CHECK_EQ(r3, 2);
+
+            const auto r4 = time_to_build(bp[1], current, CLAY_R_IDX);
+            CHECK_EQ(r4, 3);
+
+            const auto r5 = time_to_build(bp[0], current, OBSDN_R_IDX);
+            CHECK_EQ(r5, -1);
+
+            current.resources[CLAY_M_IDX].rate = 1;
+            const auto r6 = time_to_build(bp[0], current, OBSDN_R_IDX);
+            CHECK_EQ(r6, 14);
+
+            current.resources[CLAY_M_IDX].rate = 7;
+            const auto r7 = time_to_build(bp[0], current, OBSDN_R_IDX);
+            CHECK_EQ(r7, 3);
+
+            current.resources[ORE_M_IDX].rate = 7;
+            const auto r8 = time_to_build(bp[0], current, OBSDN_R_IDX);
+            CHECK_EQ(r8, 3);
         }
     }
 
