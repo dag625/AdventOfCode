@@ -29,7 +29,7 @@ namespace aoc {
 
     std::optional<std::string_view> starts_with(std::string_view str, std::string_view to_find);
 
-    std::vector<std::string> read_file_lines(const std::filesystem::path& file);
+    std::vector<std::string> read_file_lines(const std::filesystem::path &file, bool need_trim = true);
     std::string read_file(const std::filesystem::path& file);
 
     template <typename T>

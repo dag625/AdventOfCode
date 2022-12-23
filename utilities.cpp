@@ -123,7 +123,7 @@ namespace aoc {
         }
     }
 
-    std::vector<std::string> read_file_lines(const fs::path& file) {
+    std::vector<std::string> read_file_lines(const fs::path& file, bool need_trim) {
         if (!fs::exists(file)) {
             throw std::runtime_error{"Can't read lines from file which doesn't exist."};
         }
@@ -134,7 +134,12 @@ namespace aoc {
         std::vector<std::string> input;
         std::ifstream in {file};
         while (std::getline(in, line)) {
-            input.push_back(std::move(trim(line)));
+            if (need_trim) {
+                input.push_back(std::move(trim(line)));
+            }
+            else {
+                input.push_back(std::move(line));
+            }
         }
         return input;
     }

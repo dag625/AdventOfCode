@@ -60,6 +60,18 @@ namespace aoc {
         return p -= v;
     }
 
+    inline position operator*(position p, int v) noexcept {
+        p.x *= v;
+        p.y *= v;
+        return p;
+    }
+
+    inline position operator/(position p, int v) noexcept {
+        p.x /= v;
+        p.y /= v;
+        return p;
+    }
+
     inline bool operator==(position a, position b) noexcept {
         return a.x == b.x && a.y == b.y;
     }
