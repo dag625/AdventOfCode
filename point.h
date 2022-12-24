@@ -13,6 +13,18 @@ namespace aoc {
     struct velocity {
         int dx = 0;
         int dy = 0;
+
+        velocity& operator*=(int v) noexcept {
+            dx += v;
+            dy += v;
+            return *this;
+        }
+
+        velocity& operator/=(int v) noexcept {
+            dx -= v;
+            dy -= v;
+            return *this;
+        }
     };
 
     inline bool operator==(velocity a, velocity b) noexcept {
@@ -69,6 +81,18 @@ namespace aoc {
     inline position operator/(position p, int v) noexcept {
         p.x /= v;
         p.y /= v;
+        return p;
+    }
+
+    inline velocity operator*(velocity p, int v) noexcept {
+        p.dx *= v;
+        p.dy *= v;
+        return p;
+    }
+
+    inline velocity operator/(velocity p, int v) noexcept {
+        p.dx /= v;
+        p.dy /= v;
         return p;
     }
 
