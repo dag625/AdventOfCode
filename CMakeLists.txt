@@ -135,7 +135,11 @@ add_executable(AdventOfCode
         2022/day22.cpp
         2022/day23.cpp
         2022/day24.cpp
-        2022/day25.cpp)
+        2022/day25.cpp
+        2016/day1.cpp
+        2016/day2.cpp
+        2016/day3.cpp
+        2016/day4.cpp)
 target_include_directories(AdventOfCode PRIVATE "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/boost/include")
 target_compile_definitions(AdventOfCode PRIVATE BOOST_IOSTREAMS_NO_LIB)
 target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL fmt)
