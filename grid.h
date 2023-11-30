@@ -345,10 +345,11 @@ namespace aoc {
                 iterator& operator+=(int n) noexcept { m_idx += n; return *this; }
                 iterator& operator-=(int n) noexcept { m_idx -= n; return *this; }
 
-                iterator operator+(int n) const noexcept { auto retval = *this; retval += n; return retval; }
-                iterator operator-(int n) const noexcept { auto retval = *this; retval -= n; return retval; }
+                iterator operator+(difference_type n) const noexcept { auto retval = *this; retval += n; return retval; }
+                iterator operator-(difference_type n) const noexcept { auto retval = *this; retval -= n; return retval; }
                 T& operator[](int n) const { return *(*this + n); }
 
+                difference_type operator-(const iterator& rhs) const noexcept { if (m_grid != rhs.m_grid || m_col != rhs.m_col) { return 0; } return m_idx - rhs.m_idx; }
                 difference_type operator-(const position_iterator& rhs) const noexcept { if (m_grid != rhs.m_grid) { return 0; } return m_idx - rhs.m_idx; }
             };
 
