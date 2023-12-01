@@ -22,6 +22,37 @@ namespace {
     using namespace std::string_view_literals;
 
     constexpr std::string_view DIGITS[] = { "zero"sv, "one"sv, "two"sv, "three"sv, "four"sv, "five"sv, "six"sv, "seven"sv, "eight"sv, "nine"sv };
+    constexpr std::string_view REPLACE[] = { "ze0ro"sv, "on1e"sv, "t2wo"sv, "th3ree"sv, "fo4ur"sv, "fi5ve"sv, "si6x"sv, "sev7en"sv, "ei8ght"sv, "ni9ne"sv };
+
+    //Begin alternate implementation
+
+    /*
+    This alternate implementation looks much nicer, but it doesn't perform quite as well in part 2.
+    The idea for it comes from Reddit.
+     */
+
+    std::string abc_to_digits(std::string_view s) {
+        std::string retval {s};
+        for (int i = 0; i < retval.size(); ++i) {
+            std::string_view sub {retval.begin() + i, retval.end()};
+            for (int d = 0; d < std::size(DIGITS); ++d) {
+                if (sub.starts_with(DIGITS[d])) {
+                    retval.replace(i, DIGITS[d].size(), REPLACE[d]);
+                    break;
+                }
+            }
+        }
+        return retval;
+    }
+
+    std::string digits_only(std::string_view s) {
+        return s | std::views::filter(&isdigit) | to<std::string>();
+    }
+
+    int first_last(std::string_view s) {
+        return static_cast<int>(s.front() - '0') * 10 + static_cast<int>(s.back() - '0');
+    }
+    //End alternate implementation
 
     bool is_digit(std::string_view s, std::string_view d) {
         const auto tmp = s.substr(0, d.size());
@@ -120,6 +151,7 @@ namespace {
     std::string part_1(const std::filesystem::path &input_dir) {
         const auto input = get_input(input_dir);
         const auto vals = input | std::views::transform(&parse_value) | to<std::vector<int>>();
+        //const auto vals = input | std::views::transform(&digits_only) | std::views::transform(&first_last) | to<std::vector<int>>();//Alternate implementation
         const auto sum = std::accumulate(vals.begin(), vals.end(), 0);
         return std::to_string(sum);
     }
@@ -144,6 +176,7 @@ namespace {
     std::string part_2(const std::filesystem::path &input_dir) {
         const auto input = get_input(input_dir);
         const auto vals = input | std::views::transform(&parse_abc_value) | to<std::vector<int>>();
+        //const auto vals = input | std::views::transform(&abc_to_digits) | std::views::transform(&digits_only) | std::views::transform(&first_last) | to<std::vector<int>>();//Alternate implementation
         const auto sum = std::accumulate(vals.begin(), vals.end(), 0);
         return std::to_string(sum);//30640, 43233
     }
