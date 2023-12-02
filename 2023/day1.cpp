@@ -62,7 +62,7 @@ namespace {
     std::pair<int, int> find_digit(std::string_view s) {
         const auto first = s.find_first_of("0123456789");
         const auto last = s.find_last_of("0123456789");
-        return {first, last};
+        return {static_cast<int>(first), static_cast<int>(last)};
     }
 
     int parse_value(std::string_view s) {
