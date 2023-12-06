@@ -46,14 +46,14 @@ namespace {
     }
 
     int64_t num_winning(const race& r) {
-        int64_t winning = 0;
-        for (int64_t i = 0; i < r.time; ++i) {
-            const int64_t d = distance(r, i);
-            if (d > r.dist) {
-                ++winning;
-            }
-        }
-        return winning;
+        //-h^2 + h*t - d
+        const auto sqrt = std::sqrt(r.time * r.time - 4 * r.dist);
+        const auto stop = static_cast<double>(r.time) / 2.0 + sqrt / 2.0;
+        const auto start = static_cast<double>(r.time) / 2.0 - sqrt / 2.0;
+        const auto istart = static_cast<int64_t>(std::ceil(start));
+        const auto istop = static_cast<int64_t>(std::floor(stop));
+        const auto total = istop - istart + 1;
+        return total;
     }
 
     int64_t digits(int64_t n) {
