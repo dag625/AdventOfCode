@@ -96,6 +96,10 @@ namespace aoc {
         return p;
     }
 
+    inline velocity operator-(velocity v) noexcept {
+        return {-v.dx, -v.dy};
+    }
+
     inline bool operator==(position a, position b) noexcept {
         return a.x == b.x && a.y == b.y;
     }
