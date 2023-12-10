@@ -97,27 +97,6 @@ namespace {
         }
     }
 
-    grid<char> expand(const grid<char>& g) {
-        grid<char> retval {g.num_rows() * 2 + 1, g.num_cols() * 2 + 1};
-        std::fill(retval.begin(), retval.end(), '.');
-        for (int x = 0; x < g.num_rows(); ++x) {
-            for (int y = 0; y < g.num_cols(); ++y) {
-                retval[position{2 * x + 1, 2 * y + 1}] = g[position{x, y}];
-            }
-        }
-        return retval;
-    }
-
-    grid<char> compress(const grid<char>& g) {
-        grid<char> retval {g.num_rows() / 2, g.num_cols() / 2};
-        for (int x = 0; x < retval.num_rows(); ++x) {
-            for (int y = 0; y < retval.num_cols(); ++y) {
-                retval[position{x, y}] = g[position{2 * x + 1, 2 * y + 1}];
-            }
-        }
-        return retval;
-    }
-
     /*
     --- Day 10: Pipe Maze ---
     You use the hang glider to ride the hot air from Desert Island all the way up to the floating metal island. This island is surprisingly cold and there definitely aren't any thermals to glide on, so you leave your hang glider behind.
@@ -338,7 +317,7 @@ namespace {
     Figure out whether you have time to search for the nest by calculating the area within the loop. How many tiles are enclosed by the loop?
     */
     std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = expand(get_input(input_dir));
+        const auto input = get_input(input_dir).expand_2x('.');
         position current{};
         for (const auto p : input.list_positions()) {
             if (input[p] == 'S') {
@@ -376,7 +355,7 @@ namespace {
         //inout.display(std::cout);
         fill(inout, position{});
         //inout.display(std::cout);
-        const auto result = compress(inout);
+        const auto result = inout.compress_2x();
         //result.display(std::cout);
         const auto num = std::count_if(result.begin(), result.end(), [](const char c){ return c != 'X' && c != 'O'; });
         return std::to_string(num);//756

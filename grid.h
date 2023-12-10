@@ -372,6 +372,27 @@ namespace aoc {
         [[nodiscard]] stride_span<const T> const_column_span(std::size_t col) noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
         [[nodiscard]] stride_span<const T> const_column_span(std::size_t col) const noexcept { return {m_data, col, static_cast<std::ptrdiff_t>(m_num_cols)}; }
 
+        [[nodiscard]] grid expand_2x(const T& fill_item) const {
+            grid retval {num_rows() * 2 + 1, num_cols() * 2 + 1};
+            std::fill(retval.begin(), retval.end(), fill_item);
+            for (int x = 0; x < num_rows(); ++x) {
+                for (int y = 0; y < num_cols(); ++y) {
+                    retval[position{2 * x + 1, 2 * y + 1}] = (*this)[position{x, y}];
+                }
+            }
+            return retval;
+        }
+
+        [[nodiscard]] grid compress_2x() const {
+            grid retval {num_rows() / 2, num_cols() / 2};
+            for (int x = 0; x < retval.num_rows(); ++x) {
+                for (int y = 0; y < retval.num_cols(); ++y) {
+                    retval[position{x, y}] = (*this)[position{2 * x + 1, 2 * y + 1}];
+                }
+            }
+            return retval;
+        }
+
         void display(std::ostream& os, std::optional<position> marked = std::nullopt, int col_width = 8) const {
             std::size_t idx = 0;
             os << std::setw(6) << std::left << (idx / m_num_cols);
