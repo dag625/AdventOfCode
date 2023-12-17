@@ -55,7 +55,6 @@ namespace {
         int x = 0;
         int y = 0;
         direction from_dir = direction::none;
-        int dist = 0;
 
         state() = default;
         state(position p) : x{p.x}, y{p.y} {}
@@ -68,7 +67,6 @@ namespace {
             if (from_dir != direction::up && from_dir != direction::down) {
                 for (int d = min_dist; d <= max_dist; ++d) {
                     state n = *this;
-                    n.dist = d;
                     n.from_dir = direction::up;
                     n.x += d;
                     if (g.in({n.x, n.y})) {
@@ -79,7 +77,6 @@ namespace {
             if (from_dir != direction::down && from_dir != direction::up) {
                 for (int d = min_dist; d <= max_dist; ++d) {
                     state n = *this;
-                    n.dist = d;
                     n.from_dir = direction::down;
                     n.x -= d;
                     if (g.in({n.x, n.y})) {
@@ -90,7 +87,6 @@ namespace {
             if (from_dir != direction::left && from_dir != direction::right) {
                 for (int d = min_dist; d <= max_dist; ++d) {
                     state n = *this;
-                    n.dist = d;
                     n.from_dir = direction::left;
                     n.y += d;
                     if (g.in({n.x, n.y})) {
@@ -101,7 +97,6 @@ namespace {
             if (from_dir != direction::right && from_dir != direction::left) {
                 for (int d = min_dist; d <= max_dist; ++d) {
                     state n = *this;
-                    n.dist = d;
                     n.from_dir = direction::right;
                     n.y -= d;
                     if (g.in({n.x, n.y})) {
@@ -117,7 +112,7 @@ namespace {
     };
 
     inline std::ostream& operator<<(std::ostream& os, const state& s) {
-        os << s.position() << " " << s.from_dir << "-" << s.dist;
+        os << s.position() << " " << s.from_dir;
         return os;
     }
 
