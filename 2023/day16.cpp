@@ -10,6 +10,7 @@
 #include <vector>
 #include <deque>
 #include <iostream>
+#include <future>
 
 #include "utilities.h"
 #include "grid.h"
@@ -251,33 +252,38 @@ namespace {
     std::string part_2(const std::filesystem::path &input_dir) {
         const auto input = get_input(input_dir);
         const auto tiles = to_tiles(input);
-        std::size_t max = 0;
+        //std::size_t max = 0;
         const int num_rows = static_cast<int>(tiles.num_rows()), num_cols = static_cast<int>(tiles.num_cols());
         const auto count_pred = [](const tile& t){ return t.energized; };
+        std::vector<std::future<int64_t>> results;
+        results.reserve(2 * (num_cols + num_rows));
         for (int r = 0; r < num_rows; ++r) {
-            const beam left {{r, -1}, {0, 1}}, right {{r, num_cols}, {0, -1}};
-            auto lt = tiles, rt = tiles;
-            beam_it(lt, left);
-            beam_it(rt, right);
-            if (const auto v = std::count_if(lt.begin(), lt.end(), count_pred); v > max) {
-                max = v;
-            }
-            if (const auto v = std::count_if(rt.begin(), rt.end(), count_pred); v > max) {
-                max = v;
-            }
+            results.push_back(std::async(std::launch::async, [&tiles, r, num_cols, &count_pred]() {
+                auto lt = tiles;
+                beam_it(lt, {{r, -1},
+                             {0, 1}});
+                return std::count_if(lt.begin(), lt.end(), count_pred);
+            }));
+            results.push_back(std::async(std::launch::async, [&tiles, r, num_cols, &count_pred](){
+                auto rt = tiles;
+                beam_it(rt, {{r, num_cols}, {0, -1}});
+                return std::count_if(rt.begin(), rt.end(), count_pred);
+            }));
         }
         for (int c = 0; c < num_cols; ++c) {
-            const beam top {{-1, c}, {1, 0}}, bottom {{num_rows, c}, {-1, 0}};
-            auto tt = tiles, bt = tiles;
-            beam_it(tt, top);
-            beam_it(bt, bottom);
-            if (const auto v = std::count_if(tt.begin(), tt.end(), count_pred); v > max) {
-                max = v;
-            }
-            if (const auto v = std::count_if(bt.begin(), bt.end(), count_pred); v > max) {
-                max = v;
-            }
+            results.push_back(std::async(std::launch::async, [&tiles, c, num_rows, &count_pred](){
+                auto tt = tiles;
+                beam_it(tt, {{-1, c}, {1, 0}});
+                return std::count_if(tt.begin(), tt.end(), count_pred);
+            }));
+            results.push_back(std::async(std::launch::async, [&tiles, c, num_rows, &count_pred](){
+                auto bt = tiles;
+                beam_it(bt, {{num_rows, c}, {-1, 0}});
+                return std::count_if(bt.begin(), bt.end(), count_pred);
+            }));
         }
+        const auto values = results | std::views::transform([](std::future<int64_t>& f){ return f.get(); }) | to<std::vector<int64_t>>();
+        const auto max = std::ranges::max(values);
         return std::to_string(max);
     }
 
