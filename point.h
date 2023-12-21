@@ -7,12 +7,16 @@
 
 #include <tuple>
 #include <iterator>
+#include <compare>
 
 namespace aoc {
 
     struct velocity {
         int dx = 0;
         int dy = 0;
+
+        [[nodiscard]] bool operator==(const velocity& rhs) const = default;
+        [[nodiscard]] auto operator<=>(const velocity& rhs) const = default;
 
         velocity& operator*=(int v) noexcept {
             dx += v;
@@ -27,17 +31,12 @@ namespace aoc {
         }
     };
 
-    inline bool operator==(velocity a, velocity b) noexcept {
-        return a.dx == b.dx && a.dy == b.dy;
-    }
-
-    inline bool operator!=(velocity a, velocity b) noexcept {
-        return a.dx != b.dx || a.dy != b.dy;
-    }
-
     struct position {
         int x = 0;
         int y = 0;
+
+        [[nodiscard]] bool operator==(const position& rhs) const = default;
+        [[nodiscard]] auto operator<=>(const position& rhs) const = default;
 
         position &operator+=(velocity v) noexcept {
             x += v.dx;
@@ -98,18 +97,6 @@ namespace aoc {
 
     inline velocity operator-(velocity v) noexcept {
         return {-v.dx, -v.dy};
-    }
-
-    inline bool operator==(position a, position b) noexcept {
-        return a.x == b.x && a.y == b.y;
-    }
-
-    inline bool operator!=(position a, position b) noexcept {
-        return a.x != b.x || a.y != b.y;
-    }
-
-    inline bool operator<(position a, position b) noexcept {
-        return std::tie(a.x, a.y) < std::tie(b.x, b.y);
     }
 
     inline position top_left() noexcept {
