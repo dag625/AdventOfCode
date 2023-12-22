@@ -121,15 +121,10 @@ namespace aoc {
 
     struct velocity3d : public velocity {
         int dz = 0;
+
+        [[nodiscard]] bool operator==(const velocity3d& rhs) const = default;
+        [[nodiscard]] auto operator<=>(const velocity3d& rhs) const = default;
     };
-
-    inline bool operator==(velocity3d a, velocity3d b) noexcept {
-        return a.dx == b.dx && a.dy == b.dy && a.dz == b.dz;
-    }
-
-    inline bool operator!=(velocity3d a, velocity3d b) noexcept {
-        return a.dx != b.dx || a.dy != b.dy || a.dz != b.dz;
-    }
 
     struct position3d : public position {
         int z = 0;
@@ -137,6 +132,11 @@ namespace aoc {
         position3d() = default;
         position3d(int x, int y, int z) : position{x, y}, z{z} {}
         position3d(position p) : position{p}, z{0} {}
+
+        [[nodiscard]] position project_xy() const { return {x, y}; }
+
+        [[nodiscard]] bool operator==(const position3d& rhs) const = default;
+        [[nodiscard]] auto operator<=>(const position3d& rhs) const = default;
 
         position3d &operator+=(velocity3d v) noexcept {
             x += v.dx;
@@ -167,14 +167,6 @@ namespace aoc {
 
     inline position3d operator-(position3d p, velocity3d v) noexcept {
         return p -= v;
-    }
-
-    inline bool operator==(position3d a, position3d b) noexcept {
-        return a.x == b.x && a.y == b.y && a.z == b.z;
-    }
-
-    inline bool operator!=(position3d a, position3d b) noexcept {
-        return a.x != b.x || a.y != b.y || a.z != b.z;
     }
 
     constexpr velocity3d STANDARD_3D_DIRECTIONS[] = {{1,  -1, 1},
