@@ -51,10 +51,12 @@ namespace aoc {
                 const auto start = std::chrono::system_clock::now();
                 md_tab(std::cout, md_fmt) << (c.func)(input_dir) << md_newline{md_fmt};
                 md_tab(std::cout, md_fmt) << "Challenge time:  " << time_to_string(std::chrono::system_clock::now() - start) << md_newline{md_fmt, true};
+                std::cout.flush();
             }
             catch (const std::exception& e) {
                 md_tab(std::cerr, md_fmt) << "Challenge for Year " << c.year << " - Day " << c.day << " - Challenge " << c.num <<
                     " failed due to an exception:  " << e.what() << md_newline{md_fmt, true};
+                std::cout.flush();
             }
         }
 
