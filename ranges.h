@@ -7,32 +7,15 @@
 
 #include <ranges>
 
-/*
- * This implementation is from https://stackoverflow.com/a/60971856.
- */
-
 namespace aoc {
 
-    namespace detail {
-        // Type acts as a tag to find the correct operator| overload
-        template <typename C>
-        struct to_helper {
-        };
+    /*
+     * We used to have our own implementation before the C++ standard added it to the
+     * STL.  Now that it's in the standard, we replace our version with theirs which
+     * is nicer.
+     */
 
-        // This actually does the work
-        template <typename Container, std::ranges::range R>
-        requires std::convertible_to<std::ranges::range_value_t<R>, typename Container::value_type>
-        Container operator|(R&& r, to_helper<Container>) {
-            return Container{r.begin(), r.end()};
-        }
-    }
-
-    // Couldn't find an concept for container, however a
-    // container is a range, but not a view.
-    template <typename Container>
-    auto to() {
-        return detail::to_helper<Container>{};
-    }
+    using std::ranges::to;
 
 } /* namespace aoc */
 

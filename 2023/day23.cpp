@@ -23,7 +23,7 @@ namespace {
     grid<char> get_input(const fs::path &input_dir) {
         const auto lines = read_file_lines(input_dir / "2023" / "day_23_input.txt");
         const auto row_len = lines.front().size();
-        return {lines | std::views::join | to<std::vector<char>>(), row_len};
+        return {lines | std::views::join | to<std::vector>(), row_len};
     }
 
     std::vector<position> get_neighbors_slopeless(position p, const grid<char>& g) {

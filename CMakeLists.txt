@@ -7,7 +7,7 @@ find_package(OpenSSL REQUIRED)
 
 include(doctest/cmake/doctest.cmake)
 
-add_subdirectory("fmt-8.0.1")
+add_subdirectory("fmt-10.1.1")
 
 add_executable(AdventOfCode
         main.cpp

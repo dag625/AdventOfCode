@@ -32,30 +32,36 @@ namespace {
             if (start <= src && start + length >= src + len) {
                 return src;
             }
-            //Given range is contained by this range
+                //Given range is contained by this range
             else if (start > src && start + length < src + len) {
                 return start;
             }
-            //Given range starts before and ends in this range
+                //Given range starts before and ends in this range
             else if (start < src && start + length > src && start + length <= src + len) {
                 return src;
             }
-            //Given range starts in and ends after this range
+                //Given range starts in and ends after this range
             else if (start >= src && start < src + len && start + length > src + len) {
                 return start;
             }
             return std::nullopt;
         }
 
-        bool operator<(const range& rhs) const noexcept {
+        bool operator<(const range &rhs) const noexcept {
             return dst < rhs.dst;
         }
     };
 
-    std::ostream& operator<<(std::ostream& os, const range& r) {
+    std::ostream &operator<<(std::ostream &os, const range &r) {
         os << r.src << " -> " << r.dst << " @ " << r.len;
         return os;
     }
+
+}
+
+template <> struct fmt::formatter<range> : ostream_formatter {};
+
+namespace {
 
     bool sort_by_dst(const range& lhs, const range& rhs) noexcept {
         return lhs.dst < rhs.dst;
@@ -395,8 +401,8 @@ namespace {
             auto total = pad_src(input.conversions.front());
             for (const auto& r : input.conversions | std::views::drop(1)) {
                 fmt::print("\nStep\n");
-                for (const auto& r : total) {
-                    fmt::print("{}\n", r);
+                for (const auto& t : total) {
+                    fmt::print("{}\n", t);
                 }
                 total = combine(total, r);
             }
