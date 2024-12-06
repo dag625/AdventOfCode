@@ -70,7 +70,7 @@ namespace aoc {
         return retval;
     }
 
-    std::vector<position> grid_dijkstra_get_path(const grid_dijkstra_result& result, const position start, const position stop) {
+    inline std::vector<position> grid_dijkstra_get_path(const grid_dijkstra_result& result, const position start, const position stop) {
         std::vector<position> reversed;
         position current = stop;
         while (current != start) {

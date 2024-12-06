@@ -120,7 +120,7 @@ namespace {
 
 
     /*
-     See https://adventofcode.com/2024/day/05
+     See https://adventofcode.com/2016/day/12
      */
 
     std::vector<instruction> get_input(const fs::path &input_dir) {
