@@ -80,22 +80,28 @@ namespace {
         return false;
     }
 
-    /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
-        auto current = find_start(input);
-        velocity dir {-1, 0};//Up, ^
+    std::vector<position> walk_out(const grid<char>& g, const position start, velocity dir) {
+        auto current = start;
         std::vector<position> visited;
-        while (input.in(current)) {
+        while (g.in(current)) {
             const auto pos = std::lower_bound(visited.begin(), visited.end(), current);
             if (pos == visited.end() || *pos != current) {
                 visited.insert(pos, current);
             }
 
-            const auto [new_pos, new_vel] = walk(input, current, dir);
+            const auto [new_pos, new_vel] = walk(g, current, dir);
             current = new_pos;
             dir = new_vel;
         }
+        return visited;
+    }
+
+    /************************* Part 1 *************************/
+    std::string part_1(const std::filesystem::path &input_dir) {
+        const auto input = get_input(input_dir);
+        auto current = find_start(input);
+        velocity dir {-1, 0};//Up, ^
+        std::vector<position> visited = walk_out(input, current, dir);
         return std::to_string(visited.size());
     }
 
@@ -104,15 +110,25 @@ namespace {
         const auto input = get_input(input_dir);
         const auto current = find_start(input);
         const velocity dir {-1, 0};//Up, ^
-        int num_good_blocks = 0;
-        for (const auto block : input.list_positions()) {
-            const char item = input[block];
-            if (item == '.') {
-                auto blocked = input;
-                blocked[block] = '#';
-                if (loops(blocked, current, dir)) {
-                    ++num_good_blocks;
+        std::vector<position> visited = walk_out(input, current, dir), to_check;
+        to_check.reserve(visited.size() * 4);
+        for (const auto pos : visited) {
+            for (const auto v : CARDINAL_DIRECTIONS) {
+                const auto cp = pos + v;
+                if (input[cp] == '.') {
+                    const auto found = std::lower_bound(to_check.begin(), to_check.end(), cp);
+                    if (found == to_check.end() || *found != cp) {
+                        to_check.insert(found, cp);
+                    }
                 }
+            }
+        }
+        int num_good_blocks = 0;
+        for (const auto block : to_check) {
+            auto blocked = input;
+            blocked[block] = '#';
+            if (loops(blocked, current, dir)) {
+                ++num_good_blocks;
             }
         }
         return std::to_string(num_good_blocks);
