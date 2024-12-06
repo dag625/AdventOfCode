@@ -39,6 +39,8 @@ add_executable(AdventOfCode
         letters.cpp
         letters.h
         grid_dijkstra.h
+        openssl_hash.cpp
+        openssl_hash.h
         2020/day1.cpp
         2020/day2.cpp
         2020/day3.cpp
@@ -152,6 +154,7 @@ add_executable(AdventOfCode
         2016/day11.cpp
         2016/day12.cpp
         2016/day13.cpp
+        2016/day14.cpp
         2023/day1.cpp
         2023/day2.cpp
         2023/day3.cpp
