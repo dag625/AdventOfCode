@@ -198,6 +198,22 @@ namespace aoc {
 
     static_assert(std::size(STANDARD_3D_DIRECTIONS) == 26, "Invalid number of 3D neighbors.");
 
+    constexpr velocity3d HEX_CUBE_DIRECTIONS[] = {{1, 0, -1},
+                                                  {1, -1, 0},
+                                                  {0, -1, 1},
+                                                  {-1, 0, 1},
+                                                  {-1, 1, 0},
+                                                  {0, 1, -1}};
+
+    inline int hex_dist(const position3d a, const position3d b) noexcept {
+        const auto dist = a - b;
+        return (std::abs(dist.x) + std::abs(dist.y) + std::abs(dist.z)) / 2;
+    }
+
+    inline int hex_dist_from_origin(const position3d a) noexcept {
+        return (std::abs(a.x) + std::abs(a.y) + std::abs(a.z)) / 2;
+    }
+
 } /* namespace aoc */
 
 #endif //ADVENTOFCODE_POINT_H
