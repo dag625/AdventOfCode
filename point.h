@@ -18,6 +18,18 @@ namespace aoc {
         [[nodiscard]] bool operator==(const velocity& rhs) const = default;
         [[nodiscard]] auto operator<=>(const velocity& rhs) const = default;
 
+        velocity& operator+=(velocity v) noexcept {
+            dx += v.dx;
+            dy += v.dy;
+            return *this;
+        }
+
+        velocity& operator-=(velocity v) noexcept {
+            dx -= v.dx;
+            dy -= v.dy;
+            return *this;
+        }
+
         velocity& operator*=(int v) noexcept {
             dx += v;
             dy += v;
@@ -124,6 +136,20 @@ namespace aoc {
 
         [[nodiscard]] bool operator==(const velocity3d& rhs) const = default;
         [[nodiscard]] auto operator<=>(const velocity3d& rhs) const = default;
+
+        velocity3d& operator+=(velocity3d v) noexcept {
+            dx += v.dx;
+            dy += v.dy;
+            dz += v.dz;
+            return *this;
+        }
+
+        velocity3d& operator-=(velocity3d v) noexcept {
+            dx -= v.dx;
+            dy -= v.dy;
+            dz -= v.dz;
+            return *this;
+        }
     };
 
     struct position3d : public position {

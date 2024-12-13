@@ -29,12 +29,19 @@ namespace {
         velocity3d vel;
         velocity3d acc;
 
-        auto acceleration() const {
+        [[nodiscard]] auto acceleration() const {
             const auto x = std::abs(acc.dx);
             const auto y = std::abs(acc.dy);
             const auto z = std::abs(acc.dz);
             return std::sqrt(x*x + y*y + z*z);
         }
+
+        void step() {
+            vel += acc;
+            pos += vel;
+        }
+
+        bool operator==(const particle& rhs) const { return pos == rhs.pos; }
     };
 
     particle parse_part(std::string_view s) {
@@ -49,33 +56,21 @@ namespace {
         return lines | std::views::transform(&parse_part) | std::ranges::to<std::vector>();
     }
 
-    std::optional<std::pair<double, double>> solve(const int x0, const int x1, const int v0, const int v1, const int a0, const int a1) {
-        const auto c = x0 - x1;
-        const auto b = v0 - v1;
-        const auto a = a0 - a1;
-        const auto bot = 2 * a;
-        if (bot == 0) {
-            if (b == 0) {
-                return std::pair{0.0, 0.0}; //Stationary
-            }
-            else {
-                return std::pair{static_cast<double>(c) / b, static_cast<double>(c) / b}; //Non-quadratic
+    void simulate(std::vector<particle>& atoms) {
+        std::for_each(atoms.begin(), atoms.end(), [](particle& a){ a.step(); });
+        std::vector<int> dels;
+        for (int i = 0; i < atoms.size(); ++i) {
+            for (int j = i + 1; j < atoms.size(); ++j) {
+                if (atoms[i] == atoms[j]) {
+                    dels.push_back(i);
+                    dels.push_back(j);
+                }
             }
         }
-        const auto top_sqrt_body = b * b - 4 * a * c;
-        if (top_sqrt_body < 0) {
-            return std::nullopt; //Only complex solutions
-        }
-        const auto top_sqrt = std::sqrt(top_sqrt_body);
-        return std::pair{(top_sqrt - b) / bot, (-top_sqrt - b) / bot};
-    }
-
-    void solve(const particle& a, const particle& b) {
-        const auto xts = solve(a.pos.x, b.pos.x, a.vel.dx, b.vel.dx, a.acc.dx, b.acc.dx);
-        const auto yts = solve(a.pos.y, b.pos.y, a.vel.dy, b.vel.dy, a.acc.dy, b.acc.dy);
-        const auto zts = solve(a.pos.z, b.pos.z, a.vel.dz, b.vel.dz, a.acc.dz, b.acc.dz);
-        if (xts && yts && zts) {
-            //fmt::println("Yay");
+        std::sort(dels.begin(), dels.end(), std::greater<>{});
+        dels.erase(std::unique(dels.begin(), dels.end()), dels.end());
+        for (const int idx : dels) {
+            atoms.erase(atoms.begin() + idx);
         }
     }
 
@@ -89,13 +84,12 @@ namespace {
 
     /************************* Part 2 *************************/
     std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
-
-        particle a {{-6,0,0}, {3,0,0}, {1,0,0}};
-        particle b {{-4,0,0}, {2,0,0}, {1,0,0}};
-
-        solve(a, b);
-        return std::to_string(-1);
+        auto input = get_input(input_dir);
+        //1000 is just a stab in the dark.  10000 returned the same result, so this is probably fine.
+        for (int i = 0; i < 1000; ++i) {
+            simulate(input);
+        }
+        return std::to_string(input.size());
     }
 
     aoc::registration r{2017, 20, part_1, part_2};
