@@ -114,6 +114,29 @@ namespace aoc {
         return splited;
     }
 
+    std::vector<std::string_view> split_by_all(std::string_view s, std::string_view spl) {
+        std::vector<std::string_view> retval;
+        if (s.empty()) {
+            return retval;
+        }
+        std::string::size_type pos = s.find_first_of(spl, 0), start = 0;
+        while (pos != std::string::npos) {
+            retval.emplace_back(s.data() + start, pos - start);
+            start = pos + 1;
+            pos = s.find_first_of(spl, start);
+        }
+        retval.emplace_back(s.data() + start, s.size() - start);
+        return retval;
+    }
+
+    std::vector<std::string_view> split_by_all_no_empty(std::string_view s, std::string_view spl) {
+        auto splited = split_by_all(s, spl);
+        splited.erase(std::remove_if(splited.begin(), splited.end(),
+                                     [](const std::string_view sv){ return sv.empty(); }),
+                      splited.end());
+        return splited;
+    }
+
     std::optional<std::string_view> starts_with(std::string_view str, std::string_view to_find) {
         if (str.find(to_find) == 0) {
             return str.substr(to_find.size());
