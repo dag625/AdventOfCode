@@ -38,6 +38,10 @@ namespace aoc {
         grid(std::vector<T> data, std::size_t row_len) :
                 m_data{check_data(std::move(data), row_len)}, m_num_cols{row_len}, m_num_rows{m_data.size() / m_num_cols} {}
 
+        bool operator==(const grid<T>& rhs) const { return m_num_cols == rhs.m_num_cols && std::equal(m_data.begin(), m_data.end(), rhs.m_data.begin(), rhs.m_data.end()); }
+
+        const std::vector<T>& data() const { return m_data; }
+
         [[nodiscard]] std::optional<position> wrap(position p) const noexcept {
             if (p.x < 0 || p.x >= m_num_rows) {
                 //False if we are vertically outside the map.
@@ -131,6 +135,60 @@ namespace aoc {
                 }
                 for (auto& v : retval.column_span(retval.num_cols() - 1 - i)) {
                     v = fill_val;
+                }
+            }
+            return retval;
+        }
+
+        [[nodiscard]] grid<T> rotate(bool clockwise = true) const {
+            return clockwise ? rotate_cw() : rotate_ccw();
+        }
+
+        [[nodiscard]] grid<T> rotate_cw() const {
+            grid<T> retval = *this;
+            auto rot = [this](position p){ return position{p.y, static_cast<int>(num_cols())-p.x-1}; };
+            for (const auto p : this->list_positions()) {
+                retval[rot(p)] = this->at(p);
+            }
+            return retval;
+        }
+
+        [[nodiscard]] grid<T> rotate_ccw() const {
+            grid<T> retval = *this;
+            auto rot = [this](position p){ return position{static_cast<int>(num_rows())-p.y-1, p.x}; };
+            for (const auto p : this->list_positions()) {
+                retval[rot(p)] = this->at(p);
+            }
+            return retval;
+        }
+
+        [[nodiscard]] grid<T> flip(bool horizontal = true) const {
+            return horizontal ? flip_horizontal() : flip_vertical();
+        }
+
+        [[nodiscard]] grid<T> flip_horizontal() const {
+            grid<T> retval = *this;
+            auto flip = [this](position p){ return position{p.x, static_cast<int>(num_cols()) - p.y - 1}; };
+            for (const auto p : this->list_positions()) {
+                retval[flip(p)] = this->at(p);
+            }
+            return retval;
+        }
+
+        [[nodiscard]] grid<T> flip_vertical() const {
+            grid<T> retval = *this;
+            auto flip = [this](position p){ return position{static_cast<int>(num_rows()) - p.x - 1, p.y}; };
+            for (const auto p : this->list_positions()) {
+                retval[flip(p)] = this->at(p);
+            }
+            return retval;
+        }
+
+        [[nodiscard]] grid<T> subgrid(position origin, position size) const {
+            grid<T> retval {static_cast<std::size_t>(size.x), static_cast<std::size_t>(size.y)};
+            for (int r = 0; r < size.x; ++r) {
+                for (int c = 0; c < size.y; ++c) {
+                    retval[r][c] = this->at(origin.x + r, origin.y + c);
                 }
             }
             return retval;
