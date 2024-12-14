@@ -167,23 +167,26 @@ namespace {
     std::string part_2(const std::filesystem::path &input_dir) {
         const auto input = get_input(input_dir);
         /*
+         * ANALYSIS OF INPUT PROGRAM:
+         * Note:  INCR is the increment of the 2nd to last instruction from the input
          * e is incremented until it equals b, at which point d is incremented
-         * when d and e are equal to b, b is incremented by 17 and f is set to 1
+         * when d and e are equal to b, b is incremented by INCR and f is set to 1
          * program stops when b, c, d, and e are equal
          * f is set to 0 when d * e == b
          * f is set to 1 when b is incremented (after all other increment operations)
          * g is set to 0 when b is incremented (b == d == e)
          * h is incremented when f and g are 0
          * -> h is incremented when b is non-prime and incremented
-         * --> h = # of non-prime numbers between the inital b and c, incrementing by 17, inclusive of c
+         * --> h = # of non-prime numbers between the inital b and c, incrementing by INCR, inclusive of c
          */
+        const auto incr = -std::get<int64_t>(std::get<sub_ins>(input[input.size() - 2]).op2);
         state s{};
         s.registers[0] = 1;
         while (s.ip >= 0 && s.ip < input.size() && s.ip < 8) {
             std::visit([&s](const auto& ins){ ins.run1(s); }, input[s.ip]);
         }
         int h = 0;
-        for (int64_t val = s.registers[1]; val <= s.registers[2]; val += 17) {
+        for (int64_t val = s.registers[1]; val <= s.registers[2]; val += incr) {
             h += static_cast<int>(is_non_prime(val));
         }
         return std::to_string(h);
