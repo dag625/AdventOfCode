@@ -115,7 +115,6 @@ namespace {
             //Flagged, reverse
             current.dir = {-current.dir.dx, -current.dir.dy};
             cfound->level = Clean;
-            infected.erase(cfound);
         }
         else {
             //Clean, turn left
