@@ -188,6 +188,7 @@ add_executable(AdventOfCode
         2017/day19.cpp
         2017/day20.cpp
         2017/day21.cpp
+        2017/day22.cpp
         2023/day1.cpp
         2023/day2.cpp
         2023/day3.cpp
