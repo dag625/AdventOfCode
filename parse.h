@@ -24,6 +24,12 @@ namespace aoc {
         return val;
     }
 
+    //Convenience functions:
+    inline int parse32(std::string_view s) { return parse<int>(s); }
+    inline int64_t parse64(std::string_view s) { return parse<int64_t>(s); }
+    inline uint32_t parseu32(std::string_view s) { return parse<uint32_t>(s); }
+    inline uint64_t parseu64(std::string_view s) { return parse<uint64_t>(s); }
+
     template <typename T>
     T parse_allow_plus(std::string_view s, int base = 10) {
         if (s.starts_with('+')) {
