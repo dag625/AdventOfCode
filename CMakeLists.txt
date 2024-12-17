@@ -40,6 +40,7 @@ add_executable(AdventOfCode
         letters.cpp
         letters.h
         grid_dijkstra.h
+        grid_dir_dijkstra.h
         openssl_hash.cpp
         openssl_hash.h
         2020/day1.cpp
@@ -235,7 +236,8 @@ add_executable(AdventOfCode
         2024/day12.cpp
         2024/day13.cpp
         2024/day14.cpp
-        2024/day15.cpp)
+        2024/day15.cpp
+        2024/day16.cpp)
 target_include_directories(AdventOfCode PRIVATE "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/boost/include")
 target_compile_definitions(AdventOfCode PRIVATE BOOST_IOSTREAMS_NO_LIB)
 target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL fmt)
