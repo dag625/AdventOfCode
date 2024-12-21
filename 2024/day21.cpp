@@ -187,9 +187,9 @@ namespace {
 
     struct cache_item {
         cache_key key;
-        std::string shortest;
+        int64_t shortest;
 
-        cache_item(cache_key k, std::string_view s) : key{std::move(k)}, shortest{s} {}
+        cache_item(cache_key k, int64_t l) : key{std::move(k)}, shortest{l} {}
 
         auto operator<=>(const cache_item& rhs) const { return key <=> rhs.key; }
         bool operator==(const cache_item& rhs) const { return key == rhs.key; }
@@ -229,26 +229,38 @@ namespace {
         return retval;
     }
 
-    std::string get_min_dir(std::string_view s, const int depth_remaining, std::vector<cache_item>& cache) {
+    int64_t get_min_dir(std::string_view s, const int depth_remaining, std::vector<cache_item>& cache) {
         const cache_key current {s, depth_remaining};
         const auto found = std::lower_bound(cache.begin(), cache.end(), current);
         if (found != cache.end() && *found == current) {
             return found->shortest;
         }
         else if (depth_remaining == 0) {
-            return std::string{s};
+            return static_cast<int64_t>(s.size());
         }
         else {
             std::vector<std::string> to_try = get_options(s, dirpad());
-            std::optional<std::string> best;
+            int64_t retval = std::numeric_limits<int64_t>::max();
             for (const auto& t : to_try) {
-                auto res = get_min_dir(t, depth_remaining - 1, cache);
-                if (!best || res.size() < best->size()) {
-                    best = std::move(res);
+                /*
+                 * We can't actually build the string for part 2 as it gets waaaaay too long.  So we need to content
+                 * ourselves with just finding the length.  And for that every sequence leading up to an 'A' is going
+                 * to independently contribute to the length.  So we split the string by the 'A's (leading to a set of
+                 * strings each ending in 'A'), find the length of each right to the end, and then sum the lengths of
+                 * the substrings together.  This also results in a much smaller cache space since each string past
+                 * the first level of recursion will be at most 6-ish characters, so things complete very quickly,
+                 */
+                const auto parts = split_with(t, 'A');
+                int64_t res = 0;
+                for (const auto& p : parts) {
+                    const auto part_res = get_min_dir(p, depth_remaining - 1, cache);
+                    res += part_res;
+                }
+                if (res < retval) {
+                    retval = res;
                 }
             }
-            auto retval = best.value_or("");
-            const cache_key ret_key {retval, depth_remaining};
+            const cache_key ret_key {s, depth_remaining};
             const auto found_ret = std::lower_bound(cache.begin(), cache.end(), ret_key);
             if (found_ret == cache.end() || *found_ret != ret_key) {
                 cache.emplace(found_ret, ret_key, retval);
@@ -257,17 +269,16 @@ namespace {
         }
     }
 
-    std::string get_min(std::string_view s, const int num_dir_pads) {
+    int64_t get_min(std::string_view s, const int num_dir_pads) {
         const auto num_pads = get_options(s, numpad());
-        std::optional<std::string> best;
+        int64_t retval = std::numeric_limits<int64_t>::max();
         std::vector<cache_item> cache;
         for (const auto& t : num_pads) {
-            auto res = get_min_dir(t, num_dir_pads, cache);
-            if (!best || res.size() < best->size()) {
-                best = std::move(res);
+            const auto res = get_min_dir(t, num_dir_pads, cache);
+            if (res < retval) {
+                retval = res;
             }
         }
-        auto retval = best.value_or("");
         return retval;
     }
 
@@ -283,7 +294,7 @@ namespace {
         for (const auto& nums : input) {
             const auto converted = get_min(nums, 2);
             const auto num = get_numpad_num(nums);
-            total += num * converted.size();
+            total += num * converted;
         }
         return std::to_string(total);
     }
@@ -295,7 +306,7 @@ namespace {
         for (const auto& nums : input) {
             const auto converted = get_min(nums, 25);
             const auto num = get_numpad_num(nums);
-            total += num * converted.size();
+            total += num * converted;
         }
         return std::to_string(total);
     }
@@ -316,8 +327,8 @@ namespace {
             for (const auto& nums : input) {
                 const auto converted = get_min(nums, 2);
                 const auto num = get_numpad_num(nums);
-                std::cout << fmt::format("{} ({}) -> ({}) {}", nums, num, converted.size(), converted) << std::endl;
-                total += num * converted.size();
+                std::cout << fmt::format("{} ({}) -> {}", nums, num, converted) << std::endl;
+                total += num * converted;
             }
             CHECK_EQ(total, 126384);
         }

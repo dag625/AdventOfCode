@@ -137,6 +137,40 @@ namespace aoc {
         return splited;
     }
 
+    std::vector<std::string_view> split_with(std::string_view s, char c, bool keep_empty_end) {
+        std::vector<std::string_view> retval;
+        if (s.empty()) {
+            return retval;
+        }
+        std::string::size_type pos = s.find(c, 0), start = 0;
+        while (pos != std::string::npos) {
+            retval.emplace_back(s.data() + start, pos - start + 1);
+            start = pos + 1;
+            pos = s.find(c, start);
+        }
+        if (start == s.size() && keep_empty_end) {
+            retval.emplace_back(s.data() + start, s.size() - start + 1);
+        }
+        return retval;
+    }
+
+    std::vector<std::string_view> split_with(std::string_view s, std::string_view spl, bool keep_empty_end) {
+        std::vector<std::string_view> retval;
+        if (s.empty()) {
+            return retval;
+        }
+        std::string::size_type pos = s.find(spl, 0), start = 0;
+        while (pos != std::string::npos) {
+            retval.emplace_back(s.data() + start, pos - start + spl.size());
+            start = pos + spl.size();
+            pos = s.find(spl, start);
+        }
+        if (start == s.size() && keep_empty_end) {
+            retval.emplace_back(s.data() + start, s.size() - start + spl.size());
+        }
+        return retval;
+    }
+
     std::optional<std::string_view> starts_with(std::string_view str, std::string_view to_find) {
         if (str.find(to_find) == 0) {
             return str.substr(to_find.size());

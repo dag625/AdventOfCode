@@ -30,6 +30,10 @@ namespace aoc {
     std::vector<std::string_view> split_by_all(std::string_view s, std::string_view spl);
     std::vector<std::string_view> split_by_all_no_empty(std::string_view s, std::string_view spl);
 
+    //Include the splitter at the end of each element
+    std::vector<std::string_view> split_with(std::string_view s, char c, bool keep_empty_end = false);
+    std::vector<std::string_view> split_with(std::string_view s, std::string_view spl, bool keep_empty_end = false);
+
     std::optional<std::string_view> starts_with(std::string_view str, std::string_view to_find);
 
     std::vector<std::string> read_file_lines(const std::filesystem::path &file, bool need_trim = true);
