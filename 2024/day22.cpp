@@ -68,43 +68,49 @@ namespace {
         return {std::move(prices), std::move(deltas)};
     }
 
-    using seq = std::array<int, 4>;
+    constexpr int SEQ_LEN = 4;
 
-    constexpr seq init_seq() {
-        return {-9, -9, -9, -9};
-    }
+    using seq = std::array<int, SEQ_LEN>;
 
-    constexpr void incr_seq(seq& s, int idx) {
-        ++s[idx];
-        if (idx != 0 && s[idx] == 10) {
-            s[idx] = -9;
-            incr_seq(s, idx - 1);
-        }
-    }
+    struct seq_info {
+        seq s{};
+        int num = 0;
 
-    constexpr void incr_seq(seq& s) {
-        incr_seq(s, 3);
-    }
+        auto operator<=>(const seq& rhs) const { return s <=> rhs; }
+        bool operator==(const seq& rhs) const { return s == rhs; }
+    };
 
-    constexpr bool is_max(seq& s) { return s[0] >= 10; }
-
-    int num_bananas(const price_info& info, const seq& s) {
+    std::vector<seq_info> find_sequences(const price_info& info) {
+        std::vector<seq_info> retval;
+        seq s{};
         for (int i = 0; i < info.second.size() - s.size() + 1; ++i) {
-            if (std::equal(info.second.begin() + i, info.second.begin() + i + static_cast<int>(s.size()), s.begin(), s.end())) {
-                return info.first[i + s.size()];
+            std::copy(info.second.begin() + i, info.second.begin() + i + static_cast<int>(s.size()), s.begin());
+            const auto found = std::lower_bound(retval.begin(), retval.end(), s);
+            if (found == retval.end() || *found != s) {
+                retval.emplace(found, s, info.first[i + s.size()]);
             }
         }
-        return 0;
+        return retval;
     }
 
-    int total_bananas(const std::vector<price_info>& info, const seq& s) {
-        return std::accumulate(info.begin(), info.end(), 0, [&s](int total, const price_info& i){ return total + num_bananas(i, s); });
+    int total_bananas(const std::vector<std::vector<seq_info>>& infos, const seq& s) {
+        return std::accumulate(infos.begin(), infos.end(), 0,
+                               [&s](int total, const std::vector<seq_info>& i)
+                {
+                    const auto found = std::lower_bound(i.begin(), i.end(), s);
+                    return total + (found != i.end() && *found == s ? found->num : 0);
+                });
     }
 
     int find_max_total_bananas(const std::vector<price_info>& info) {
+        const auto per_seller = info | std::views::transform(&find_sequences) | std::ranges::to<std::vector>();
+        auto all_seqs = per_seller | std::views::join | std::views::transform([](const seq_info& i){ return i.s; }) | std::ranges::to<std::vector>();
+        std::sort(all_seqs.begin(), all_seqs.end());
+        all_seqs.erase(std::unique(all_seqs.begin(), all_seqs.end()), all_seqs.end());
+
         int max = 0;
-        for (auto s = init_seq(); !is_max(s); incr_seq(s)) {
-            const auto res = total_bananas(info, s);
+        for (const auto& s : all_seqs) {
+            const auto res = total_bananas(per_seller, s);
             if (res > max) {
                 max = res;
             }
@@ -130,10 +136,19 @@ namespace {
 
     aoc::registration r{2024, 22, part_1, part_2};
 
-//    TEST_SUITE("2024_day22") {
-//        TEST_CASE("2024_day22:example") {
-//
-//        }
-//    }
+    TEST_SUITE("2024_day22") {
+        TEST_CASE("2024_day22:example") {
+            const std::vector<uint64_t> input {
+                    123,
+                    1,
+                    2,
+                    3,
+                    2024,
+            };
+            const auto prices = input | std::views::transform([](uint64_t v){ return get_deltas(v, 2000); }) | std::ranges::to<std::vector>();
+            const auto per_seller = prices | std::views::transform(&find_sequences) | std::ranges::to<std::vector>();
+
+        }
+    }
 
 } /* namespace <anon> */
