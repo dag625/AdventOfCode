@@ -42,14 +42,17 @@ namespace aoc {
             return nl.write(os);
         }
 
-        void run_challenge(const std::filesystem::path& input_dir, const challenge& c, bool md_fmt) {
+        void run_challenge(const std::filesystem::path& input_dir, const challenge& c, bool md_fmt, bool hide_answers) {
             try {
                 if (md_fmt) {
                     std::cout << "#### ";
                 }
                 std::cout << "Year " << c.year << " - Day " << c.day << " - Challenge " << c.num << md_newline{md_fmt, true};
                 const auto start = std::chrono::system_clock::now();
-                md_tab(std::cout, md_fmt) << (c.func)(input_dir) << md_newline{md_fmt};
+                const auto result = (c.func)(input_dir);
+                if (!hide_answers) {
+                    md_tab(std::cout, md_fmt) << (c.func)(input_dir) << md_newline{md_fmt};
+                }
                 md_tab(std::cout, md_fmt) << "Challenge time:  " << time_to_string(std::chrono::system_clock::now() - start) << md_newline{md_fmt, true};
                 std::cout.flush();
             }
@@ -112,7 +115,7 @@ namespace aoc {
         std::sort(m_challenges.begin(), m_challenges.end());
     }
 
-    void challenges::run_all(std::optional<int> y, std::optional<int> d, std::optional<int> n, const std::filesystem::path& input_dir, bool use_markdown_output_fmt) const noexcept {
+    void challenges::run_all(std::optional<int> y, std::optional<int> d, std::optional<int> n, const std::filesystem::path& input_dir, bool use_markdown_output_fmt, bool hide_answers) const noexcept {
         if (!y && (d || n)) {
             std::cerr << "Cannot specify day or challenge number without specifying the year.\n";
             return;
@@ -139,7 +142,7 @@ namespace aoc {
             end = std::upper_bound(m_challenges.begin(), m_challenges.end(), std::make_tuple(*y, *d, *n));
         }
         const auto start = std::chrono::system_clock::now();
-        std::for_each(begin, end, [&input_dir, use_markdown_output_fmt](const challenge& c) noexcept { run_challenge(input_dir, c, use_markdown_output_fmt); });
+        std::for_each(begin, end, [&input_dir, use_markdown_output_fmt, hide_answers](const challenge& c) noexcept { run_challenge(input_dir, c, use_markdown_output_fmt, hide_answers); });
         auto dur = std::chrono::system_clock::now() - start;
         if (use_markdown_output_fmt) {
             std::cout << "#### ";

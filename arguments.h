@@ -210,7 +210,7 @@ namespace aoc {
                 .set_not_present_callback([&value](){ value = false; });
             return *this;
         }
-        argument_parser& add_flag(char arg1, std::string_view& arg2, bool& value) {
+        argument_parser& add_flag(char arg1, std::string_view arg2, bool& value) {
             m_arguments.emplace_back(arg1, arg2, [&value](std::string_view s){ value = argument_boolean_parser::parse(s); })
                 .set_not_present_callback([&value](){ value = false; });
             return *this;
