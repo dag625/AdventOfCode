@@ -25,8 +25,7 @@ namespace {
      See https://adventofcode.com/2024/day/22
      */
 
-    std::vector<uint64_t> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_22_input.txt");
+    std::vector<uint64_t> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parseu64) | std::ranges::to<std::vector>();
     }
 
@@ -119,16 +118,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto secret2000 = input | std::views::transform([](uint64_t v){ return update(v, 2000); });
         const auto sum = std::accumulate(secret2000.begin(), secret2000.end(), 0ull);
         return std::to_string(sum);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto prices = input | std::views::transform([](uint64_t v){ return get_deltas(v, 2000); }) | std::ranges::to<std::vector>();
         const auto result = find_max_total_bananas(prices);
         return std::to_string(result);

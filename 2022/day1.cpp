@@ -20,8 +20,7 @@ namespace {
 
     using namespace aoc;
 
-    std::vector<int> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_1_input.txt");
+    std::vector<int> get_input(const std::vector<std::string>& lines) {
         std::vector<int> retval;
         retval.emplace_back();
         for (const auto& s : lines) {
@@ -73,8 +72,8 @@ namespace {
 
     Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int best = 0;
         for (const auto& elf : input) {
             if (elf > best) {
@@ -94,8 +93,8 @@ namespace {
 
     Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::array<int, 3> best{};
         for (const auto& elf : input) {
             if (elf > best[0]) {

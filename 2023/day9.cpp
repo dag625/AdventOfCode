@@ -26,8 +26,7 @@ namespace {
         return split_no_empty(s, ' ') | std::views::transform(&parse_num) | to<std::vector<int64_t>>();
     }
 
-    std::vector<std::vector<int64_t>> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_9_input.txt");
+    std::vector<std::vector<int64_t>> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_sequence) | to<std::vector<std::vector<int64_t>>>();
     }
 
@@ -112,8 +111,8 @@ namespace {
 
     Analyze your OASIS report and extrapolate the next value for each history. What is the sum of these extrapolated values?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (const auto& s : input) {
             const auto next = get_next(s, [](const std::vector<int64_t>& vs, int64_t delta){ return vs.back() + delta; });
@@ -141,8 +140,8 @@ namespace {
 
     Analyze your OASIS report again, this time extrapolating the previous value for each history. What is the sum of these extrapolated values?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (const auto& s : input) {
             const auto next = get_next(s, [](const std::vector<int64_t>& vs, int64_t delta){ return vs.front() - delta; });

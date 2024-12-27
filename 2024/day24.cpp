@@ -107,8 +107,7 @@ namespace {
         std::vector<gate> gates;
     };
 
-    input_data get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_24_input.txt");
+    input_data get_input(const std::vector<std::string>& lines) {
         const auto blank = std::find(lines.begin(), lines.end(), "");
         const auto num_wires = std::distance(lines.begin(), blank);
         return {lines | std::views::take(num_wires) | std::views::transform(&parse_wire) | std::ranges::to<std::vector>(),
@@ -365,16 +364,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto [wires, gates] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto [wires, gates] = get_input(lines);
         add_uninit_wires(wires, gates);
         const auto val = calc_value(wires, gates);
         return std::to_string(val);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto [wires, gates] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto [wires, gates] = get_input(lines);
         add_uninit_wires(wires, gates);
         auto result = check_adders(gates, wires);
         std::sort(result.begin(), result.end());

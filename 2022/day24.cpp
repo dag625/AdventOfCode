@@ -79,8 +79,7 @@ namespace {
         return retval;
     }
 
-    std::vector<blizzard> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_24_input.txt");
+    std::vector<blizzard> get_input(const std::vector<std::string>& lines) {
         return lines_to_input(lines);
     }
 
@@ -414,8 +413,8 @@ namespace {
     ######E#
     What is the fewest number of minutes required to avoid the blizzards and reach the goal?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto precomputed_blizzards = precompute(input, REPEAT_STATE_INTERVAL, WALL_X, WALL_Y);
         return std::to_string(find_path(precomputed_blizzards, 0, START_POS, GOAL_POS, WALL_X, WALL_Y));
     }
@@ -432,8 +431,8 @@ namespace {
 
     What is the fewest number of minutes required to reach the goal, go back to the start, then reach the goal again?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto precomputed_blizzards = precompute(input, REPEAT_STATE_INTERVAL, WALL_X, WALL_Y);
         int trip1 = find_path(precomputed_blizzards, 0, START_POS, GOAL_POS, WALL_X, WALL_Y);
         int trip2 = find_path(precomputed_blizzards, trip1, GOAL_POS, START_POS, WALL_X, WALL_Y);

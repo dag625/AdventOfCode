@@ -21,8 +21,7 @@ namespace {
 
     using namespace aoc;
 
-    std::vector<grid<char>> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_13_input.txt");
+    std::vector<grid<char>> get_input(const std::vector<std::string>& lines) {
         std::vector<grid<char>> retval;
         int start = 0;
         for (int i = 0; i < lines.size(); ++i) {
@@ -133,8 +132,8 @@ namespace {
     /*
 
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto sum = std::accumulate(input.begin(), input.end(), static_cast<int64_t>(0),
                                          [](int64_t tot, const grid<char>& g){ return tot + summarize(g, false); });
         return std::to_string(sum);
@@ -143,8 +142,8 @@ namespace {
     /*
 
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto sum = std::accumulate(input.begin(), input.end(), static_cast<int64_t>(0),
                                          [](int64_t tot, const grid<char>& g){ return tot + summarize(g, true); });
         return std::to_string(sum);

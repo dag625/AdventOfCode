@@ -39,8 +39,7 @@ namespace {
                 have_parts | std::views::transform(&basic_parse_int) | to<std::vector<int>>()};
     }
 
-    std::vector<card> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_4_input.txt");
+    std::vector<card> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_card) | to<std::vector<card>>();
     }
 
@@ -99,8 +98,8 @@ namespace {
 
     Take a seat in the large pile of colorful cards. How many points are they worth in total?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (const auto& c : input) {
             sum += score(c);
@@ -137,8 +136,8 @@ namespace {
 
     Process all of the original and copied scratchcards until no more scratchcards are won. Including the original set of scratchcards, how many total scratchcards do you end up with?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num_wins = input | std::views::transform(&get_num_winning) | to<std::vector<int>>();
         std::vector<int> count;
         count.resize(num_wins.size(), 1);

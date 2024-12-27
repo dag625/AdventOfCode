@@ -16,8 +16,8 @@ namespace {
 
     using namespace aoc;
 
-    std::string get_input(const std::filesystem::path& input_dir) {
-        return aoc::read_file(input_dir / "2015" / "day_3_input.txt");
+    std::string get_input(const std::vector<std::string>& lines) {
+		return lines.front();
     }
 
     velocity get_vel(char c) {
@@ -72,8 +72,8 @@ namespace {
     ^>v< delivers presents to 4 houses in a square, including twice to the house at his starting/ending location.
     ^v^v^v^v^v delivers a bunch of presents to some very lucky children at only 2 houses.
      */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto steps = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto steps = get_input(lines);
         return std::to_string(count_visits(calculate_visits(steps)));
     }
 
@@ -90,8 +90,8 @@ namespace {
     ^>v< now delivers presents to 3 houses, and Santa and Robo-Santa end up back where they started.
     ^v^v^v^v^v now delivers presents to 11 houses, with Santa going one direction and Robo-Santa going the other.
      */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto steps = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto steps = get_input(lines);
         return std::to_string(count_visits(calculate_alt_visits(steps)));
     }
 

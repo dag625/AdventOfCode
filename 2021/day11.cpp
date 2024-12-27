@@ -28,8 +28,7 @@ namespace {
         explicit octo(int8_t val) : value{val} {}
     };
 
-    grid<octo> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_11_input.txt");
+    grid<octo> get_input(const std::vector<std::string>& lines) {
         std::vector<octo> data;
         data.reserve(100);
         for (const auto& s : lines) {
@@ -364,8 +363,8 @@ namespace {
 
     Given the starting energy levels of the dumbo octopuses in your cavern, simulate 100 steps. How many total flashes are there after 100 steps?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         int num_flashes = 0;
         for (int i = 0; i < 100; ++i) {
             num_flashes += iterate(input);
@@ -416,8 +415,8 @@ namespace {
     0000000000
     If you can calculate the exact moments when the octopuses will all flash simultaneously, you should be able to navigate through the cavern. What is the first step during which all octopuses flash?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         int step = 1;
         while (iterate(input) < 100) { ++step; }
         return std::to_string(step);

@@ -18,8 +18,7 @@ namespace {
 
     using namespace aoc;
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_12_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         std::vector<char> data;
         data.reserve(lines.size() * lines[0].size());
         for (const auto& l : lines) {
@@ -101,8 +100,8 @@ namespace {
 
     What is the fewest steps required to move from your current position to the location that should get the best signal?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto [start, stop] = find_start_stop(input);
         const auto result = grid_dijkstra(input, start, &cost);
         return std::to_string(result[stop].cost); //429 too low
@@ -132,8 +131,8 @@ namespace {
 
     What is the fewest steps required to move starting from any square with elevation a to the location that should get the best signal?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto [start, stop] = find_start_stop(input);
         const auto result = grid_dijkstra(input, stop, &rev_cost);
         int64_t min_cost = std::numeric_limits<int64_t>::max();

@@ -18,10 +18,9 @@ namespace aoc2020 {
 
     namespace {
 
-        std::vector<int> get_input(const fs::path& input_dir) {
-            auto input = read_file_lines(input_dir / "2020" / "day_1_input.txt");
+        std::vector<int> get_input(const std::vector<std::string>& lines) {
             std::vector<int> values;
-            std::transform(input.begin(), input.end(), std::back_inserter(values), [](const std::string& s){ return std::stoi(s); });
+            std::transform(lines.begin(), lines.end(), std::back_inserter(values), [](const std::string& s){ return std::stoi(s); });
             return values;
         }
 
@@ -84,8 +83,8 @@ namespace aoc2020 {
 
     Of course, your expense report is much larger. Find the two entries that sum to 2020; what do you get if you multiply them together?
     */
-    std::string solve_day_1_1(const std::filesystem::path& input_dir) {
-        return solve_day_1(solve_day_1_1_impl, get_input(input_dir));
+    std::string solve_day_1_1(const std::vector<std::string>& lines) {
+        return solve_day_1(solve_day_1_1_impl, get_input(lines));
     }
 
     /*
@@ -95,8 +94,8 @@ namespace aoc2020 {
 
     In your expense report, what is the product of the three entries that sum to 2020?
     */
-    std::string solve_day_1_2(const std::filesystem::path& input_dir) {
-        return solve_day_1(solve_day_1_2_impl, get_input(input_dir));
+    std::string solve_day_1_2(const std::vector<std::string>& lines) {
+        return solve_day_1(solve_day_1_2_impl, get_input(lines));
     }
 
     static registration r {2020, 1, solve_day_1_1, solve_day_1_2};

@@ -126,8 +126,7 @@ namespace {
         return retval;
     }
 
-    std::vector<sue> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2015" / "day_16_input.txt");
+    std::vector<sue> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform([](std::string_view s){ return parse_sue(s); }) | to<std::vector<sue>>();
     }
 
@@ -164,8 +163,8 @@ namespace {
 
     What is the number of the Sue that got you the gift?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto found = std::find(input.begin(), input.end(), OUTPUT);
         if (found == input.end()) {
             throw std::runtime_error{fmt::format("Failed to find a matching Sue.")};
@@ -181,8 +180,8 @@ namespace {
 
     What is the number of the real Aunt Sue?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto found = std::find_if(input.begin(), input.end(), [](const sue& s){ return part_2_find(s, OUTPUT); });
         if (found == input.end()) {
             throw std::runtime_error{fmt::format("Failed to find a matching Sue.")};

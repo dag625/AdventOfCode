@@ -41,8 +41,7 @@ namespace {
         return retval;
     }
 
-    grid<spot> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_25_input.txt");
+    grid<spot> get_input(const std::vector<std::string>& lines) {
         return to_spots(to_grid(lines));
     }
 
@@ -359,8 +358,8 @@ namespace {
 
     Find somewhere safe to land your submarine. What is the first step on which no sea cucumbers move?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         //384 - too low
         return std::to_string(step_until_stopped(input));
     }

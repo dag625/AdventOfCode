@@ -53,8 +53,7 @@ namespace {
         }
     }
 
-    std::vector<reindeer> get_input(const std::filesystem::path& input_dir) {
-        auto lines = aoc::read_file_lines(input_dir / "2015" / "day_14_input.txt");
+    std::vector<reindeer> get_input(const std::vector<std::string>& lines) {
         std::vector<reindeer> retval;
         retval.reserve(lines.size());
         std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse);
@@ -91,8 +90,8 @@ namespace {
 
     Given the descriptions of each reindeer (in your puzzle input), after exactly 2503 seconds, what distance has the winning reindeer traveled?
      */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto deer = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto deer = get_input(lines);
         std::vector<int> dist;
         dist.reserve(deer.size());
         std::transform(deer.begin(), deer.end(), std::back_inserter(dist), [](const reindeer& r){ return distance_after(r, 2503); });
@@ -110,8 +109,8 @@ namespace {
 
     Again given the descriptions of each reindeer (in your puzzle input), after exactly 2503 seconds, how many points does the winning reindeer have?
      */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto racers = to_racers(get_input(input_dir));
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto racers = to_racers(get_input(lines));
         for (int i = 0; i < 2503; ++i) {
             int best = 0;
             racer* best_r = nullptr;

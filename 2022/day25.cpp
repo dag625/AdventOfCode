@@ -74,8 +74,7 @@ namespace {
         return digits | std::views::drop_while([](int64_t v){ return v == 0; }) | std::views::transform(to_char) | to<std::string>();
     }
 
-    std::vector<int64_t> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_25_input.txt");
+    std::vector<int64_t> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_num) | to<std::vector<int64_t>>();
     }
 
@@ -174,8 +173,8 @@ namespace {
 
     The Elves are starting to get cold. What SNAFU number do you supply to Bob's console?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto sum = std::accumulate(input.begin(), input.end(), 0ll);
         return to_snafu(sum);
     }

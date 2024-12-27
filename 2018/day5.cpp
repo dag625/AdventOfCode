@@ -22,8 +22,7 @@ namespace {
      See https://adventofcode.com/2018/day/5
      */
 
-    std::string get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2018" / "day_5_input.txt");
+    std::string get_input(const std::vector<std::string>& lines) {
         return lines.front();
     }
 
@@ -61,15 +60,15 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto reacted = collapse(input);
         return std::to_string(reacted.size());
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto best_len = find_best(input);
         return std::to_string(best_len);
     }

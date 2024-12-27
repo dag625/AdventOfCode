@@ -57,8 +57,7 @@ namespace {
         }
     }
 
-    std::vector<instruction> get_input(const std::filesystem::path& input_dir) {
-        auto lines = aoc::read_file_lines(input_dir / "2015" / "day_6_input.txt");
+    std::vector<instruction> get_input(const std::vector<std::string>& lines) {
         std::vector<instruction> retval;
         retval.reserve(lines.size());
         std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse);
@@ -138,8 +137,8 @@ namespace {
     turn off 499,499 through 500,500 would turn off (or leave off) the middle four lights.
     After following the instructions, how many lights are lit?
      */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto instrustions = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto instrustions = get_input(lines);
         grid<light> lights {1000,1000};
         for (const auto& ins : instrustions) {
             apply(lights, ins, act_1);
@@ -166,8 +165,8 @@ namespace {
     turn on 0,0 through 0,0 would increase the total brightness by 1.
     toggle 0,0 through 999,999 would increase the total brightness by 2000000.
      */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto instrustions = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto instrustions = get_input(lines);
         grid<light> lights {1000,1000};
         for (const auto& ins : instrustions) {
             apply(lights, ins, act_2);

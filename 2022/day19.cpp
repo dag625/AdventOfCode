@@ -48,8 +48,7 @@ namespace {
         return retval;
     }
 
-    std::vector<blueprint> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_19_input.txt");
+    std::vector<blueprint> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_blueprint) | to<std::vector<blueprint>>();
     }
 
@@ -361,8 +360,8 @@ namespace {
 
     Determine the quality level of each blueprint using the largest number of geodes it could produce in 24 minutes. What do you get if you add up the quality level of all of the blueprints in your list?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         int result = 0;
         for (int id = 1; id <= input.size(); ++id) {
             const auto res = check_recursive(input[id - 1], 24);
@@ -579,8 +578,8 @@ namespace {
 
     Don't worry about quality levels; instead, just determine the largest number of geodes you could open using each of the first three blueprints. What do you get if you multiply these numbers together?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         int result = 1;
         for (int id = 1; id <= 3; ++id) {
             const auto res = check_recursive(input[id - 1], 32);

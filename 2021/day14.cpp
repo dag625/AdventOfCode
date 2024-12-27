@@ -58,8 +58,7 @@ namespace {
         return {{parts[0][0], parts[0][1]}, {{parts[0][0], parts[1][0]}, {parts[1][0], parts[0][1]}}};
     }
 
-    std::pair<std::string, std::vector<mapping>> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_14_input.txt");
+    std::pair<std::string, std::vector<mapping>> get_input(const std::vector<std::string>& lines) {
         const std::string& start = lines.front();
 
         auto mappings = lines |
@@ -165,8 +164,8 @@ namespace {
 
     Apply 10 steps of pair insertion to the polymer template and find the most and least common elements in the result. What do you get if you take the quantity of the most common element and subtract the quantity of the least common element?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto [start, mappings] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [start, mappings] = get_input(lines);
         auto counts = init_counts(start);
         do_iterations(10, counts, mappings);
         const auto char_counts = get_char_counts(counts);
@@ -183,8 +182,8 @@ namespace {
 
     Apply 40 steps of pair insertion to the polymer template and find the most and least common elements in the result. What do you get if you take the quantity of the most common element and subtract the quantity of the least common element?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto [start, mappings] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [start, mappings] = get_input(lines);
         auto counts = init_counts(start);
         do_iterations(40, counts, mappings);
         const auto char_counts = get_char_counts(counts);

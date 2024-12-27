@@ -21,8 +21,7 @@ namespace {
 
     using namespace aoc;
 
-    std::string get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_15_input.txt");
+    std::string get_input(const std::vector<std::string>& lines) {
         return lines.front();
     }
 
@@ -140,8 +139,8 @@ namespace {
 
     Run the HASH algorithm on each step in the initialization sequence. What is the sum of the results? (The initialization sequence is one long line; be careful when copy-pasting it.)
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto steps = split(input, ',');
         const auto sum = std::accumulate(steps.begin(), steps.end(), static_cast<int64_t>(0),
                                          [](int64_t tot, std::string_view s){ return tot + do_hash(s); });
@@ -235,8 +234,8 @@ namespace {
 
     With the help of an over-enthusiastic reindeer in a hard hat, follow the initialization sequence. What is the focusing power of the resulting lens configuration?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto instructions = split(input, ',');
         hash_map map{};
         for (const auto& ins : instructions) {

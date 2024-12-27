@@ -32,8 +32,7 @@ namespace {
 
     std::string int64_to_string(int64_t v) { return std::to_string(v); }
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_21_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | to<std::vector<char>>(), row_len};
     }
@@ -166,8 +165,8 @@ namespace {
 
     Starting from the garden plot marked S on your map, how many garden plots could the Elf reach in exactly 64 steps?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto pos_list = input.list_positions();
         const auto found_start = std::find_if(pos_list.begin(), pos_list.end(), [&input](const position p){ return input[p] == 'S'; });
         std::vector<position> locations;
@@ -234,8 +233,8 @@ namespace {
     In exactly 5000 steps, he can reach 16733044 garden plots.
     However, the step count the Elf needs is much larger! Starting from the garden plot marked S on your infinite map, how many garden plots could the Elf reach in exactly 26501365 steps?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const int64_t NUM_STEPS = 26501365ll;
         const auto pos_list = input.list_positions();
         const auto found_start = std::find_if(pos_list.begin(), pos_list.end(), [&input](const position p){ return input[p] == 'S'; });

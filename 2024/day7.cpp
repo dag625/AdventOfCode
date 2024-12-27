@@ -38,8 +38,7 @@ namespace {
                 p2 | std::views::transform([](std::string_view v){ return parse<int64_t>(v); }) | std::ranges::to<std::vector>()};
     }
 
-    std::vector<equation> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_7_input.txt");
+    std::vector<equation> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_eq) | std::ranges::to<std::vector>();
     }
 
@@ -77,8 +76,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto vals = input | std::views::filter([](const equation& e){ return can_do_with_ops(e, OPS1); }) |
                           std::views::transform([](const equation& e){ return e.result; }) |
                           std::ranges::to<std::vector>();
@@ -87,8 +86,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto vals = input | std::views::filter([](const equation& e){ return can_do_with_ops(e, OPS2); }) |
                           std::views::transform([](const equation& e){ return e.result; }) |
                           std::ranges::to<std::vector>();

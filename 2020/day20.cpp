@@ -398,8 +398,7 @@ namespace aoc2020 {
             mark_monsters(g, col_monsters, get_mutable_col);
         }
 
-        std::vector<tile> get_input(const fs::path &input_dir) {
-            auto lines = read_file_lines(input_dir / "2020" / "day_20_input.txt");
+        std::vector<tile> get_input(const std::vector<std::string>& lines) {
             auto current = lines.begin();
             const auto end = lines.end();
             std::vector<tile> tiles;
@@ -591,8 +590,8 @@ namespace aoc2020 {
 
     Assemble the tiles into an image. What do you get if you multiply together the IDs of the four corner tiles?
     */
-    std::string solve_day_20_1(const std::filesystem::path& input_dir) {
-        auto tiles = get_input(input_dir);
+    std::string solve_day_20_1(const std::vector<std::string>& lines) {
+        auto tiles = get_input(lines);
         int64_t acc = 1;
         find_matching_borders(tiles);
         for (const auto& t : tiles) {
@@ -697,8 +696,8 @@ namespace aoc2020 {
 
     How many # are not part of a sea monster?
     */
-    std::string solve_day_20_2(const std::filesystem::path& input_dir) {
-        auto tiles = get_input(input_dir);
+    std::string solve_day_20_2(const std::vector<std::string>& lines) {
+        auto tiles = get_input(lines);
         find_matching_borders(tiles);
         int i = 0;
         while (i * i < tiles.size()) { ++i; }

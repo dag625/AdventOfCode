@@ -51,8 +51,7 @@ namespace {
                 {parse<int>(parts[6]), parse<int>(parts[7]), parse<int>(parts[8])}};
     }
 
-    std::vector<particle> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_20_input.txt");
+    std::vector<particle> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_part) | std::ranges::to<std::vector>();
     }
 
@@ -75,16 +74,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto accels = input | std::views::transform([](const particle& p){ return p.acceleration(); }) | std::ranges::to<std::vector>();
         const auto slowest = std::min_element(accels.begin(), accels.end());
         return std::to_string(std::distance(accels.begin(), slowest));
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         //1000 is just a stab in the dark.  10000 returned the same result, so this is probably fine.
         for (int i = 0; i < 1000; ++i) {
             simulate(input);

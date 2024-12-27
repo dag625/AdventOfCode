@@ -4,6 +4,7 @@
 
 #include "registration.h"
 #include "utilities.h"
+#include "ranges.h"
 
 #include <doctest/doctest.h>
 #include <nlohmann/json.hpp>
@@ -70,8 +71,8 @@ namespace {
         }
     }
 
-    nlohmann::json get_input(const std::filesystem::path& input_dir) {
-        return nlohmann::json::parse(aoc::read_file(input_dir / "2015" / "day_12_input.txt"));
+    nlohmann::json get_input(const std::vector<std::string>& lines) {
+        return nlohmann::json::parse(lines | std::views::join | std::ranges::to<std::string>());
     }
 
     /*
@@ -89,8 +90,8 @@ namespace {
 
     What is the sum of all numbers in the document?
      */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        return std::to_string(count_nums(get_input(input_dir)));
+    std::string part_1(const std::vector<std::string>& lines) {
+        return std::to_string(count_nums(get_input(lines)));
     }
 
     /*
@@ -103,8 +104,8 @@ namespace {
     {"d":"red","e":[1,2,3,4],"f":5} now has a sum of 0, because the entire structure is ignored.
     [1,"red",5] has a sum of 6, because "red" in an array has no effect.
      */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        return std::to_string(count_non_red_nums(get_input(input_dir)));
+    std::string part_2(const std::vector<std::string>& lines) {
+        return std::to_string(count_non_red_nums(get_input(lines)));
     }
 
     aoc::registration r{2015, 12, part_1, part_2};

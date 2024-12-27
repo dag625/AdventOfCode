@@ -48,8 +48,7 @@ namespace {
         return { std::string{s.substr(0, id_start)}, parse<int>(id_str), std::string{s.substr(chk_start, 5)} };
     }
 
-    std::vector<data> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_4_input.txt");
+    std::vector<data> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_data) | to<std::vector<data>>();
     }
 
@@ -95,8 +94,8 @@ namespace {
 
     What is the sum of the sector IDs of the real rooms?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (const auto& d : input) {
             const auto cs = calculate_checksum(d.text);
@@ -119,8 +118,8 @@ namespace {
 
     What is the sector ID of the room where North Pole objects are stored?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int id = -1;
         for (const auto& d : input) {
             const auto cs = calculate_checksum(d.text);

@@ -22,8 +22,7 @@ namespace aoc2020 {
             return retval;
         }
 
-        std::vector<int64_t> get_input(const fs::path &input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_9_input.txt");
+        std::vector<int64_t> get_input(const std::vector<std::string>& lines) {
             std::vector<int64_t> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_int64);
@@ -129,8 +128,8 @@ namespace aoc2020 {
 
     The first step of attacking the weakness in the XMAS data is to find the first number in the list (after the preamble) which is not the sum of two of the 25 numbers before it. What is the first number that does not have this property?
     */
-    std::string solve_day_9_1(const std::filesystem::path& input_dir) {
-        return std::to_string(find_first_invalid(get_input(input_dir)));
+    std::string solve_day_9_1(const std::vector<std::string>& lines) {
+        return std::to_string(find_first_invalid(get_input(lines)));
     }
 
     /*
@@ -164,8 +163,8 @@ namespace aoc2020 {
 
     What is the encryption weakness in your XMAS-encrypted list of numbers?
     */
-    std::string solve_day_9_2(const std::filesystem::path& input_dir) {
-        auto data = get_input(input_dir);
+    std::string solve_day_9_2(const std::vector<std::string>& lines) {
+        auto data = get_input(lines);
         return std::to_string(find_sum_range(data, find_first_invalid(data)));
     }
 

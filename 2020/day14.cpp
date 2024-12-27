@@ -151,8 +151,7 @@ namespace aoc2020 {
             }
         }
 
-        std::vector<instruction> get_input(const fs::path &input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_14_input.txt");
+        std::vector<instruction> get_input(const std::vector<std::string>& lines) {
             std::vector<instruction> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_instruction);
@@ -223,8 +222,8 @@ namespace aoc2020 {
 
     Execute the initialization program. What is the sum of all values left in memory after it completes?
     */
-    std::string solve_day_14_1(const std::filesystem::path& input_dir) {
-        auto instructions = get_input(input_dir);
+    std::string solve_day_14_1(const std::vector<std::string>& lines) {
+        auto instructions = get_input(lines);
         decoder_v1 s;
         for (const auto& ins : instructions) {
             s.apply(ins);
@@ -280,8 +279,8 @@ namespace aoc2020 {
 
     Execute the initialization program using an emulator for a version 2 decoder chip. What is the sum of all values left in memory after it completes?
     */
-    std::string solve_day_14_2(const std::filesystem::path& input_dir) {
-        auto instructions = get_input(input_dir);
+    std::string solve_day_14_2(const std::vector<std::string>& lines) {
+        auto instructions = get_input(lines);
         decoder_v2 s;
         for (const auto& ins : instructions) {
             s.apply(ins);

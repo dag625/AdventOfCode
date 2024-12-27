@@ -24,8 +24,7 @@ namespace aoc2020 {
             return retval;
         }
 
-        std::vector<int> get_input(const fs::path &input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_10_input.txt");
+        std::vector<int> get_input(const std::vector<std::string>& lines) {
             std::vector<int> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_int);
@@ -152,8 +151,8 @@ namespace aoc2020 {
 
     Find a chain that uses all of your adapters to connect the charging outlet to your device's built-in adapter and count the joltage differences between the charging outlet, the adapters, and your device. What is the number of 1-jolt differences multiplied by the number of 3-jolt differences?
     */
-    std::string solve_day_10_1(const std::filesystem::path& input_dir) {
-        auto [num1s, num3s] = count_diffs(get_input(input_dir));
+    std::string solve_day_10_1(const std::vector<std::string>& lines) {
+        auto [num1s, num3s] = count_diffs(get_input(lines));
         return std::to_string(num1s * num3s);
     }
 
@@ -209,8 +208,8 @@ namespace aoc2020 {
 
     What is the total number of distinct ways you can arrange the adapters to connect the charging outlet to your device?
     */
-    std::string solve_day_10_2(const std::filesystem::path& input_dir) {
-        auto data = get_input(input_dir);
+    std::string solve_day_10_2(const std::vector<std::string>& lines) {
+        auto data = get_input(lines);
         return std::to_string(count_paths(data));
     }
 

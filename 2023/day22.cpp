@@ -43,8 +43,7 @@ namespace {
         }
     }
 
-    std::vector<brick> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_22_input.txt");
+    std::vector<brick> get_input(const std::vector<std::string>& lines) {
         auto idxs = std::views::iota(0, static_cast<int>(lines.size()));
         return std::views::zip_transform([](std::string_view s, int i){ return parse_brick(s, i); }, lines, idxs) | to<std::vector<brick>>();
     }
@@ -283,8 +282,8 @@ namespace {
 
     Figure how the blocks will settle based on the snapshot. Once they've settled, consider disintegrating a single brick; how many bricks could be safely chosen as the one to get disintegrated?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         const auto [critical, num_fallen] = fall(input);
         const auto result = input.size() - critical.size();
         return std::to_string(result);
@@ -304,8 +303,8 @@ namespace {
 
     For each brick, determine how many other bricks would fall if that brick were disintegrated. What is the sum of the number of other bricks that would fall?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         const auto [critical, num_fallen_init] = fall(input);
         int sum = 0;
         for (const int crit_id : critical) {

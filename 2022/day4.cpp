@@ -29,8 +29,7 @@ namespace {
         return {{parse<int>(se1[0]), parse<int>(se1[1])}, {parse<int>(se2[0]), parse<int>(se2[1])}};
     }
 
-    std::vector<pairing> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_4_input.txt");
+    std::vector<pairing> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_pairing) | to<std::vector<pairing>>();
     }
 
@@ -92,8 +91,8 @@ namespace {
 
     In how many assignment pairs does one range fully contain the other?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         return std::to_string(std::count_if(input.begin(), input.end(), either_contains));
     }
 
@@ -111,8 +110,8 @@ namespace {
 
     In how many assignment pairs do the ranges overlap?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         return std::to_string(std::count_if(input.begin(), input.end(), overlap));//699 too low
     }
 

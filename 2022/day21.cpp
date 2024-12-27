@@ -52,8 +52,7 @@ namespace {
         }
     }
 
-    std::vector<monkey> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_21_input.txt");
+    std::vector<monkey> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_monkey) | to<std::vector<monkey>>();
     }
 
@@ -229,8 +228,8 @@ namespace {
 
     However, your actual situation involves considerably more monkeys. What number will the monkey named root yell?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::sort(input.begin(), input.end());
         const auto root_val = find_root(input);
         return std::to_string(root_val);
@@ -248,8 +247,8 @@ namespace {
 
     What number do you yell to pass root's equality test?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::sort(input.begin(), input.end());
         const auto root = std::lower_bound(input.begin(), input.end(), std::string{ROOT_NAME});
         const auto match_val = calc_non_humn_side(*root, input);

@@ -74,10 +74,8 @@ namespace {
         return parse_list_consume(s);
     }
 
-    std::vector<list> get_input(const fs::path &input_dir) {
-        auto lines = read_file_lines(input_dir / "2022" / "day_13_input.txt");
-        lines.erase(std::remove(lines.begin(), lines.end(), std::string{}), lines.end());
-        return lines | std::views::transform(parse_list) | to<std::vector<list>>();
+    std::vector<list> get_input(const std::vector<std::string>& lines) {
+        return lines | std::views::filter([](const std::string& s){ return !s.empty(); }) | std::views::transform(parse_list) | to<std::vector<list>>();
     }
 
     bool is_less(const list& a, const list& b);
@@ -220,8 +218,8 @@ namespace {
 
     Determine which pairs of packets are already in the right order. What is the sum of the indices of those pairs?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::size_t sum = 0;
         for (std::size_t i = 0; i < input.size(); i += 2) {
             if (is_less(input[i], input[i+1])) {
@@ -265,8 +263,8 @@ namespace {
 
     Organize all of the packets into the correct order. What is the decoder key for the distress signal?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         const auto divider1 = parse_list("[[2]]");
         const auto divider2 = parse_list("[[6]]");
         input.push_back(parse_list("[[2]]"));

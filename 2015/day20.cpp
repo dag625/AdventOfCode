@@ -100,7 +100,7 @@ namespace {
 
     What is the lowest house number of the house to get at least as many presents as the number in your puzzle input?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         uint64_t val = 1;
         for (; val < MIN_SUM_OF_ALL_FACTORS; ++val) {
             uint64_t sum = sum_of_all_factors(val);
@@ -117,7 +117,7 @@ namespace {
 
     With these changes, what is the new lowest house number of the house to get at least as many presents as the number in your puzzle input?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         uint64_t val = 1;
         //Do part 1 because part 2 should be larger (we're removing presents from earlier elves).
         for (; val < MIN_SUM_OF_ALL_FACTORS; ++val) {

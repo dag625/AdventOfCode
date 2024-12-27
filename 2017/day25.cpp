@@ -70,8 +70,7 @@ namespace {
         std::vector<state> states;
     };
 
-    machine get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_25_input.txt");
+    machine get_input(const std::vector<std::string>& lines) {
         const auto init_state = parse_1st_state(lines[0]);
         const auto num_steps = parse_num_steps(lines[1]);
         return {init_state, num_steps,
@@ -98,8 +97,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::vector<int> on;
         int cursor = 0, sp = static_cast<int>(input.init_state - 'A');
         for (int i = 0; i < input.num_steps; ++i) {

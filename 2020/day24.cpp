@@ -164,8 +164,7 @@ namespace  {
         std::cout << '\n';
     }
 
-    std::vector<position> get_input(const fs::path &input_dir) {
-        auto lines = aoc::read_file_lines(input_dir / "2020" / "day_24_input.txt");
+    std::vector<position> get_input(const std::vector<std::string>& lines) {
         std::vector<position> retval;
         retval.reserve(lines.size());
         std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_position);
@@ -188,13 +187,13 @@ namespace  {
         return retval;
     }
 
-    std::string part_1(const fs::path& input_dir) {
-        auto tiles = to_status(get_input(input_dir));
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto tiles = to_status(get_input(lines));
         return std::to_string(std::count_if(tiles.begin(), tiles.end(), [](const status& s){ return s.is_black; }));
     }
 
-    std::string part_2(const fs::path& input_dir) {
-        auto tiles = to_status(get_input(input_dir));
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto tiles = to_status(get_input(lines));
         for (int i = 0; i < 100; ++i) {
             iterate(tiles);
         }

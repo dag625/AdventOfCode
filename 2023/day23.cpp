@@ -20,8 +20,7 @@ namespace {
 
     using namespace aoc;
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_23_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | to<std::vector>(), row_len};
     }
@@ -236,8 +235,8 @@ namespace {
 
     Find the longest hike you can take through the hiking trails listed on your map. How many steps long is the longest hike?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const position start {0, 1}, end{static_cast<int>(input.num_rows()) - 1, static_cast<int>(input.num_cols()) - 2};
         const auto nodes = condense(input, start, end);
         const auto result = walk_nodes_recursive(nodes, start, end, &can_move_sloped);
@@ -277,8 +276,8 @@ namespace {
     #####################O#
     Find the longest hike you can take through the surprisingly dry hiking trails listed on your map. How many steps long is the longest hike?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const position start {0, 1}, end{static_cast<int>(input.num_rows()) - 1, static_cast<int>(input.num_cols()) - 2};
         const auto nodes = condense(input, start, end);
         const auto result = walk_nodes_recursive(nodes, start, end, &can_move_slopeless);

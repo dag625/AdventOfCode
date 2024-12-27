@@ -89,14 +89,14 @@ namespace {
     The next password after ghijklmn is ghjaabcc, because you eventually skip all the passwords that start with ghi..., since i is not allowed.
     Given Santa's current password (your puzzle input), what should his next password be?
      */
-    std::string part_1(const std::filesystem::path &input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         return iterate(INPUT);
     }
 
     /*
     Santa's password expired again. What's the next one?
      */
-    std::string part_2(const std::filesystem::path &input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         return iterate(iterate(INPUT));
     }
 

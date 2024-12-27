@@ -428,7 +428,7 @@ namespace {
       #########
     What is the least energy required to organize the amphipods?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         std::vector<cache_line> seen;
         return std::to_string(run(INPUT, false, seen));
     }
@@ -654,7 +654,7 @@ namespace {
       #########
     Using the initial configuration from the full diagram, what is the least energy required to organize the amphipods?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         std::vector<cache_line> seen;
         return std::to_string(run(INPUT, true, seen));
     }

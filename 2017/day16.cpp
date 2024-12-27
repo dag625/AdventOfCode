@@ -90,8 +90,7 @@ namespace {
         return move_strs | std::views::transform(&parse_move) | std::ranges::to<std::vector>();
     }
 
-    std::vector<dance_move> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_16_input.txt");
+    std::vector<dance_move> get_input(const std::vector<std::string>& lines) {
         return parse_moves(lines.front());
     }
 
@@ -121,16 +120,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto d = std::views::iota('a', 'q') | std::ranges::to<std::string>();
         do_the_dance(d, input);
         return d;
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto d = std::views::iota('a', 'q') | std::ranges::to<std::string>();
         const auto res = find_the_loop(d, input, 1'000'000'000);
         return res;

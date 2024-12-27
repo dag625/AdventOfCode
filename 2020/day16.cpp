@@ -89,8 +89,8 @@ namespace aoc2020 {
             return {std::string{parts[0]}, {parse_range(rs[0]), parse_range(rs[1])}};
         }
 
-        input get_input(const fs::path &input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_16_input.txt");
+        input get_input(const std::vector<std::string>& lines_in) {
+            auto lines = lines_in;
             const auto fields_end = std::find_if(lines.begin(), lines.end(), [](const std::string& s){ return s.empty(); });
             if (fields_end == lines.end()) {
                 throw std::runtime_error{"No break between the fields list and tickets list found."};
@@ -205,8 +205,8 @@ namespace aoc2020 {
 
     Consider the validity of the nearby tickets you scanned. What is your ticket scanning error rate?
     */
-    std::string solve_day_16_1(const std::filesystem::path& input_dir) {
-        auto in = get_input(input_dir);
+    std::string solve_day_16_1(const std::vector<std::string>& lines) {
+        auto in = get_input(lines);
         int64_t sum = 0;
         for (auto tf : in.tickets) {
             auto a = tf;
@@ -243,9 +243,9 @@ namespace aoc2020 {
 
     Once you work out which field is which, look for the six fields on your ticket that start with the word departure. What do you get if you multiply those six values together?
     */
-    std::string solve_day_16_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_16_2(const std::vector<std::string>& lines) {
         using namespace std::string_view_literals;
-        auto in = get_input(input_dir);
+        auto in = get_input(lines);
         for (std::size_t row = 0; row < in.tickets.num_rows();) {
             if (!in.all_fields_valid(in.tickets[row])) {
                 in.tickets.erase_row(row);

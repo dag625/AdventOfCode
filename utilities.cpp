@@ -212,6 +212,10 @@ namespace aoc {
         return {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
     }
 
+    void trim_lines_inplace(std::vector<std::string>& lines) {
+        std::for_each(lines.begin(), lines.end(), [](std::string& s){ s = trim(s); });
+    }
+
     TEST_SUITE("utilities" * doctest::description("Tests for utility functions.")) {
         using namespace std::string_view_literals;
         TEST_CASE("utilities:split1" * doctest::description("Tests for split() functions.")) {

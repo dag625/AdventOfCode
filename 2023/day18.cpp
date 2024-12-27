@@ -56,8 +56,7 @@ namespace {
         return retval;
     }
 
-    std::vector<instruction> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_18_input.txt");
+    std::vector<instruction> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_ins) | to<std::vector<instruction>>();
     }
 
@@ -253,8 +252,8 @@ namespace {
 
     The Elves are concerned the lagoon won't be large enough; if they follow their dig plan, how many cubic meters of lava could it hold?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto line_data = dig_smarter(input);
         const auto num = cells_inside(line_data);
         return std::to_string(num);
@@ -288,8 +287,8 @@ namespace {
 
     Convert the hexadecimal color codes into the correct instructions; if the Elves follow this new dig plan, how many cubic meters of lava could the lagoon hold?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto corrected = input | std::views::transform(&correct) | to<std::vector<instruction>>();
         const auto line_data = dig_smarter(corrected);
         const auto num = cells_inside(line_data);

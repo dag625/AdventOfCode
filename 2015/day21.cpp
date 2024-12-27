@@ -174,7 +174,7 @@ namespace {
 
     You have 100 hit points. The boss's actual stats are in your puzzle input. What is the least amount of gold you can spend and still win the fight?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         player b{boss{}};
         int min_cost = std::numeric_limits<int>::max();
         for (const auto& w : WEAPONS) {
@@ -203,7 +203,7 @@ namespace {
 
     What is the most amount of gold you can spend and still lose the fight?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         player b{boss{}};
         int max_cost = -1;
         for (const auto& w : WEAPONS) {

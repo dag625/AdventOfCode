@@ -23,8 +23,7 @@ namespace {
      See https://adventofcode.com/2017/day/10
      */
 
-    std::pair<std::vector<int>,std::string> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_10_input.txt");
+    std::pair<std::vector<int>,std::string> get_input(const std::vector<std::string>& lines) {
         const auto parts = split(lines.front(), ',');
         return {parts | std::views::transform([](std::string_view s){ return parse<int>(s); }) | std::ranges::to<std::vector>(), lines.front()};
     }
@@ -50,8 +49,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto [input, ignored] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [input, ignored] = get_input(lines);
         auto list = std::views::iota(0, 256) | std::ranges::to<std::vector>();
         const auto size = static_cast<int>(list.size());
         int pos = 0, skip = 0;
@@ -64,8 +63,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto [ignored, raw_input] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [ignored, raw_input] = get_input(lines);
         auto input = raw_input | std::views::transform([](const char c){ return static_cast<int>(c); }) | std::ranges::to<std::vector>();
         input.push_back(17);
         input.push_back(31);

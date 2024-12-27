@@ -72,14 +72,13 @@ namespace {
             std::ranges::to<std::vector>();
     }
 
-    std::vector<machine> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_13_input.txt");
+    std::vector<machine> get_input(const std::vector<std::string>& lines) {
         return to_machines(lines);
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (const auto& m : input) {
             const auto cost = m.calc_cost();
@@ -89,8 +88,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (const auto& m : input) {
             const auto cost = m.calc_cost(10000000000000ll);

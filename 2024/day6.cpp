@@ -25,8 +25,7 @@ namespace {
      See https://adventofcode.com/2024/day/6
      */
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_6_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         return to_grid(lines);
     }
 
@@ -97,8 +96,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto current = find_start(input);
         velocity dir {-1, 0};//Up, ^
         std::vector<position> visited = walk_out(input, current, dir);
@@ -106,8 +105,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto current = find_start(input);
         const velocity dir {-1, 0};//Up, ^
         std::vector<position> visited = walk_out(input, current, dir), to_check;

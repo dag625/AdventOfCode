@@ -12,8 +12,6 @@
 #include "utilities.h"
 #include "grid.h"
 
-namespace fs = std::filesystem;
-
 namespace {
 
     using namespace aoc;
@@ -22,8 +20,7 @@ namespace {
      See https://adventofcode.com/2016/day/18
      */
 
-    grid<char> get_input(const fs::path &input_dir, const std::size_t num_rows) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_18_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines, const std::size_t num_rows) {
         grid<char> retval {num_rows, lines.front().size()};
         for (auto& p : retval) {
             p = '.';
@@ -59,16 +56,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir, 40);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines, 40);
         set_rows(input);
         const auto num_safe = std::count_if(input.begin(), input.end(), [](const char c){ return c == '.'; });
         return std::to_string(num_safe);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir, 400000);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines, 400000);
         set_rows(input);
         const auto num_safe = std::count_if(input.begin(), input.end(), [](const char c){ return c == '.'; });
         return std::to_string(num_safe);

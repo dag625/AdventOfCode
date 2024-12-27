@@ -106,8 +106,7 @@ namespace aoc2020 {
             add_neighbors_of_active(data);
         }
 
-        grid<char> get_input(const fs::path &input_dir) {
-            auto lines = read_file_lines(input_dir / "2020" / "day_17_input.txt");
+        grid<char> get_input(const std::vector<std::string>& lines) {
             return to_grid(lines);
         }
 
@@ -255,8 +254,8 @@ namespace aoc2020 {
 
     Starting with your given initial configuration, simulate six cycles. How many cubes are left in the active state after the sixth cycle?
     */
-    std::string solve_day_17_1(const std::filesystem::path& input_dir) {
-        auto cells = get_active<3>(get_input(input_dir));
+    std::string solve_day_17_1(const std::vector<std::string>& lines) {
+        auto cells = get_active<3>(get_input(lines));
         add_neighbors_of_active(cells);
         for (int i = 0; i < 6; ++i) {
             iterate(cells);
@@ -513,8 +512,8 @@ namespace aoc2020 {
 
     Starting with your given initial configuration, simulate six cycles in a 4-dimensional space. How many cubes are left in the active state after the sixth cycle?
     */
-    std::string solve_day_17_2(const std::filesystem::path& input_dir) {
-        auto cells = get_active<4>(get_input(input_dir));
+    std::string solve_day_17_2(const std::vector<std::string>& lines) {
+        auto cells = get_active<4>(get_input(lines));
         add_neighbors_of_active(cells);
         for (int i = 0; i < 6; ++i) {
             iterate(cells);

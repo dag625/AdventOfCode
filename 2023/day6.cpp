@@ -29,8 +29,7 @@ namespace {
 
     race to_race(std::tuple<int64_t, int64_t> v) { return { std::get<0>(v), std::get<1>(v) }; }
 
-    std::vector<race> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_6_input.txt");
+    std::vector<race> get_input(const std::vector<std::string>& lines) {
 
          return std::views::zip(split_no_empty(lines[0], ' ') | std::views::drop(1) | std::views::transform(&parse_int),
                                                  split_no_empty(lines[1], ' ') | std::views::drop(1) | std::views::transform(&parse_int)) |
@@ -119,8 +118,8 @@ namespace {
 
     Determine the number of ways you could beat the record in each race. What do you get if you multiply these numbers together?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto wins = input | std::views::transform(&num_winning) | to<std::vector<int64_t>>();
         const auto margin = std::accumulate(wins.begin(), wins.end(), static_cast<int64_t>(1), [](int64_t tot, int64_t next){ return tot * next; });
         return std::to_string(margin);
@@ -142,8 +141,8 @@ namespace {
 
     How many ways can you beat the record in this one much longer race?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto single = kerning(input);
         const auto winning = num_winning(single);
         return std::to_string(winning);

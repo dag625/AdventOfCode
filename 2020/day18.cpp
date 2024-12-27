@@ -137,8 +137,7 @@ namespace aoc2020 {
             return { std::make_unique<node>(group{}, parse(stmt.substr(0, pos_end - 1))), pos_end };
         }
 
-        std::vector<node::ptr> get_input(const fs::path &input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_18_input.txt");
+        std::vector<node::ptr> get_input(const std::vector<std::string>& lines) {
             std::vector<node::ptr> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse);
@@ -235,8 +234,8 @@ namespace aoc2020 {
     ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2 becomes 13632.
     Before you can help with the homework, you need to understand it yourself. Evaluate the expression on each line of the homework; what is the sum of the resulting values?
     */
-    std::string solve_day_18_1(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string solve_day_18_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::for_each(input.begin(), input.end(), [](node::ptr& n){ balance<no_precedence>(n); });
         return std::to_string(std::accumulate(input.begin(), input.end(), 0ll, [](int64_t acc, const node::ptr& n){
             return acc + evaluate(n);
@@ -265,8 +264,8 @@ namespace aoc2020 {
     ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2 becomes 23340.
     What do you get if you add up the results of evaluating the homework problems using these new rules?
     */
-    std::string solve_day_18_2(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string solve_day_18_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::for_each(input.begin(), input.end(), [](node::ptr& n){ balance<add_precedence>(n); });
         return std::to_string(std::accumulate(input.begin(), input.end(), 0ll, [](int64_t acc, const node::ptr& n){
             return acc + evaluate(n);

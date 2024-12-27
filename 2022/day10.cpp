@@ -37,8 +37,7 @@ namespace {
         }
     }
 
-    std::vector<instr> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_10_input.txt");
+    std::vector<instr> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_instr) | to<std::vector<instr>>();
     }
 
@@ -232,8 +231,8 @@ namespace {
 
     Find the signal strength during the 20th, 60th, 100th, 140th, 180th, and 220th cycles. What is the sum of these six signal strengths?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t x = 1, strength = 0;
         int cycle = 1, next_cycle = 20;
         std::optional<int> to_add{};
@@ -381,8 +380,8 @@ namespace {
     #######.......#######.......#######.....
     Render the image given by your program. What eight capital letters appear on your CRT?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         constexpr int width = 40, height = 6;
         int x = 1, cycle = 1;
         std::vector<char> raw_screen(width * height, '.');

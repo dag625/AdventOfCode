@@ -46,8 +46,7 @@ namespace {
         return route{ map.at(nr.src), map.at(nr.dst), nr.length };
     }
 
-    std::pair<std::vector<route>, int> get_input(const std::filesystem::path& input_dir) {
-        auto lines = aoc::read_file_lines(input_dir / "2015" / "day_9_input.txt");
+    std::pair<std::vector<route>, int> get_input(const std::vector<std::string>& lines) {
         std::vector<named_route> named;
         named.reserve(lines.size());
         std::transform(lines.begin(), lines.end(), std::back_inserter(named), parse);
@@ -135,8 +134,8 @@ namespace {
 
     What is the distance of the shortest route?
      */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto [routes, last_id] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [routes, last_id] = get_input(lines);
         const auto perms = generate_permutations(last_id, last_id);
         std::vector<int> lengths;
         lengths.reserve(perms.size());
@@ -155,8 +154,8 @@ namespace {
 
     What is the distance of the longest route?
      */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto [routes, last_id] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [routes, last_id] = get_input(lines);
         const auto perms = generate_permutations(last_id, last_id);
         std::vector<int> lengths;
         lengths.reserve(perms.size());

@@ -77,8 +77,7 @@ namespace {
         return shifts;
     }
 
-    std::vector<shift> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2018" / "day_4_input.txt");
+    std::vector<shift> get_input(const std::vector<std::string>& lines) {
         return to_shifts(lines);
     }
 
@@ -127,8 +126,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto sleeps = to_sleeps(input);
         const auto sleepiest = std::max_element(sleeps.begin(), sleeps.end());
         const auto [sleepiest_min, num] = sleepiest->most_likely_sleep_min();
@@ -136,8 +135,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto sleeps = to_sleeps(input);
         int id = 0, min = -1, times = 0;
         for (const auto& s : sleeps) {

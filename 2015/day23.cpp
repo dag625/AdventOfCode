@@ -79,8 +79,7 @@ namespace {
         return {op, reg, offset};
     }
 
-    std::vector<instruction> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2015" / "day_23_input.txt");
+    std::vector<instruction> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_instr) | to<std::vector<instruction>>();
     }
 
@@ -141,8 +140,8 @@ namespace {
     inc a
     What is the value in register b when the program in your puzzle input is finished executing?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         computer c;
         while (c.run(input)) {}
         return std::to_string(c.registers[1]);
@@ -152,8 +151,8 @@ namespace {
     --- Part Two ---
     The unknown benefactor is very thankful for releasi-- er, helping little Jane Marie with her computer. Definitely not to distract you, what is the value in register b after the program is finished executing if register a starts as 1 instead?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         computer c;
         c.registers[0] = 1;
         while (c.run(input)) {}

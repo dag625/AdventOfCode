@@ -12,8 +12,6 @@
 #include "utilities.h"
 #include "grid.h"
 
-namespace fs = std::filesystem;
-
 namespace {
 
     using namespace aoc;
@@ -22,8 +20,7 @@ namespace {
      See https://adventofcode.com/2017/day/19
      */
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_19_input.txt", false);
+    grid<char> get_input(const std::vector<std::string>& lines) {
         return to_grid(lines);
     }
 
@@ -68,8 +65,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto current = find_start(input);
         position last {-1, current.y};
         std::string letters;
@@ -80,8 +77,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto current = find_start(input);
         position last {-1, current.y};
         std::string letters;

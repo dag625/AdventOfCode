@@ -8,8 +8,7 @@
 #include <fmt/core.h>
 
 #include <array>
-
-namespace fs = std::filesystem;
+#include <algorithm>
 
 namespace {
 
@@ -89,7 +88,7 @@ namespace {
     15, 5, and 5
     Filling all containers entirely, how many different combinations of containers can exactly fit all 150 liters of eggnog?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         const auto combos = combos_of_containers(150);
         return std::to_string(combos.size());
     }
@@ -102,7 +101,7 @@ namespace {
 
     In the example above, the minimum number of containers was two. There were three ways to use that many containers, and so the answer there would be 3.
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         const auto combos = combos_of_containers(150);
         const auto min_combo = std::min_element(combos.begin(), combos.end(), [](const std::vector<int>& a, const std::vector<int>& b){ return a.size() < b.size(); });
         return std::to_string(std::count_if(combos.begin(), combos.end(), [sz = min_combo->size()](const std::vector<int>& a){ return a.size() == sz; }));

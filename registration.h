@@ -6,11 +6,11 @@
 #define ADVENTOFCODE_REGISTRATION_H
 
 #include <string>
-#include <filesystem>
+#include <vector>
 
 namespace aoc {
 
-    using challenge_function = std::string (*)(const std::filesystem::path& input_dir);
+    using challenge_function = std::string (*)(const std::vector<std::string>& input_lines);
 
     class registration {
     public:

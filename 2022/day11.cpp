@@ -77,10 +77,10 @@ namespace {
         return {std::move(item_list), the_op, op_num, parse<int>(d_line), parse<int>(t_line), parse<int>(f_line)};
     }
 
-    std::vector<monkey> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_11_input.txt");
+    std::vector<monkey> get_input(const std::vector<std::string>& lines) {
+        auto trimmed = trim_lines(lines);
         std::vector<monkey> retval;
-        for (auto it = lines.begin(); it != lines.end(); it += 6) {
+        for (auto it = trimmed.begin(); it != trimmed.end(); it += 6) {
             if (it->empty()) {
                 ++it;
             }
@@ -342,8 +342,8 @@ namespace {
 
     Figure out which monkeys to chase by counting how many items they inspect over 20 rounds. What is the level of monkey business after 20 rounds of stuff-slinging simian shenanigans?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         for (int i = 0; i < 20; ++i) {
             do_round(input, 3, 0);
         }
@@ -436,8 +436,8 @@ namespace {
 
     Worry levels are no longer divided by three after each item is inspected; you'll need to find another way to keep your worry levels manageable. Starting again from the initial state in your puzzle input, what is the level of monkey business after 10000 rounds?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         const item_type lcm = std::accumulate(input.begin(), input.end(), 1, [](int v, const monkey& m){ return v * m.test_num; });
         for (int i = 0; i < 10000; ++i) {
             do_round(input, 1, lcm);

@@ -97,8 +97,7 @@ namespace aoc2020 {
             return retval;
         }
 
-        std::vector<food> get_input(const fs::path &input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_21_input.txt");
+        std::vector<food> get_input(const std::vector<std::string>& lines) {
             std::vector<food> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_food);
@@ -128,8 +127,8 @@ namespace aoc2020 {
 
     Determine which ingredients cannot possibly contain any of the allergens in your list. How many times do any of those ingredients appear?
     */
-    std::string solve_day_21_1(const std::filesystem::path& input_dir) {
-        const auto foods = get_input(input_dir);
+    std::string solve_day_21_1(const std::vector<std::string>& lines) {
+        const auto foods = get_input(lines);
         std::vector<allergen_info> allergens = get_allergen_info(foods);
         std::vector<std::string_view> unsafe_ingredients;
         for (const auto& a : allergens) {
@@ -159,8 +158,8 @@ namespace aoc2020 {
 
     Time to stock your raft with supplies. What is your canonical dangerous ingredient list?
     */
-    std::string solve_day_21_2(const std::filesystem::path& input_dir) {
-        const auto foods = get_input(input_dir);
+    std::string solve_day_21_2(const std::vector<std::string>& lines) {
+        const auto foods = get_input(lines);
         std::vector<allergen_info> allergens = get_allergen_info(foods);
 
         auto order = [](const allergen_info& a, const allergen_info& b){ return a.ingredients.size() < b.ingredients.size(); };

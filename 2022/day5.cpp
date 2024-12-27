@@ -56,8 +56,7 @@ namespace {
         };
     }
 
-    std::vector<move> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_5_input.txt");
+    std::vector<move> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::drop(10) | std::views::transform(parse_move) | to<std::vector<move>>();
     }
 
@@ -133,8 +132,8 @@ namespace {
 
     After the rearrangement procedure completes, what crate ends up on top of each stack?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto stacks = init_stacks();
         std::for_each(input.begin(), input.end(), [&stacks](const move& m){ apply_move_1(stacks, m); });
         return message(stacks);
@@ -185,8 +184,8 @@ namespace {
 
     Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies. After the rearrangement procedure completes, what crate ends up on top of each stack?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto stacks = init_stacks();
         std::for_each(input.begin(), input.end(), [&stacks](const move& m){ apply_move_2(stacks, m); });
         return message(stacks);

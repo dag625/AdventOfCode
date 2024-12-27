@@ -51,7 +51,7 @@ namespace {
 
     Given the actual Door ID, what is the password?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> ctx {EVP_MD_CTX_new(), &EVP_MD_CTX_free};
         std::string pass;
         for (int i = 0; i < std::numeric_limits<int>::max(); ++i) {
@@ -89,7 +89,7 @@ namespace {
 
     Given the actual Door ID and this new method, what is the password? Be extra proud of your solution if it uses a cinematic "decrypting" animation.
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> ctx {EVP_MD_CTX_new(), &EVP_MD_CTX_free};
         std::array<std::optional<char>, 8> pass{};
         for (int i = 0; i < std::numeric_limits<int>::max(); ++i) {

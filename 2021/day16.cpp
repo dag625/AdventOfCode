@@ -276,7 +276,7 @@ namespace {
     A0016C880162017C3686B18A3D4780 is an operator packet that contains an operator packet that contains an operator packet that contains five literal values; it has a version sum of 31.
     Decode the structure of your hexadecimal-encoded BITS transmission; what do you get if you add up the version numbers in all packets?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         const auto input = to_bytes(INPUT);
         std::span view {input};
         std::size_t offset = 0;
@@ -311,7 +311,7 @@ namespace {
     9C0141080250320F1802104A08 produces 1, because 1 + 3 = 2 * 2.
     What do you get if you evaluate the expression represented by your hexadecimal-encoded BITS transmission?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         const auto input = to_bytes(INPUT);
         std::span view {input};
         std::size_t offset = 0;

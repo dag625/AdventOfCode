@@ -31,8 +31,7 @@ namespace {
         return {std::move(data), static_cast<std::size_t>(num_rows)};
     }
 
-    grid<uint8_t> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_15_input.txt");
+    grid<uint8_t> get_input(const std::vector<std::string>& lines) {
         return to_data(lines);
     }
 
@@ -79,8 +78,8 @@ namespace {
 
     What is the lowest total risk of any path from the top left to the bottom right?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto result = grid_a_star(input, {0,0}, {99,99});
         return std::to_string(result->cost);
     }
@@ -206,8 +205,8 @@ namespace {
 
     Using the full map, what is the lowest total risk of any path from the top left to the bottom right?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         grid<uint8_t> larger {5 * input.num_rows(), 5 * input.num_cols()};
         for (const auto pos : input.list_positions()) {
             for (int i = 0; i < 5; ++i) {

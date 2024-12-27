@@ -134,8 +134,7 @@ namespace {
         return {p[4].b, p[5].b, p[15].b};
     }
 
-    std::pair<std::vector<program>, std::vector<constants>> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_24_input.txt");
+    std::pair<std::vector<program>, std::vector<constants>> get_input(const std::vector<std::string>& lines) {
         auto full = lines | std::views::transform([](std::string_view s){ return parse_instruction(s); }) | to<std::vector<instruction>>();
         std::vector<program> programs;
         programs.reserve(14);
@@ -291,8 +290,8 @@ namespace {
 
     To enable as many submarine features as possible, find the largest valid fourteen-digit model number that contains no 0 digits. What is the largest model number accepted by MONAD?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto [programs, input] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [programs, input] = get_input(lines);
         std::array<input_data, 14> inputs{};
         walk(inputs, input);
         const auto strs = inputs_to_string(inputs);
@@ -309,8 +308,8 @@ namespace {
 
     What is the smallest model number accepted by MONAD?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto [programs, input] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [programs, input] = get_input(lines);
         std::array<input_data, 14> inputs{};
         walk(inputs, input);
         const auto strs = inputs_to_string(inputs);

@@ -25,8 +25,7 @@ namespace {
      See https://adventofcode.com/2024/day/15
      */
 
-    std::pair<grid<char>, std::string> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_15_input.txt");
+    std::pair<grid<char>, std::string> get_input(const std::vector<std::string>& lines) {
         const auto mid = std::find(lines.begin(), lines.end(), "");
         return {to_grid(lines.begin(), mid),
                 std::ranges::subrange(mid + 1, lines.end()) | std::views::join | std::ranges::to<std::string>()};
@@ -197,8 +196,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto [g, dirs] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto [g, dirs] = get_input(lines);
         const auto start = find_current(g);
         const auto finish = do_steps(g, start, dirs);
         int64_t sum = 0;
@@ -211,8 +210,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto [small_g, dirs] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto [small_g, dirs] = get_input(lines);
         const auto small_start = find_current(small_g);
         auto [g, start] = embiggen(small_g, small_start);
         const auto finish = do_big_steps(g, start, dirs);

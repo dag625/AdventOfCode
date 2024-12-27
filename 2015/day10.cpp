@@ -55,7 +55,7 @@ namespace {
     111221 becomes 312211 (three 1s, two 2s, and one 1).
     Starting with the digits in your puzzle input, apply this process 40 times. What is the length of the result?
      */
-    std::string part_1(const std::filesystem::path& input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         std::string puzzle {INPUT};
         for (int i = 0; i < 40; ++i) {
             puzzle = iterate(puzzle);
@@ -68,7 +68,7 @@ namespace {
 
     Now, starting again with the digits in your puzzle input, apply this process 50 times. What is the length of the new result?
      */
-    std::string part_2(const std::filesystem::path& input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         std::string puzzle {INPUT};
         for (int i = 0; i < 50; ++i) {
             puzzle = iterate(puzzle);

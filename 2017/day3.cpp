@@ -23,8 +23,7 @@ namespace {
      See https://adventofcode.com/2017/day/3
      */
 
-    int get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_3_input.txt");
+    int get_input(const std::vector<std::string>& lines) {
         return parse<int>(lines.front());
     }
 
@@ -92,15 +91,15 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto [ring, xdist] = ring_and_dist_to_cardinal(input);
         return std::to_string(ring + xdist);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto [ring, xdist] = ring_and_dist_to_cardinal(input);
         const auto side_len = 2 * static_cast<std::size_t>(ring) + 1;
         grid<int> g {side_len, side_len};

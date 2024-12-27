@@ -37,8 +37,7 @@ namespace {
         return {s.substr(0, 3), s.substr(7, 3), s.substr(12, 3)};
     }
 
-    std::pair<std::string, std::vector<node>> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_8_input.txt");
+    std::pair<std::string, std::vector<node>> get_input(const std::vector<std::string>& lines) {
         auto nodes = lines | std::views::drop(2) | std::views::transform(&parse_node) | to<std::vector<node>>();
         std::sort(nodes.begin(), nodes.end());
         return {lines.front(), std::move(nodes)};
@@ -76,8 +75,8 @@ namespace {
     ZZZ = (ZZZ, ZZZ)
     Starting at AAA, follow the left/right instructions. How many steps are required to reach ZZZ?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto [directions, nodes] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [directions, nodes] = get_input(lines);
         auto current = nodes.begin();
         int step = 0;
         while (true) {
@@ -130,8 +129,8 @@ namespace {
 
     Simultaneously start on every node that ends with A. How many steps does it take before you're only on nodes that end with Z?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto [directions, nodes] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [directions, nodes] = get_input(lines);
         std::vector<decltype(nodes.begin())> current;
         for (auto n = nodes.begin(); n != nodes.end(); ++n) {
             if (n->id.back() == 'A') {

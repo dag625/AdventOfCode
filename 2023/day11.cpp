@@ -20,8 +20,7 @@ namespace {
 
     constexpr char GALAXY = '#';
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_11_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | to<std::vector<char>>(), row_len};
     }
@@ -174,8 +173,8 @@ namespace {
 
     Expand the universe, then find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto erows = empty_rows(input), ecols = empty_cols(input);
         const auto galaxies = get_galaxies(input);
         int64_t sum = 0;
@@ -197,8 +196,8 @@ namespace {
 
     Starting with the same initial image, expand the universe according to these new rules, then find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto erows = empty_rows(input), ecols = empty_cols(input);
         const auto galaxies = get_galaxies(input);
         int64_t sum = 0;

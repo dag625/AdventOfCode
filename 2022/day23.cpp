@@ -35,8 +35,7 @@ namespace {
         return retval;
     }
 
-    std::vector<position> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_23_input.txt");
+    std::vector<position> get_input(const std::vector<std::string>& lines) {
         return lines_to_positions(lines);
     }
 
@@ -320,8 +319,8 @@ namespace {
 
     Simulate the Elves' process and find the smallest rectangle that contains the Elves after 10 rounds. How many empty ground tiles does that rectangle contain?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto elves = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto elves = get_input(lines);
         for (int round = 0; round < 10; ++round) {
             bool any_moved = false;
             std::tie(elves, any_moved) = do_round(elves, round);
@@ -349,8 +348,8 @@ namespace {
     .......#......
     Figure out where the Elves need to go. What is the number of the first round where no Elf moves?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto elves = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto elves = get_input(lines);
         bool any_moved = true;
         int round = 0;
         for (; any_moved; ++round) {

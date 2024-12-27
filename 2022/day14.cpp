@@ -84,8 +84,7 @@ namespace {
         return all;
     }
 
-    std::vector<location> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_14_input.txt");
+    std::vector<location> get_input(const std::vector<std::string>& lines) {
         std::vector<location> all;
         for (const auto& l : lines) {
             const auto pts = parse_locs(l);
@@ -320,8 +319,8 @@ namespace {
     ~..........
     Using your scan, simulate the falling sand. How many units of sand come to rest before sand starts flowing into the abyss below?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         return std::to_string(count_until_free_flow(input));
     }
 
@@ -361,8 +360,8 @@ namespace {
     #########################
     Using your scan, simulate the falling sand until the source of the sand becomes blocked. How many units of sand come to rest?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         return std::to_string(count_until_reach_origin(input));//27481 too high
     }
 

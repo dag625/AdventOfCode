@@ -47,8 +47,7 @@ namespace {
         return {std::move(spots), data.num_rows()};
     }
 
-    grid<uint8_t> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_9_input.txt");
+    grid<uint8_t> get_input(const std::vector<std::string>& lines) {
         return to_data(lines);
     }
 
@@ -103,8 +102,8 @@ namespace {
 
     Find all of the low points on your heightmap. What is the sum of the risk levels of all low points on your heightmap?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t risk = 0;
         for (const auto pos : input.list_positions()) {
             const auto val = input[pos];
@@ -157,8 +156,8 @@ namespace {
 
     What do you get if you multiply together the sizes of the three largest basins?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto spots_grid = to_spots(get_input(input_dir));
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto spots_grid = to_spots(get_input(lines));
         std::vector<int> sizes = get_basin_sizes(spots_grid);
         std::ranges::sort(sizes, [](int a, int b){ return a > b; });
         return std::to_string(sizes[0] * sizes[1] * sizes[2]);

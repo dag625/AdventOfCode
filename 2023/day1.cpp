@@ -119,8 +119,7 @@ namespace {
         return retval;
     }
 
-    std::vector<std::string> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_1_input.txt");
+    std::vector<std::string> get_input(const std::vector<std::string>& lines) {
         return lines;
     }
 
@@ -148,8 +147,8 @@ namespace {
 
     Consider your entire calibration document. What is the sum of all of the calibration values?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto vals = input | std::views::transform(&parse_value) | to<std::vector<int>>();
         //const auto vals = input | std::views::transform(&digits_only) | std::views::transform(&first_last) | to<std::vector<int>>();//Alternate implementation
         const auto sum = std::accumulate(vals.begin(), vals.end(), 0);
@@ -173,8 +172,8 @@ namespace {
 
     What is the sum of all of the calibration values?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto vals = input | std::views::transform(&parse_abc_value) | to<std::vector<int>>();
         //const auto vals = input | std::views::transform(&abc_to_digits) | std::views::transform(&digits_only) | std::views::transform(&first_last) | to<std::vector<int>>();//Alternate implementation
         const auto sum = std::accumulate(vals.begin(), vals.end(), 0);

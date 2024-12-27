@@ -35,8 +35,7 @@ namespace {
         return {parse32(parts[0]), {parse32(parts[1]), parse32(parts[2])}, {parse32(parts[3]), parse32(parts[4])}};
     }
 
-    std::vector<claim> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2018" / "day_3_input.txt");
+    std::vector<claim> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_claim) | std::ranges::to<std::vector>();
     }
 
@@ -78,16 +77,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto [g, id] = create_grid(input);
         const auto num_overlaps = std::count(g.begin(), g.end(), -1);
         return std::to_string(num_overlaps);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto [g, id] = create_grid(input);
         return std::to_string(id);
     }

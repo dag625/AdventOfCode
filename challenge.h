@@ -13,7 +13,7 @@
 namespace aoc {
 
     struct challenge {
-        using function = std::string (*)(const std::filesystem::path& input_dir);
+        using function = std::string (*)(const std::vector<std::string>& input_lines);
         function func = nullptr;
         int year = 0;
         int day = 0;

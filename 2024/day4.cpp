@@ -27,8 +27,7 @@ namespace {
     constexpr std::string_view FIND_XMAS = "XMAS";
     constexpr std::string_view FIND_X_MAS = "MAS";
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_4_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | std::ranges::to<std::vector>(), row_len};
     }
@@ -84,8 +83,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int retval = 0;
         for (int r = 0; r < input.num_rows(); ++r) {
             retval += num_in_span(input.row_span(r));
@@ -98,8 +97,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto retval = num_x_mas(input);
         return std::to_string(retval);
     }

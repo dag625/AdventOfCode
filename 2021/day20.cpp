@@ -37,8 +37,7 @@ namespace {
         grid<cell> image;
     };
 
-    input get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_20_input.txt");
+    input get_input(const std::vector<std::string>& lines) {
         return {lines.front(), to_grid(lines.begin() + 2, lines.end()).map<cell>([](char c){ return cell{c}; })};
     }
 
@@ -186,8 +185,8 @@ namespace {
 
     Start with the original input image and apply the image enhancement algorithm twice, being careful to account for the infinite size of the images. How many pixels are lit in the resulting image?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num_steps = 2;
         char far_value = '.';
         auto expanded = input.image.expand(num_steps, cell{far_value});
@@ -205,8 +204,8 @@ namespace {
 
     Start again with the original input image and apply the image enhancement algorithm 50 times. How many pixels are lit in the resulting image?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num_steps = 50;
         char far_value = '.';
         auto expanded = input.image.expand(num_steps, cell{far_value});

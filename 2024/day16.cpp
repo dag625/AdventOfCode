@@ -24,8 +24,7 @@ namespace {
      See https://adventofcode.com/2024/day/16
      */
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_16_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         return to_grid(lines);
     }
 
@@ -135,8 +134,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         const auto [start, end] = get_start_end(input);
         const velocity init_v {0, 1}; //East
         const auto res = grid_dir_dijkstra(input, start, init_v, &cost_p1);
@@ -144,8 +143,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         const auto [start, end] = get_start_end(input);
         const velocity init_v {0, 1}; //East
         const auto res = grid_dir_dijkstra(input, start, init_v, &cost_p1);

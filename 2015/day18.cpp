@@ -36,8 +36,7 @@ namespace {
         return {ch.buffer() | std::views::transform(&to_cell) | to<std::vector<cell>>(), ch.num_cols()};
     }
 
-    grid<cell> get_input(const fs::path &input_dir) {
-        auto lines = read_file_lines(input_dir / "2015" / "day_18_input.txt");
+    grid<cell> get_input(const std::vector<std::string>& lines) {
         return to_cells(to_grid(lines));
     }
 
@@ -154,8 +153,8 @@ namespace {
 
     In your grid of 100x100 lights, given your initial configuration, how many lights are on after 100 steps?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto cells = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto cells = get_input(lines);
         for (int i = 0; i < 100; ++i) {
             iterate(cells, &update);
         }
@@ -217,8 +216,8 @@ namespace {
 
     In your grid of 100x100 lights, given your initial configuration, but with the four corners always in the on state, how many lights are on after 100 steps?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto cells = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto cells = get_input(lines);
         cells[{0,0}].set_on();
         cells[{0, static_cast<int>(cells.num_cols() - 1)}].set_on();
         cells[{static_cast<int>(cells.num_rows() - 1),0}].set_on();

@@ -45,8 +45,7 @@ namespace {
         return s | std::views::transform(&parse_dir) | to<std::vector<direction>>();
     }
 
-    std::vector<std::vector<direction>> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_2_input.txt");
+    std::vector<std::vector<direction>> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_line) | to<std::vector<std::vector<direction>>>();
     }
 
@@ -204,8 +203,8 @@ namespace {
 
     Your puzzle input is the instructions from the document you found at the front desk. What is the bathroom code?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::string result;
         for (const auto& line : input) {
             position p{};
@@ -236,8 +235,8 @@ namespace {
 
     Using the same instructions in your puzzle input, what is the correct bathroom code?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::string result;
         for (const auto& line : input) {
             position p{-2, 0};

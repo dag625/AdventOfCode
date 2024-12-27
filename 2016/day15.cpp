@@ -33,8 +33,7 @@ namespace {
         return {parse<int>(parts[3]), parse<int>(parts[11].substr(0, parts[11].size() - 1))};
     }
 
-    std::vector<disk> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_15_input.txt");
+    std::vector<disk> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_disk) | std::ranges::to<std::vector>();
     }
 
@@ -49,8 +48,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int time = 1;
         while (!falls_through(time, input)) {
             ++time;
@@ -59,8 +58,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         input.emplace_back(11, 0);
         int time = 1;
         while (!falls_through(time, input)) {

@@ -20,8 +20,7 @@ namespace {
 
     using namespace aoc;
 
-    std::vector<int> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_6_input.txt");
+    std::vector<int> get_input(const std::vector<std::string>& lines) {
         const auto split_line = split(lines.front(), ',');
         std::vector<int> retval;
         retval.reserve(split_line.size());
@@ -105,8 +104,8 @@ namespace {
 
     Find a way to simulate lanternfish. How many lanternfish would there be after 80 days?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        return std::to_string(calculate(get_input(input_dir), 80));
+    std::string part_1(const std::vector<std::string>& lines) {
+        return std::to_string(calculate(get_input(lines), 80));
     }
 
     /*
@@ -117,8 +116,8 @@ namespace {
 
     How many lanternfish would there be after 256 days?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        return std::to_string(calculate(get_input(input_dir), 256));
+    std::string part_2(const std::vector<std::string>& lines) {
+        return std::to_string(calculate(get_input(lines), 256));
     }
 
     aoc::registration r {2021, 6, part_1, part_2};

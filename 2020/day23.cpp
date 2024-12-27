@@ -232,7 +232,7 @@ namespace aoc2020 {
 
     Using your labeling, simulate 100 moves. What are the labels on the cups after cup 1?
     */
-    std::string solve_day_23_1(const std::filesystem::path& input_dir) {
+    std::string solve_day_23_1(const std::vector<std::string>& lines) {
         auto cups = get_initial_state();
         int current = INIT_CUPS[0] - 1;
         for (int i = 0; i < 100; ++i) {
@@ -254,7 +254,7 @@ namespace aoc2020 {
 
     Determine which two cups will end up immediately clockwise of cup 1. What do you get if you multiply their labels together?
     */
-    std::string solve_day_23_2(const std::filesystem::path& input_dir) {
+    std::string solve_day_23_2(const std::vector<std::string>& lines) {
         auto cups = get_expanded_initial_state<1000000>();
         int current = INIT_CUPS[0] - 1;
         for (int i = 0; i < 10000000; ++i) {

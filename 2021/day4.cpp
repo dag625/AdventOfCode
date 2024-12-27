@@ -103,8 +103,7 @@ namespace {
         std::vector<bingo_board> boards;
     };
 
-    info get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_4_input.txt");
+    info get_input(const std::vector<std::string>& lines) {
         const auto num_strs = split(lines.front(), ',');
 
         const auto to_int = [](std::string_view s){
@@ -192,8 +191,8 @@ namespace {
 
     To guarantee victory against the giant squid, figure out which board will win first. What will your final score be if you choose that board?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         for (const auto val : input.numbers) {
             for (auto& b : input.boards) {
                 if (b.have_bingo(val)) {
@@ -214,8 +213,8 @@ namespace {
 
     Figure out which board will win last. Once it wins, what would its final score be?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         for (const auto val : input.numbers) {
             for (auto b = input.boards.begin(); b != input.boards.end();) {
                 if (b->have_bingo(val)) {

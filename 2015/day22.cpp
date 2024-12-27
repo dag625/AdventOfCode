@@ -357,7 +357,7 @@ namespace {
     Poison deals 3 damage. This kills the boss, and the player wins.
     You start with 50 hit points and 500 mana points. The boss's actual stats are in your puzzle input. What is the least amount of mana you can spend and still win the fight? (Do not include mana recharge effects as "spending" negative mana.)
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         player p {}, b{boss{}};
         return std::to_string(play(p, b, 0));
     }
@@ -370,7 +370,7 @@ namespace {
 
     With the same starting stats for you and the boss, what is the least amount of mana you can spend and still win the fight?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         player p {}, b{boss{}};
         return std::to_string(play(p, b, 1));
     }

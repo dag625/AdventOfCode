@@ -294,8 +294,7 @@ namespace {
         return {parse_value(left), parse_value(right)};
     }
 
-    std::vector<pair> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_18_input.txt");
+    std::vector<pair> get_input(const std::vector<std::string>& lines) {
         return lines |
             std::views::transform([](std::string_view s){ return parse_pair(s); }) |
             to<std::vector<pair>>();
@@ -452,8 +451,8 @@ namespace {
 
     Add up all of the snailfish numbers from the homework assignment in the order they appear. What is the magnitude of the final sum?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         pair sum = input.front();
         for (const pair& p : input | std::views::drop(1)) {
             sum += p;
@@ -485,8 +484,8 @@ namespace {
 
     What is the largest magnitude of any sum of two different snailfish numbers from the homework assignment?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t max = -1;
         for (int i = 0; i < input.size(); ++i) {
             for (int j = i + 1; j < input.size(); ++j) {

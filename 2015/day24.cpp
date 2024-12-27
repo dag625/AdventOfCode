@@ -22,8 +22,7 @@ namespace {
 
     int do_parse(const std::string& s) { return parse<int>(s); }
 
-    std::vector<int> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2015" / "day_24_input.txt");
+    std::vector<int> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(do_parse) | to<std::vector<int>>();
     }
 
@@ -123,8 +122,8 @@ namespace {
 
     What is the quantum entanglement of the first group of packages in the ideal configuration?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const int num_groups = 3;
         int sum = 0;
         for (auto v : input) { sum += v; }
@@ -154,8 +153,8 @@ namespace {
 
     Now, what is the quantum entanglement of the first group of packages in the ideal configuration?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const int num_groups = 4;
         int sum = 0;
         for (auto v : input) { sum += v; }

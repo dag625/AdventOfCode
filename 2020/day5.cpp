@@ -49,8 +49,7 @@ namespace aoc2020 {
             return {row, col};
         }
 
-        std::vector<seat> get_input(const fs::path& input_dir) {
-            auto lines = read_file_lines(input_dir / "2020" / "day_5_input.txt");
+        std::vector<seat> get_input(const std::vector<std::string>& lines) {
             std::vector<seat> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_seat);
@@ -98,8 +97,8 @@ namespace aoc2020 {
     BBFFBBFRLL: row 102, column 4, seat ID 820.
     As a sanity check, look through your list of boarding passes. What is the highest seat ID on a boarding pass?
     */
-    std::string solve_day_5_1(const fs::path& input_dir) {
-        auto seats = get_input(input_dir);
+    std::string solve_day_5_1(const std::vector<std::string>& lines) {
+        auto seats = get_input(lines);
         return std::to_string(seats.back().seat_id());
     }
 
@@ -112,8 +111,8 @@ namespace aoc2020 {
 
     What is the ID of your seat?
     */
-    std::string solve_day_5_2(const fs::path& input_dir) {
-        auto seats = get_input(input_dir);
+    std::string solve_day_5_2(const std::vector<std::string>& lines) {
+        auto seats = get_input(lines);
         auto next_id = seats.front().seat_id();
         for (const auto s : seats) {
             if (s.seat_id() != next_id) {

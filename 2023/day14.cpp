@@ -20,8 +20,7 @@ namespace {
 
     using namespace aoc;
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_14_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | to<std::vector<char>>(), row_len};
     }
@@ -206,8 +205,8 @@ namespace {
 
     Tilt the platform so that the rounded rocks all roll north. Afterward, what is the total load on the north support beams?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         roll_up(input);
         const auto res = load(input);
         return std::to_string(res);
@@ -262,8 +261,8 @@ namespace {
 
     Run the spin cycle for 1000000000 cycles. Afterward, what is the total load on the north support beams?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         const auto num_to_detect = 200;
         std::vector<int64_t> loads;
         loads.reserve(num_to_detect);

@@ -34,8 +34,7 @@ namespace {
         return std::views::iota('a', '{') | std::views::transform([](char c){ return char_info{c}; }) | to<std::vector<char_info>>();
     }
 
-    std::vector<std::string> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_6_input.txt");
+    std::vector<std::string> get_input(const std::vector<std::string>& lines) {
         return lines;
     }
 
@@ -67,8 +66,8 @@ namespace {
 
     Given the recording in your puzzle input, what is the error-corrected version of the message being sent?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::array<std::vector<char_info>, 8> data{};
         data[0] = init_info();
         data[1] = init_info();
@@ -101,8 +100,8 @@ namespace {
 
     Given the recording in your puzzle input and this new decoding methodology, what is the original message that Santa is trying to send?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::array<std::vector<char_info>, 8> data{};
         data[0] = init_info();
         data[1] = init_info();

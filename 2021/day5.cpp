@@ -70,8 +70,7 @@ namespace {
         return input;
     }
 
-    std::vector<line> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_5_input.txt");
+    std::vector<line> get_input(const std::vector<std::string>& lines) {
         const std::regex re {R"((\d+),(\d+)\s*->\s*(\d+),(\d+))"};
         std::vector<line> retval;
         retval.reserve(lines.size());
@@ -160,8 +159,8 @@ namespace {
 
     Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        return std::to_string(find_multi_points_set(horizontal_and_vertical_only(get_input(input_dir))));
+    std::string part_1(const std::vector<std::string>& lines) {
+        return std::to_string(find_multi_points_set(horizontal_and_vertical_only(get_input(lines))));
     }
 
     /*
@@ -188,8 +187,8 @@ namespace {
 
     Consider all of the lines. At how many points do at least two lines overlap?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        return std::to_string(find_multi_points_set(get_input(input_dir)));
+    std::string part_2(const std::vector<std::string>& lines) {
+        return std::to_string(find_multi_points_set(get_input(lines)));
     }
 
     aoc::registration r {2021, 5, part_1, part_2};

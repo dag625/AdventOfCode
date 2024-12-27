@@ -34,8 +34,7 @@ namespace {
         return {std::string{parts[0]}, grp_str | std::views::transform(&parse_int) | to<std::vector<int>>()};
     }
 
-    std::vector<row> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_12_input.txt");
+    std::vector<row> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_row) | to<std::vector<row>>();
     }
 
@@ -219,8 +218,8 @@ namespace {
 
     For each row, count all of the different arrangements of operational and broken springs that meet the given criteria. What is the sum of those counts?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto sum = std::accumulate(input.begin(), input.end(), static_cast<int64_t>(0),
                                          [](int64_t tot, const row& r){ return tot +
                                                  calculate_arrangements(r); });
@@ -254,8 +253,8 @@ namespace {
 
     Unfold your condition records; what is the new sum of possible arrangement counts?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto sum = std::accumulate(input.begin(), input.end(), static_cast<int64_t>(0),
                                          [](int64_t tot, const row& r){ return tot +
                                                     calculate_arrangements(unfold(r)); });

@@ -18,8 +18,7 @@ namespace {
 
     using namespace aoc;
 
-    std::string get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_9_input.txt");
+    std::string get_input(const std::vector<std::string>& lines) {
         return lines.front();
     }
 
@@ -119,8 +118,8 @@ namespace {
     X(8x2)(3x3)ABCY becomes X(3x3)ABC(3x3)ABCY (for a decompressed length of 18), because the decompressed data from the (8x2) marker (the (3x3)ABC) is skipped and not processed further.
     What is the decompressed length of the file (your puzzle input)? Don't count whitespace.
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto len = calculate_length_non_recursive(input);
         return std::to_string(len);
     }
@@ -141,8 +140,8 @@ namespace {
 
     What is the decompressed length of the file using this improved format?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto len = calculate_length(input);
         return std::to_string(len);
     }

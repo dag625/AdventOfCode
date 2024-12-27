@@ -208,8 +208,7 @@ namespace {
         }
     }
 
-    std::vector<gate> get_input(const std::filesystem::path& input_dir) {
-        auto lines = aoc::read_file_lines(input_dir / "2015" / "day_7_input.txt");
+    std::vector<gate> get_input(const std::vector<std::string>& lines) {
         std::vector<gate> retval;
         retval.reserve(lines.size());
         std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse);
@@ -254,8 +253,8 @@ namespace {
     y: 456
     In little Bobby's kit's instructions booklet (provided as your puzzle input), what signal is ultimately provided to wire a?
      */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto gates = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto gates = get_input(lines);
         std::sort(gates.begin(), gates.end(), [](const gate& a, const gate& b){ return a.dest < b.dest; });
         return std::to_string(iterate_until_static(gates, "a"));
     }
@@ -265,8 +264,8 @@ namespace {
 
     Now, take the signal you got on wire a, override wire b to that signal, and reset the other wires (including wire a). What new signal is ultimately provided to wire a?
      */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto gates = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto gates = get_input(lines);
         std::sort(gates.begin(), gates.end(), [](const gate& a, const gate& b){ return a.dest < b.dest; });
         auto first_run = iterate_until_static(gates, "a");
         auto found = std::find_if(gates.begin(), gates.end(), [](const gate& g){ return g.dest == "b"sv; });

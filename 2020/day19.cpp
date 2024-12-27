@@ -83,8 +83,7 @@ namespace aoc2020 {
             }
         }
 
-        std::pair<std::vector<rule_entry>, std::vector<std::string>> get_input(const fs::path &input_dir) {
-            const auto lines = aoc::read_file_lines(input_dir / "2020" / "day_19_input.txt");
+        std::pair<std::vector<rule_entry>, std::vector<std::string>> get_input(const std::vector<std::string>& lines) {
             const auto blank = std::find_if(lines.begin(), lines.end(), [](const std::string& s){ return s.empty(); });
 
             std::vector<rule_entry> rules;
@@ -218,8 +217,8 @@ namespace aoc2020 {
 
     How many messages completely match rule 0?
     */
-    std::string solve_day_19_1(const std::filesystem::path& input_dir) {
-        auto [rules, messages] = get_input(input_dir);
+    std::string solve_day_19_1(const std::vector<std::string>& lines) {
+        auto [rules, messages] = get_input(lines);
         int matching = 0;
         const auto& rule0 = rules.front();
         for (const auto& m : messages) {
@@ -308,8 +307,8 @@ namespace aoc2020 {
     aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
     After updating rules 8 and 11, how many messages completely match rule 0?
     */
-    std::string solve_day_19_2(const std::filesystem::path& input_dir) {
-        auto [rules, messages] = get_input(input_dir);
+    std::string solve_day_19_2(const std::vector<std::string>& lines) {
+        auto [rules, messages] = get_input(lines);
         //We're going to take the easy way out.  The only place the changed rules are used is rule 0.
         //So we have from the challenge:
         //8: 42 | 42 8

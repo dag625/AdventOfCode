@@ -42,8 +42,7 @@ namespace {
         return p | std::views::transform([](std::string_view n){ return parse<int>(n); }) | std::ranges::to<std::vector>();
     }
 
-    input_info get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_5_input.txt");
+    input_info get_input(const std::vector<std::string>& lines) {
         const auto divider = std::find_if(lines.begin(), lines.end(), [](const std::string& s){ return s.empty(); });
         return {
             std::ranges::subrange{lines.begin(), divider} | std::views::transform(&parse_rule) | std::ranges::to<std::vector>(),
@@ -114,16 +113,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto result = std::accumulate(input.updates.begin(), input.updates.end(), 0, [&input](int total, const std::vector<int>& upd){ return total +
                 middle_page_for_ordered(upd, input.rules); });
         return std::to_string(result);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto result = std::accumulate(input.updates.begin(), input.updates.end(), 0, [&input](int total, const std::vector<int>& upd){ return total +
                 middle_page_for_fixed(upd, input.rules); });
         return std::to_string(result);

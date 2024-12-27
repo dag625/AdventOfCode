@@ -40,8 +40,7 @@ namespace {
         return {idx, parse<int>(s)};
     }
 
-    std::vector<move> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_9_input.txt");
+    std::vector<move> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_move) | to<std::vector<move>>();
     }
 
@@ -324,8 +323,8 @@ namespace {
 
     Simulate your complete hypothetical series of motions. How many positions does the tail of the rope visit at least once?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         state<2> s{};
         std::vector<position> visited;
         visited.emplace_back();
@@ -767,8 +766,8 @@ namespace {
     .........########.........
     Simulate your complete series of motions on a larger rope with ten knots. How many positions does the tail of the rope visit at least once?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         state<10> s{};
         std::vector<position> visited;
         visited.emplace_back();

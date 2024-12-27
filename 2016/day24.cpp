@@ -38,8 +38,7 @@ namespace {
         return poi;
     }
 
-    std::pair<grid<char>, std::array<position, 8>> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_24_input.txt");
+    std::pair<grid<char>, std::array<position, 8>> get_input(const std::vector<std::string>& lines) {
         auto grid = to_grid(lines);
         auto poi = get_poi<8>(grid);
         return {std::move(grid), poi};
@@ -106,16 +105,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto [grid, poi] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [grid, poi] = get_input(lines);
         const auto dists = get_dists(grid, poi);
         const auto shortest = find_shortest(dists);
         return std::to_string(shortest);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto [grid, poi] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [grid, poi] = get_input(lines);
         const auto dists = get_dists(grid, poi);
         const auto shortest = find_shortest_and_return(dists);
         return std::to_string(shortest);

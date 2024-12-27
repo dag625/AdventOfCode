@@ -44,8 +44,7 @@ namespace {
         return retval;
     }
 
-    std::vector<address> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_7_input.txt");
+    std::vector<address> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_address) | to<std::vector<address>>();
     }
 
@@ -115,8 +114,8 @@ namespace {
     ioxxoj[asdfgh]zxcvbn supports TLS (oxxo is outside square brackets, even though it's within a larger string).
     How many IPs in your puzzle input support TLS?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num = std::count_if(input.begin(), input.end(), &supports_tls);
         return std::to_string(num);
     }
@@ -135,8 +134,8 @@ namespace {
     zazbz[bzb]cdb supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
     How many IPs in your puzzle input support SSL?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num = std::count_if(input.begin(), input.end(), &supports_ssl);
         return std::to_string(num);//193 too low
     }

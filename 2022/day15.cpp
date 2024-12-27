@@ -52,8 +52,7 @@ namespace {
         return retval;
     }
 
-    std::vector<s_and_b> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_15_input.txt");
+    std::vector<s_and_b> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_sensor_and_beacon) | to<std::vector<s_and_b>>();
     }
 
@@ -229,8 +228,8 @@ namespace {
 
     Consult the report from the sensors you just deployed. In the row where y=2000000, how many positions cannot contain a beacon?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto bounds = get_bounds(input);
         int count = 0;
         for (int x = bounds.min_x; x <= bounds.max_x; ++x) {
@@ -253,8 +252,8 @@ namespace {
 
     Find the only possible position for the distress beacon. What is its tuning frequency?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto bounds = get_bounds(input);
         position result {-1, -1};
         for (auto it = input.begin(); it != input.end(); ++it) {

@@ -29,8 +29,7 @@ namespace {
         return {std::string{parts[0]}, std::string{parts[1]}};
     }
 
-    std::pair<std::vector<conversion>, std::string> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2015" / "day_19_input.txt");
+    std::pair<std::vector<conversion>, std::string> get_input(const std::vector<std::string>& lines) {
         return {lines | std::views::take(lines.size() - 2) | std::views::transform(&to_conversion) | to<std::vector<conversion>>(), lines.back()};
     }
 
@@ -101,8 +100,8 @@ namespace {
 
     Your puzzle input describes all of the possible replacements and, at the bottom, the medicine molecule for which you need to calibrate the machine. How many distinct molecules can be created after all the different ways you can do one replacement on the medicine molecule?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto [conversions, orig] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [conversions, orig] = get_input(lines);
         std::set<std::string> results;
         for (const auto& c : conversions) {
             auto converted = convert_once(orig, c);
@@ -133,8 +132,8 @@ namespace {
 
     How long will it take to make the medicine? Given the available replacements and the medicine molecule in your puzzle input, what is the fewest number of steps to go from e to the medicine molecule?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto [conversions, orig] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [conversions, orig] = get_input(lines);
         /*
          * See:  https://www.reddit.com/r/adventofcode/comments/3xflz8/comment/cy4etju/?utm_source=share&utm_medium=web2x&context=3
          *

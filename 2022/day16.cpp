@@ -61,8 +61,7 @@ namespace {
         return retval;
     }
 
-    std::vector<valve> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_16_input.txt");
+    std::vector<valve> get_input(const std::vector<std::string>& lines) {
         return to_valves(lines);
     }
 
@@ -384,8 +383,8 @@ namespace {
 
     Work out the steps to release the most pressure in 30 minutes. What is the most pressure you can release?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto result = search(input, 30);
         return std::to_string(result);
     }
@@ -469,8 +468,8 @@ namespace {
 
     With you and an elephant working together for 26 minutes, what is the most pressure you could release?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto result = search(input, 26, true);
         return std::to_string(result);
     }

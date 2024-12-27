@@ -25,8 +25,7 @@ namespace {
         return static_cast<int>(c - '0');
     }
 
-    grid<int> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_17_input.txt");
+    grid<int> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | std::views::transform(&parse_int) | to<std::vector<int>>(), row_len};
     }
@@ -261,8 +260,8 @@ namespace {
 
     Directing the crucible from the lava pool to the machine parts factory, but not moving more than three consecutive blocks in the same direction, what is the least heat loss it can incur?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto res = day17_dijkstra(input, {}, 1, 3);
         const position end_pos {static_cast<int>(input.num_cols()) - 1, static_cast<int>(input.num_rows()) - 1};
         return std::to_string(get_best_cost(res, end_pos));
@@ -311,8 +310,8 @@ namespace {
 
     Directing the ultra crucible from the lava pool to the machine parts factory, what is the least heat loss it can incur?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto res = day17_dijkstra(input, {}, 4, 10);
         const position end_pos {static_cast<int>(input.num_cols()) - 1, static_cast<int>(input.num_rows()) - 1};
         return std::to_string(get_best_cost(res, end_pos));

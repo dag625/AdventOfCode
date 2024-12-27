@@ -173,14 +173,13 @@ namespace {
         }
     }
 
-    std::vector<instruction> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_23_input.txt");
+    std::vector<instruction> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_ins) | std::ranges::to<std::vector>();
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         state s{};
         s[1] = 7;
         while (s[INS_PTR_INDEX] >= 0 && s[INS_PTR_INDEX] < input.size()) {
@@ -190,8 +189,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         state s{};
         s[1] = 12;
         while (s[INS_PTR_INDEX] >= 0 && s[INS_PTR_INDEX] < input.size()) {

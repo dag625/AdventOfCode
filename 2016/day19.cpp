@@ -24,22 +24,21 @@ namespace {
      See https://adventofcode.com/2016/day/19
      */
 
-    uint32_t get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_19_input.txt");
+    uint32_t get_input(const std::vector<std::string>& lines) {
         return parse<uint32_t>(lines.front());
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         //Solution to the Josephus Circle problem, taken from Wikipedia article on the subject.
         const auto res = ~std::bit_floor(input*2) & ((input<<1) | 1);
         return std::to_string(res);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = static_cast<int>(get_input(input_dir));
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = static_cast<int>(get_input(lines));
         //Solution thanks to following reddit comments:
         //https://www.reddit.com/r/adventofcode/comments/5j4lp1/comment/dbdihvu/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
         //https://www.reddit.com/r/adventofcode/comments/5j4lp1/comment/dbdfabo/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button

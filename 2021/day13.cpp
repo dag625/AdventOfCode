@@ -72,8 +72,7 @@ namespace {
         std::array<char, 30> data;
     };
 
-    std::pair<grid<char>, std::vector<fold>> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_13_input.txt");
+    std::pair<grid<char>, std::vector<fold>> get_input(const std::vector<std::string>& lines) {
         const auto split = std::find_if(lines.begin(), lines.end(), [](std::string_view l){ return l.empty(); });
         const auto split_idx = std::distance(lines.begin(), split);
         const auto coords = lines |
@@ -219,8 +218,8 @@ namespace {
 
     How many dots are visible after completing just the first fold instruction on your transparent paper?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto [start_grid, folds] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto [start_grid, folds] = get_input(lines);
         grid<char> folded = fold_grid(start_grid, folds.front());
         return std::to_string(std::count_if(folded.begin(), folded.end(), [](char c){ return c == '#'; }));
     }
@@ -231,8 +230,8 @@ namespace {
 
     What code do you use to activate the infrared thermal imaging camera system?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto [start_grid, folds] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto [start_grid, folds] = get_input(lines);
         grid<char> folded = start_grid;
         for (const auto& f : folds) {
             folded = fold_grid(folded, f);

@@ -22,8 +22,7 @@ namespace {
      See https://adventofcode.com/2017/day/17
      */
 
-    int get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_17_input.txt");
+    int get_input(const std::vector<std::string>& lines) {
         return parse<int>(lines.front());
     }
 
@@ -34,8 +33,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         std::vector<int> data {0};
         int pos = 0;
         for (int i = 1; i <= 2017; ++i) {
@@ -46,8 +45,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         /*
          * We want the value after 0.  0 is always at the start of the buffer.  So we just want to keep track of the
          * index and see when it hits 1 and save the value.  We don't want/need to store the whole list of values.

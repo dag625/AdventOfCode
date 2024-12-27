@@ -80,14 +80,13 @@ namespace {
         return retval;
     }
 
-    std::vector<node> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_22_input.txt");
+    std::vector<node> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::drop(2) | std::views::transform(&parse_node) | std::ranges::to<std::vector>();
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto min_used = input;
         auto max_avail = input;
         std::sort(min_used.begin(), min_used.end(), &sort_min_used);
@@ -115,8 +114,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         /*
          * From the results of the below operations, excluding the very large nodes, any node can hold any other
          * node's data, so we can freely swap among the non-large nodes.

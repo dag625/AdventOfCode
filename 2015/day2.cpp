@@ -41,8 +41,7 @@ namespace {
         return retval;
     }
 
-    std::vector<size> get_input(const std::filesystem::path& input_dir) {
-        auto lines = aoc::read_file_lines(input_dir / "2015" / "day_2_input.txt");
+    std::vector<size> get_input(const std::vector<std::string>& lines) {
         std::vector<size> retval;
         retval.reserve(lines.size());
         std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_size);
@@ -85,8 +84,8 @@ namespace {
     A present with dimensions 1x1x10 requires 2*1 + 2*10 + 2*10 = 42 square feet of wrapping paper plus 1 square foot of slack, for a total of 43 square feet.
     All numbers in the elves' list are in feet. How many total square feet of wrapping paper should they order?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto sizes = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto sizes = get_input(lines);
         return std::to_string(std::accumulate(sizes.begin(), sizes.end(), 0, [](int acc, size s){ return acc + calculate_area(s); }));
     }
 
@@ -101,8 +100,8 @@ namespace {
     A present with dimensions 1x1x10 requires 1+1+1+1 = 4 feet of ribbon to wrap the present plus 1*1*10 = 10 feet of ribbon for the bow, for a total of 14 feet.
     How many total feet of ribbon should they order?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto sizes = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto sizes = get_input(lines);
         return std::to_string(std::accumulate(sizes.begin(), sizes.end(), 0, [](int acc, size s){ return acc + calculate_length(s); }));
     }
 

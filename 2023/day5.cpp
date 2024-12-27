@@ -96,8 +96,7 @@ namespace {
         return {seed_strs | std::views::transform(&parse_num) | to<std::vector<int64_t>>(), std::move(conversions)};
     }
 
-    input get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_5_input.txt");
+    input get_input(const std::vector<std::string>& lines) {
         return parse_lines(lines);
     }
 
@@ -297,8 +296,8 @@ namespace {
 
     What is the lowest location number that corresponds to any of the initial seed numbers?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t lowest = std::numeric_limits<int64_t>::max();
         for (int64_t val : input.seeds) {
             for (const auto& c : input.conversions) {
@@ -326,8 +325,8 @@ namespace {
 
     Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. What is the lowest location number that corresponds to any of the initial seed numbers?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto total = pad_src(input.conversions.front());
         for (const auto& r : input.conversions | std::views::drop(1)) {
             total = combine(total, r);

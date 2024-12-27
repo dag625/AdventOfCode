@@ -31,8 +31,7 @@ namespace {
     bool les_states(const state& lhs, const state& rhs) { return cmp_states(lhs, rhs) == std::strong_ordering::less; }
     bool eql_states(const state& lhs, const state& rhs) { return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
 
-    state get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_6_input.txt");
+    state get_input(const std::vector<std::string>& lines) {
         const auto parts = split_no_empty(lines.front(), '\t');
         return parts | std::views::transform([](std::string_view s){ return parse<int>(s); }) | std::ranges::to<std::vector>();
     }
@@ -77,8 +76,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         state s = input;
         std::vector<sighting> seen;
         int steps = 0, last_seen_step = 0;
@@ -90,8 +89,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         state s = input;
         std::vector<sighting> seen;
         int steps = 0, last_seen_step = 0;

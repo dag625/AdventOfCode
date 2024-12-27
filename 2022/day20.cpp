@@ -21,8 +21,7 @@ namespace {
 
     int64_t parse_int(std::string_view s) { return parse<int64_t>(s); }
 
-    std::vector<int64_t> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_20_input.txt");
+    std::vector<int64_t> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(parse_int) | to<std::vector<int64_t>>();
     }
 
@@ -124,8 +123,8 @@ namespace {
 
     Mix your encrypted file exactly once. What is the sum of the three numbers that form the grove coordinates?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = to_data(get_input(input_dir));
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = to_data(get_input(lines));
         mix(input);
         const auto found = std::find_if(input.begin(), input.end(), [](const datum& d){ return d.value == 0; });
         const auto idx = std::distance(input.begin(), found);
@@ -181,8 +180,8 @@ namespace {
 
     Apply the decryption key and mix your encrypted file ten times. What is the sum of the three numbers that form the grove coordinates?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto raw = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto raw = get_input(lines);
         std::for_each(raw.begin(), raw.end(), [](int64_t& v){ v *= 811589153ll; });
         auto input = to_data(raw);
         for (int i = 0; i < 10; ++i) {

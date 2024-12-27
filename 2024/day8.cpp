@@ -23,8 +23,7 @@ namespace {
      See https://adventofcode.com/2024/day/8
      */
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_8_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         return to_grid(lines);
     }
 
@@ -120,16 +119,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto nodes = get_nodes(input);
         const auto antinodes = get_antinodes(input, nodes, &get_normal_antinodes);
         return std::to_string(antinodes.size());
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto nodes = get_nodes(input);
         const auto antinodes = get_antinodes(input, nodes, &get_resonant_antinodes);
         return std::to_string(antinodes.size());

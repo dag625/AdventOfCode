@@ -29,8 +29,7 @@ namespace {
         return {std::string{parts[0]}, subparts | to<std::vector<std::string>>()};
     }
 
-    std::vector<component> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_25_input.txt");
+    std::vector<component> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_comp) | to<std::vector>();
     }
 
@@ -150,8 +149,8 @@ namespace {
 
     Find the three wires you need to disconnect in order to divide the components into two separate groups. What do you get if you multiply the sizes of these two groups together?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto map = construct_map(input);
         const auto [num_edges_removed, group1] = stoer_wagner(map);
         const auto group2_size = map.size() - group1.size();

@@ -30,14 +30,13 @@ namespace {
         return {parse<uint32_t>(parts[0]), parse<uint32_t>(parts[1])};
     }
 
-    std::vector<range> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_20_input.txt");
+    std::vector<range> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_range) | std::ranges::to<std::vector>();
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::sort(input.begin(), input.end());
         uint32_t addr = 0;
         for (const auto [first, last] : input) {
@@ -52,8 +51,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::sort(input.begin(), input.end());
         uint32_t addr = 0, total = 0;
         for (const auto [first, last] : input) {

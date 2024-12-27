@@ -149,8 +149,7 @@ namespace aoc2020 {
             }
         }
 
-        std::vector<instruction> get_input(const fs::path &input_dir) {
-            auto lines = read_file_lines(input_dir / "2020" / "day_12_input.txt");
+        std::vector<instruction> get_input(const std::vector<std::string>& lines) {
             std::vector<instruction> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_instruction);
@@ -193,8 +192,8 @@ namespace aoc2020 {
 
     Figure out where the navigation instructions lead. What is the Manhattan distance between that location and the ship's starting position?
     */
-    std::string solve_day_12_1(const std::filesystem::path& input_dir) {
-        auto instructions = get_input(input_dir);
+    std::string solve_day_12_1(const std::vector<std::string>& lines) {
+        auto instructions = get_input(lines);
         course c {{0, 0}, direction::East};
         for (const auto& ins : instructions) {
             c += ins;
@@ -227,8 +226,8 @@ namespace aoc2020 {
 
     Figure out where the navigation instructions actually lead. What is the Manhattan distance between that location and the ship's starting position?
     */
-    std::string solve_day_12_2(const std::filesystem::path& input_dir) {
-        auto instructions = get_input(input_dir);
+    std::string solve_day_12_2(const std::vector<std::string>& lines) {
+        auto instructions = get_input(lines);
         waypoint_course c {{0, 0},
                            {-1, 10}};
         for (const auto& ins : instructions) {

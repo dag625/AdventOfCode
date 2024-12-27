@@ -47,8 +47,7 @@ namespace {
         }
     };
 
-    std::vector<dir> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_7_input.txt");
+    std::vector<dir> get_input(const std::vector<std::string>& lines) {
         std::vector<dir> retval;
         retval.push_back({"", {}, {}});
         dir::index current_dir = 0;
@@ -154,8 +153,8 @@ namespace {
 
     Find all of the directories with a total size of at most 100000. What is the sum of the total sizes of those directories?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t result = 0;
         for (const auto& dir : input) {
             const auto size = dir.size(input);
@@ -184,8 +183,8 @@ namespace {
 
     Find the smallest directory that, if deleted, would free up enough space on the filesystem to run the update. What is the total size of that directory?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const int64_t TOTAL_DISK = 70000000;
         const int64_t NEEDED_DISK = 30000000;
         const auto used = input[0].size(input);

@@ -21,8 +21,7 @@ namespace {
 
     using namespace aoc;
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_10_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | to<std::vector<char>>(), row_len};
     }
@@ -192,8 +191,8 @@ namespace {
     23...
     Find the single giant loop starting at S. How many steps along the loop does it take to get from the starting position to the point farthest from the starting position?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         position current{};
         for (const auto p : input.list_positions()) {
             if (input[p] == 'S') {
@@ -316,8 +315,8 @@ namespace {
 
     Figure out whether you have time to search for the nest by calculating the area within the loop. How many tiles are enclosed by the loop?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir).expand_2x('.');
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines).expand_2x('.');
         position current{};
         for (const auto p : input.list_positions()) {
             if (input[p] == 'S') {

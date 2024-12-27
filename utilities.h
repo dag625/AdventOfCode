@@ -39,6 +39,12 @@ namespace aoc {
     std::vector<std::string> read_file_lines(const std::filesystem::path &file, bool need_trim = true);
     std::string read_file(const std::filesystem::path& file);
 
+    void trim_lines_inplace(std::vector<std::string>& lines);
+    inline std::vector<std::string> trim_lines(std::vector<std::string> lines) {
+        trim_lines_inplace(lines);
+        return lines;
+    }
+
     template <typename T>
     T default_to_string(T&& t) {
         return std::forward<T>(t);

@@ -20,8 +20,7 @@ namespace {
 
     using namespace aoc;
 
-    std::vector<int> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_7_input.txt");
+    std::vector<int> get_input(const std::vector<std::string>& lines) {
         const auto split_line = split(lines.front(), ',');
         std::vector<int> retval;
         retval.reserve(split_line.size());
@@ -70,8 +69,8 @@ namespace {
 
     Determine the horizontal position that the crabs can align to using the least fuel possible. How much fuel must they spend to align to that position?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::ranges::sort(input);
         std::vector<int> fuel (input.size());
         for (int i = 0; i < input.size(); ++i) {
@@ -103,8 +102,8 @@ namespace {
 
     Determine the horizontal position that the crabs can align to using the least fuel possible so they can make you an escape route! How much fuel must they spend to align to that position?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         std::ranges::sort(input);
         std::vector<int> fuel (input.size());
         for (int i = 0; i < input.size(); ++i) {

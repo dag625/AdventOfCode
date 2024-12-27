@@ -19,8 +19,7 @@ namespace {
 
     using namespace aoc;
 
-    std::vector<std::string> get_input(const fs::path &input_dir) {
-        auto lines = read_file_lines(input_dir / "2023" / "day_3_input.txt");
+    std::vector<std::string> get_input(const std::vector<std::string>& lines) {
         return lines;
     }
 
@@ -94,8 +93,8 @@ namespace {
 
     Of course, the actual engine schematic is much larger. What is the sum of all of the part numbers in the engine schematic?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (int r = 0; r < input.size(); ++r) {
             for (int c = 0; c < input[r].size(); ++c) {
@@ -151,8 +150,8 @@ namespace {
 
     What is the sum of all of the gear ratios in your engine schematic?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (int r = 0; r < input.size(); ++r) {
             for (int c = 0; c < input[r].size(); ++c) {

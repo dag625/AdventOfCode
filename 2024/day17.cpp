@@ -35,8 +35,7 @@ namespace {
         state(int64_t rA, int64_t rB, int64_t rC) : regs{rA, rB, rC} {}
     };
 
-    std::pair<state, std::vector<int>> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_17_input.txt");
+    std::pair<state, std::vector<int>> get_input(const std::vector<std::string>& lines) {
         const auto p1 = split_no_empty(lines[0], ' ');
         const auto p2 = split_no_empty(lines[1], ' ');
         const auto p3 = split_no_empty(lines[2], ' ');
@@ -223,16 +222,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto [s, program] = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto [s, program] = get_input(lines);
         //print(s, program);
         run(s, program);
         return fmt::format("{}", fmt::join(s.output, ","));
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        auto [is, program] = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto [is, program] = get_input(lines);
         int64_t a = 0;
         for (int d = static_cast<int>(program.size()) - 1; d >= 0; --d) {
             a = find_digit(a, d, program, program);

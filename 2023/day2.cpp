@@ -59,8 +59,7 @@ namespace {
         return {game_id, pulls | std::views::transform(&parse_pull) | to<std::vector<cubes>>()};
     }
 
-    std::vector<game> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_2_input.txt");
+    std::vector<game> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_game) | to<std::vector<game>>();
     }
 
@@ -115,8 +114,8 @@ namespace {
 
     Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int sum = 0;
         const cubes count {12, 13, 14};
         for (const auto& g : input) {
@@ -149,8 +148,8 @@ namespace {
 
     For each game, find the minimum set of cubes that must have been present. What is the sum of the power of these sets?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t sum = 0;
         for (const auto& g : input) {
             sum += minimum_power(g);

@@ -93,7 +93,7 @@ namespace {
 
     Santa looks nervous. Your puzzle input contains the message on the machine's console. What code do you give the machine?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
+    std::string part_1(const std::vector<std::string>& lines) {
         const auto index = calculate_index(ROW, COL);
         return std::to_string(get_value(index));
     }

@@ -11,10 +11,9 @@
 #include <array>
 #include <compare>
 #include <numeric>
+#include <algorithm>
 
 #include "ranges.h"
-
-namespace fs = std::filesystem;
 
 namespace {
 
@@ -74,7 +73,7 @@ namespace {
     };
 
     template <int NUM>
-    state<NUM> get_input(const fs::path &input_dir) {
+    state<NUM> get_input() {
         state<NUM> retval;
         //thulium:
         retval.items[0] = 1;
@@ -168,8 +167,8 @@ namespace {
     }
 
     template <int NUM>
-    int do_with_size(const std::filesystem::path &input_dir) {
-        const auto input = get_input<NUM>(input_dir);
+    int do_with_size() {
+        const auto input = get_input<NUM>();
         std::vector<state<NUM>> choices;
         std::vector<stepless_state<NUM>> seen;
         choices.push_back(input);
@@ -195,20 +194,16 @@ namespace {
         return -1;
     }
 
-    /*
-
-    */
-    std::string part_1(const std::filesystem::path &input_dir) {
+    /************************* Part 1 *************************/
+    std::string part_1(const std::vector<std::string>& lines) {
         //Took 12.105005800s to run on release... :/
-        return std::to_string(do_with_size<NUM_ITEMS_P1>(input_dir));
+        return std::to_string(do_with_size<NUM_ITEMS_P1>());
     }
 
-    /*
-
-    */
-    std::string part_2(const std::filesystem::path &input_dir) {
+    /************************* Part 1 *************************/
+    std::string part_2(const std::vector<std::string>& lines) {
         //Took 18:40.155365 (almost 20 minutes) to run on release... :/
-        return std::to_string(do_with_size<NUM_ITEMS_P2>(input_dir));
+        return std::to_string(do_with_size<NUM_ITEMS_P2>());
     }
 
     aoc::registration r{2016, 11, part_1, part_2};

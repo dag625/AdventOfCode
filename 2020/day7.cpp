@@ -49,8 +49,7 @@ namespace aoc2020 {
             return { name, reqs };
         }
 
-        std::vector<bag_type> get_input(const fs::path& input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_7_input.txt");
+        std::vector<bag_type> get_input(const std::vector<std::string>& lines) {
             std::vector<bag_type> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_bag_type);
@@ -117,8 +116,8 @@ namespace aoc2020 {
 
     How many bag colors can eventually contain at least one shiny gold bag? (The list of rules is quite long; make sure you get all of it.)
     */
-    std::string solve_day_7_1(const std::filesystem::path& input_dir) {
-        return std::to_string(get_ancestors(get_input(input_dir), "shiny gold").size());
+    std::string solve_day_7_1(const std::vector<std::string>& lines) {
+        return std::to_string(get_ancestors(get_input(lines), "shiny gold").size());
     }
 
     /*
@@ -147,8 +146,8 @@ namespace aoc2020 {
 
     How many individual bags are required inside your single shiny gold bag?
     */
-    std::string solve_day_7_2(const std::filesystem::path& input_dir) {
-        return std::to_string(count_descendants(get_input(input_dir), "shiny gold"));
+    std::string solve_day_7_2(const std::vector<std::string>& lines) {
+        return std::to_string(count_descendants(get_input(lines), "shiny gold"));
     }
 
     static aoc::registration r {2020, 7, solve_day_7_1, solve_day_7_2};

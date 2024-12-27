@@ -24,8 +24,7 @@ namespace {
      See https://adventofcode.com/2017/day/14
      */
 
-    std::string get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_14_input.txt");
+    std::string get_input(const std::vector<std::string>& lines) {
         return lines.front();
     }
 
@@ -124,8 +123,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         grid<char> g {128u, 128u};
         int used = 0;
         for (int r = 0; r < g.num_rows(); ++r) {
@@ -142,8 +141,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         grid<int> g {128u, 128u};
         for (int r = 0; r < g.num_rows(); ++r) {
             const auto hash = knot_hash(fmt::format("{}-{}", input, r));

@@ -89,8 +89,7 @@ namespace {
                  {std::max(x1, x2), std::max(y1, y2), std::max(z1, z2)}};
     }
 
-    std::vector<box> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_22_input.txt");
+    std::vector<box> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_step) | to<std::vector<box>>();
     }
 
@@ -236,8 +235,8 @@ namespace {
 
     Execute the reboot steps. Afterward, considering only cubes in the region x=-50..50,y=-50..50,z=-50..50, how many cubes are on?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto states = follow_steps(input);
         return std::to_string(count_cells(states));
     }
@@ -314,8 +313,8 @@ namespace {
 
     Starting again with all cubes off, execute all reboot steps. Afterward, considering all cubes, how many cubes are on?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto states = follow_steps(input, true);
         return std::to_string(count_cells(states));
     }

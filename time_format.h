@@ -13,6 +13,9 @@ namespace aoc {
 
     template <typename Rep, typename Period>
     std::string time_to_string(std::chrono::duration<Rep, Period> v) {
+        if (v < std::chrono::microseconds{1}) {
+            return "<1us";
+        }
         std::stringstream os;
         os << std::setfill('0');
         bool haveDays = false;

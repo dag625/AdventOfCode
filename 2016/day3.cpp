@@ -25,8 +25,7 @@ namespace {
         return {parse<int>(p[0]), parse<int>(p[1]), parse<int>(p[2])};
     }
 
-    std::vector<position3d> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_3_input.txt");
+    std::vector<position3d> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_point) | to<std::vector<position3d>>();
     }
 
@@ -58,8 +57,8 @@ namespace {
 
     In your puzzle input, how many of the listed triangles are possible?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num = std::count_if(input.begin(), input.end(), &is_possible);
         return std::to_string(num);
     }
@@ -78,8 +77,8 @@ namespace {
     203 403 603
     In your puzzle input, and instead reading by columns, how many of the listed triangles are possible?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = tilt(get_input(input_dir));
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = tilt(get_input(lines));
         const auto num = std::count_if(input.begin(), input.end(), &is_possible);
         return std::to_string(num);
     }

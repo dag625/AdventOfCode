@@ -52,8 +52,7 @@ namespace {
         }
     }
 
-    std::vector<instruction> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_8_input.txt");
+    std::vector<instruction> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_instruction) | to<std::vector<instruction>>();
     }
 
@@ -121,8 +120,8 @@ namespace {
 
     There seems to be an intermediate check of the voltage used by the display: after you swipe your card, if the screen did work, how many pixels should be lit?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         grid<char> screen {6, 50};
         std::fill(screen.begin(), screen.end(), '.');
         for (const auto& ins : input) {
@@ -138,8 +137,8 @@ namespace {
 
     After you swipe your card, what code is the screen trying to display?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         grid<char> screen {6, 50};
         std::fill(screen.begin(), screen.end(), '.');
         for (const auto& ins : input) {

@@ -82,8 +82,7 @@ namespace {
         }
     };
 
-    std::vector<instruction> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_1_input.txt");
+    std::vector<instruction> get_input(const std::vector<std::string>& lines) {
         std::vector<instruction> retval;
         for (const auto& l : lines) {
             const auto parts = split(l, ", ");
@@ -111,8 +110,8 @@ namespace {
     R5, L5, R5, R3 leaves you 12 blocks away.
     How many blocks away is Easter Bunny HQ?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         state s{};
         for (const auto& ins : input) {
             s += ins;
@@ -128,8 +127,8 @@ namespace {
 
     How many blocks away is the first location you visit twice?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         state s{};
         std::vector<position> visited;
         visited.reserve(input.size() * 10);

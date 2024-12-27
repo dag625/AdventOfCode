@@ -75,8 +75,7 @@ namespace {
         return {parse_3digit<position64>(parts[0]), parse_3digit<velocity64>(parts[1])};
     };
 
-    std::vector<stone> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_24_input.txt");
+    std::vector<stone> get_input(const std::vector<std::string>& lines) {
         return lines | std::views::transform(&parse_stone) | to<std::vector>();
     }
 
@@ -165,8 +164,8 @@ namespace {
 
     Considering only the X and Y axes, check all pairs of hailstones' future paths for intersections. How many of these intersections occur within the test area?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto count = find_intersections(input, MIN_POS, MAX_POS);
         return std::to_string(count);
     }
@@ -208,8 +207,8 @@ namespace {
 
     Determine the exact position and velocity the rock needs to have at time 0 so that it perfectly collides with every hailstone. What do you get if you add up the X, Y, and Z coordinates of that initial position?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         /*
          * Run the python script day24_part2.py, passing the input file as the argument, e.g.:
          * >python.exe .\2023\day24_part2.py C:\Path\to\AoC\Inputs\inputs\2023\day_24_input.txt

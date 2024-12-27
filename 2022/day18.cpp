@@ -34,8 +34,7 @@ namespace {
         return {parse<int>(parts[0]), parse<int>(parts[1]), parse<int>(parts[2])};
     }
 
-    std::vector<point_3d> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2022" / "day_18_input.txt");
+    std::vector<point_3d> get_input(const std::vector<std::string>& lines) {
         auto retval = lines | std::views::transform(parse_point) | to<std::vector<point_3d>>();
         std::sort(retval.begin(), retval.end());
         return retval;
@@ -108,8 +107,8 @@ namespace {
 
     What is the surface area of your scanned lava droplet?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto dirs = get_cardinal_directions<3>();
         int free_faces = 0;
         for (const auto& p : input) {
@@ -134,8 +133,8 @@ namespace {
 
     What is the exterior surface area of your scanned lava droplet?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto air = find_air(input);
         const auto dirs = get_cardinal_directions<3>();
         int free_faces = 0;

@@ -272,8 +272,7 @@ namespace {
         return {id, std::move(beacons), std::move(fps)};
     }
 
-    std::vector<scanner> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_19_input.txt");
+    std::vector<scanner> get_input(const std::vector<std::string>& lines) {
         const auto end = lines.end();
         std::vector<scanner> retval;
         retval.reserve(32);
@@ -778,8 +777,8 @@ namespace {
 
     Assemble the full map of beacons. How many beacons are there?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         input.front().offset = {0, 0, 0};
         input.front().transform = { 1, 0, 0,   0, 1, 0,   0, 0, 1};
         auto points = input.front().beacons | to<std::set<vector_3d>>();
@@ -810,8 +809,8 @@ namespace {
 
     What is the largest Manhattan distance between any two scanners?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         input.front().offset = {0, 0, 0};
         input.front().transform = { 1, 0, 0,   0, 1, 0,   0, 0, 1};
         while (std::any_of(input.begin(), input.end(), [](const scanner& s){ return !s.offset.has_value(); })) {

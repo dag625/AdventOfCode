@@ -23,8 +23,7 @@ namespace {
      See https://adventofcode.com/2024/day/3
      */
 
-    std::vector<std::string> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_3_input.txt");
+    std::vector<std::string> get_input(const std::vector<std::string>& lines) {
         return lines;
     }
 
@@ -63,8 +62,8 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t total = 0;
         for (const auto& l : input) {
             total += totalInLine(l);
@@ -73,8 +72,8 @@ namespace {
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t total = 0;
         bool enabled = true;
         for (const auto& l : input) {

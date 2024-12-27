@@ -18,8 +18,7 @@ namespace aoc2020 {
 
     namespace {
 
-        grid<char> get_input(const fs::path &input_dir) {
-            auto lines = read_file_lines(input_dir / "2020" / "day_11_input.txt");
+        grid<char> get_input(const std::vector<std::string>& lines) {
             return to_grid(lines);
         }
 
@@ -180,8 +179,8 @@ namespace aoc2020 {
 
     Simulate your seating area by applying the seating rules repeatedly until no seats change state. How many seats end up occupied?
     */
-    std::string solve_day_11_1(const std::filesystem::path& input_dir) {
-        auto grid = get_input(input_dir);
+    std::string solve_day_11_1(const std::vector<std::string>& lines) {
+        auto grid = get_input(lines);
         int num_changes = 1, num_iters = 0;
         while (num_changes > 0) {
             auto changes = iterate<ruleset_1>(grid);
@@ -299,8 +298,8 @@ namespace aoc2020 {
 
     Given the new visibility method and the rule change for occupied seats becoming empty, once equilibrium is reached, how many seats end up occupied?
     */
-    std::string solve_day_11_2(const std::filesystem::path& input_dir) {
-        auto grid = get_input(input_dir);
+    std::string solve_day_11_2(const std::vector<std::string>& lines) {
+        auto grid = get_input(lines);
         int num_changes = 1, num_iters = 0;
         while (num_changes > 0) {
             auto changes = iterate<ruleset_2>(grid);

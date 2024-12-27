@@ -34,8 +34,7 @@ namespace {
         return parts | std::views::transform([](std::string_view t){ return std::string{t}; }) | std::ranges::to<std::vector>();
     }
 
-    info get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2024" / "day_19_input.txt");
+    info get_input(const std::vector<std::string>& lines) {
         return {
                 parse_towels(lines.front()),
                 {lines.begin() + 2, lines.end()}
@@ -103,16 +102,16 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num_possible = std::count_if(input.designs.begin(), input.designs.end(),
                                                 [&t = input.towels](std::string_view s){ return is_possible(s, t); });
         return std::to_string(num_possible);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num_ways = std::accumulate(input.designs.begin(), input.designs.end(), 0ll,
                                                 [&t = input.towels](int64_t tot, std::string_view s){ return tot + num_possible(s, t); });
         return std::to_string(num_ways);

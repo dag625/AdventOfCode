@@ -45,8 +45,7 @@ namespace {
         return {std::move(data), cg.num_cols()};
     }
 
-    grid<char> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_16_input.txt");
+    grid<char> get_input(const std::vector<std::string>& lines) {
         const auto row_len = lines.front().size();
         return {lines | std::views::join | to<std::vector<char>>(), row_len};
     }
@@ -209,8 +208,8 @@ namespace {
 
     The light isn't energizing enough tiles to produce lava; to debug the contraption, you need to start by analyzing the current situation. With the beam starting in the top-left heading right, how many tiles end up being energized?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto tiles = to_tiles(input);
         beam_it(tiles, {{0, -1}, {0, 1}});
         const auto num = std::count_if(tiles.begin(), tiles.end(), [](const tile& t){ return t.energized; });
@@ -249,8 +248,8 @@ namespace {
     .#...#.#..
     Find the initial beam configuration that energizes the largest number of tiles; how many tiles are energized in that configuration?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto tiles = to_tiles(input);
         //std::size_t max = 0;
         const int num_rows = static_cast<int>(tiles.num_rows()), num_cols = static_cast<int>(tiles.num_cols());

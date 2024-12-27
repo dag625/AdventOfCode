@@ -22,8 +22,7 @@ namespace {
      See https://adventofcode.com/2017/day/4
      */
 
-    std::vector<std::string> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_4_input.txt");
+    std::vector<std::string> get_input(const std::vector<std::string>& lines) {
         return lines;
     }
 
@@ -48,15 +47,15 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num_valid = std::count_if(input.begin(), input.end(), &is_valid);
         return std::to_string(num_valid);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto num_valid = std::count_if(input.begin(), input.end(), &is_valid_anagrams);
         return std::to_string(num_valid);
     }

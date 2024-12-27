@@ -53,8 +53,7 @@ namespace aoc2020 {
             return { parse_code(m[1]), std::stoi(m[2]) };
         }
 
-        std::vector<instruction> get_input(const fs::path& input_dir) {
-            auto lines = aoc::read_file_lines(input_dir / "2020" / "day_8_input.txt");
+        std::vector<instruction> get_input(const std::vector<std::string>& lines) {
             std::vector<instruction> retval;
             retval.reserve(lines.size());
             std::transform(lines.begin(), lines.end(), std::back_inserter(retval), parse_instruction);
@@ -145,8 +144,8 @@ namespace aoc2020 {
 
     Your puzzle answer was 2025.
     */
-    std::string solve_day_8_1(const std::filesystem::path& input_dir) {
-        auto instructions = get_input(input_dir);
+    std::string solve_day_8_1(const std::vector<std::string>& lines) {
+        auto instructions = get_input(lines);
         return std::to_string(accumulate(instructions).first);
     }
 
@@ -185,8 +184,8 @@ namespace aoc2020 {
 
     Fix the program so that it terminates normally by changing exactly one jmp (to nop) or nop (to jmp). What is the value of the accumulator after the program terminates?
     */
-    std::string solve_day_8_2(const std::filesystem::path& input_dir) {
-        auto instructions = get_input(input_dir);
+    std::string solve_day_8_2(const std::vector<std::string>& lines) {
+        auto instructions = get_input(lines);
         return std::to_string(fix_loop(instructions));
     }
 

@@ -42,8 +42,7 @@ namespace {
         return {parse<int>(parts[0]), parse<int>(parts[1])};
     }
 
-    std::vector<comp> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2017" / "day_24_input.txt");
+    std::vector<comp> get_input(const std::vector<std::string>& lines) {
         auto retval = lines | std::views::transform(&parse_comp) | std::ranges::to<std::vector>();
         std::sort(retval.begin(), retval.end());
         return retval;
@@ -112,15 +111,15 @@ namespace {
     }
 
     /************************* Part 1 *************************/
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto str = max_strength(input, 0);
         return std::to_string(str);
     }
 
     /************************* Part 2 *************************/
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         const auto [len, str] = max_length_strength(input, 0);
         return std::to_string(str);
     }

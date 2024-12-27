@@ -24,8 +24,7 @@ namespace {
         std::vector<std::string> outputs{};
     };
 
-    std::vector<line> get_input(const fs::path& input_dir) {
-        const auto lines = read_file_lines(input_dir / "2021" / "day_8_input.txt");
+    std::vector<line> get_input(const std::vector<std::string>& lines) {
         std::vector<line> retval;
         std::ranges::transform(lines, std::back_inserter(retval), [](const std::string& s) {
             const auto in_out = split(s, '|');
@@ -181,8 +180,8 @@ namespace {
 
     In the output values, how many times do digits 1, 4, 7, or 8 appear?
     */
-    std::string part_1(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         int64_t val = 0;
         for (const auto& l : input) {
             val += std::ranges::count_if(l.outputs,
@@ -244,8 +243,8 @@ namespace {
 
     For each entry, determine all of the wire/segment connections and decode the four-digit output values. What do you get if you add up all of the output values?
     */
-    std::string part_2(const std::filesystem::path& input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         return std::to_string(sum(input, [](const line& l){ return sum_outputs(l); }));
     }
 

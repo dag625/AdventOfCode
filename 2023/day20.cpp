@@ -75,8 +75,7 @@ namespace {
         }
     }
 
-    std::vector<mod> get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2023" / "day_20_input.txt");
+    std::vector<mod> get_input(const std::vector<std::string>& lines) {
         auto retval = lines | std::views::transform(&parse_mod) | to<std::vector<mod>>();
         set_inputs(retval);
         return retval;
@@ -244,8 +243,8 @@ namespace {
 
     Consult your module configuration; determine the number of low pulses and high pulses that would be sent after pushing the button 1000 times, waiting for all pulses to be fully handled after each push of the button. What do you get if you multiply the total number of low pulses sent by the total number of high pulses sent?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        auto input = get_input(lines);
         int64_t low = 0, high = 0;
         //Do stupidly
         for (int i = 0; i < 1000; ++i) {
@@ -263,9 +262,9 @@ namespace {
 
     Reset all modules to their default states. Waiting for all pulses to be fully handled after each button press, what is the fewest number of button presses required to deliver a single low pulse to the module named rx?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
+    std::string part_2(const std::vector<std::string>& lines) {
         using namespace std::string_literals;
-        auto input = get_input(input_dir);
+        auto input = get_input(lines);
         const auto pre_end = std::find_if(input.begin(), input.end(), [](const mod& m){ return std::find(m.outputs.begin(), m.outputs.end(), "rx"s) != m.outputs.end(); });
         const auto pre_pre_ends = input |
                 std::views::filter([n = pre_end->name](const mod& m){ return std::find(m.outputs.begin(), m.outputs.end(), n) != m.outputs.end(); }) |

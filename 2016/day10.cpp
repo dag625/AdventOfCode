@@ -56,8 +56,7 @@ namespace {
         }
     }
 
-    config get_input(const fs::path &input_dir) {
-        const auto lines = read_file_lines(input_dir / "2016" / "day_10_input.txt");
+    config get_input(const std::vector<std::string>& lines) {
         config retval;
         for (const auto& l : lines) {
             parse_line(l, retval);
@@ -168,8 +167,8 @@ namespace {
 
     Based on your instructions, what is the number of the bot that is responsible for comparing value-61 microchips with value-17 microchips?
     */
-    std::string part_1(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_1(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto bots = init_from_config(input);
         while (!iterate(input, bots)) {}
         const auto found = std::find_if(bots.begin(), bots.end(), [](const bot& b){ return *b.lo == 17 && *b.hi == 61; });
@@ -180,8 +179,8 @@ namespace {
     --- Part Two ---
     What do you get if you multiply together the values of one chip in each of outputs 0, 1, and 2?
     */
-    std::string part_2(const std::filesystem::path &input_dir) {
-        const auto input = get_input(input_dir);
+    std::string part_2(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
         auto bots = init_from_config(input);
         while (!iterate(input, bots)) {}
         const auto found0 = std::find_if(input.transfers.begin(), input.transfers.end(),

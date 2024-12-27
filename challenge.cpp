@@ -4,11 +4,13 @@
 
 #include "challenge.h"
 #include "time_format.h"
+#include "utilities.h"
 
 #include <tuple>
 #include <algorithm>
 #include <iostream>
 #include <chrono>
+#include <format>
 
 namespace aoc {
 
@@ -44,16 +46,20 @@ namespace aoc {
 
         void run_challenge(const std::filesystem::path& input_dir, const challenge& c, bool md_fmt, bool hide_answers) {
             try {
+                //read_file_lines(input_dir / "2024" / "day_1_input.txt")
+                const auto input_file = input_dir / std::to_string(c.year) / std::format("day_{}_input.txt", c.day);
+                const auto input_lines = read_file_lines(input_file, false);
+
                 if (md_fmt) {
                     std::cout << "#### ";
                 }
                 std::cout << "Year " << c.year << " - Day " << c.day << " - Challenge " << c.num << md_newline{md_fmt, true};
-                const auto start = std::chrono::system_clock::now();
-                const auto result = (c.func)(input_dir);
+                const auto start = std::chrono::steady_clock::now();
+                const auto result = (c.func)(input_lines);
                 if (!hide_answers) {
-                    md_tab(std::cout, md_fmt) << (c.func)(input_dir) << md_newline{md_fmt};
+                    md_tab(std::cout, md_fmt) << result << md_newline{md_fmt};
                 }
-                md_tab(std::cout, md_fmt) << "Challenge time:  " << time_to_string(std::chrono::system_clock::now() - start) << md_newline{md_fmt, true};
+                md_tab(std::cout, md_fmt) << "Challenge time:  " << time_to_string(std::chrono::steady_clock::now() - start) << md_newline{md_fmt, true};
                 std::cout.flush();
             }
             catch (const std::exception& e) {
