@@ -8,6 +8,7 @@
 #include <string_view>
 #include <charconv>
 #include <system_error>
+#include <optional>
 
 namespace aoc {
 
@@ -36,6 +37,19 @@ namespace aoc {
             s.remove_prefix(1);
         }
         return parse<T>(s, base);
+    }
+
+    template <typename T>
+    std::optional<T> try_parse(std::string_view s, int base = 10) {
+        if (s.empty()) {
+            return std::nullopt;
+        }
+        T val{};
+        const auto res = std::from_chars(s.data(), s.data() + s.size(), val, base);
+        if (const auto ec = std::make_error_code(res.ec); ec) {
+            return std::nullopt;
+        }
+        return val;
     }
 
 } /* namespace aoc */
