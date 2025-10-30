@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(AdventOfCode)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME ON)
@@ -247,7 +247,8 @@ add_executable(AdventOfCode
         2024/day22.cpp
         2024/day23.cpp
         2024/day24.cpp
-        2024/day25.cpp)
+        2024/day25.cpp
+        2018/day6.cpp)
 target_include_directories(AdventOfCode PRIVATE "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/boost/include")
 target_compile_definitions(AdventOfCode PRIVATE BOOST_IOSTREAMS_NO_LIB)
 target_link_libraries(AdventOfCode PRIVATE OpenSSL::SSL fmt)
