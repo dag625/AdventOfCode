@@ -8,6 +8,7 @@
 #include <fmt/core.h>
 
 #include <vector>
+#include <list>
 
 #include "utilities.h"
 #include "parse.h"
@@ -30,45 +31,66 @@ namespace {
         return {parse32(parts[0]), parse32(parts[6])};
     }
 
-    struct state {
-        std::vector<int64_t> scores;
-        std::vector<int> marbles = { 0 };
-        int current = 0;
+    class state {
+    public:
+        using list = std::list<int>;
+        using iter = list::const_iterator;
 
-        explicit state(const game& g) { scores.resize(g.num_players); marbles.reserve(g.num_marbles + 1); }
+    private:
+        std::vector<int64_t> m_scores;
+        list marbles = { 0 };
+        iter current = marbles.begin();
 
-        [[nodiscard]] int next() const {
-            const int tmp = current + 2;//We are inserting at the postion before this.
-            const int sz = static_cast<int>(marbles.size());
-            const int a = tmp - static_cast<int>(tmp > sz) * sz;
-            return a;
+        [[nodiscard]] iter next(const iter start) const {
+            iter retval = std::next(start);
+            if (retval == marbles.end()) {
+                return marbles.begin();
+            }
+            else {
+                return retval;
+            }
         }
 
-        [[nodiscard]] int prev() const {
-            const int tmp = current - 7;
-            const int sz = static_cast<int>(marbles.size());
-            const int a = tmp + static_cast<int>(tmp < 0) * sz;
-            return a;
+        [[nodiscard]] iter prev(const iter start, int steps) const {
+            iter retval = start;
+            for (int s = 0; s < steps; ++s) {
+                if (retval == marbles.begin()) {
+                    retval = marbles.end();
+                }
+                retval = std::prev(retval);
+            }
+            return retval;
+        }
+
+    public:
+        explicit state(const game& g) { m_scores.resize(g.num_players); }
+
+        const std::vector<int64_t>& scores() const { return m_scores; }
+
+        [[nodiscard]] iter next() const {
+            return next(next(current));
+        }
+
+        [[nodiscard]] iter prev() const {
+            return prev(current, 7);
         }
 
         void add_marble(int player, int m) {
             if (m % 23 == 0) [[unlikely]] {
-                scores[player] += m;
-                const auto n = prev();
-                const auto rem = marbles.begin() + n;
-                scores[player] += *rem;
+                m_scores[player] += m;
+                const auto rem = prev();
+                m_scores[player] += *rem;
+                current = next(rem);
                 marbles.erase(rem);
-                current = n;
             }
             else if (marbles.size() < 2) [[unlikely]] {
                 marbles.push_back(m);
                 ++current;
             }
             else [[likely]] {
-                const auto n = next();
-                const auto pos = marbles.begin() + n;
+                const auto pos = next();
                 marbles.insert(pos, m);
-                current = n;
+                current = prev(pos, 1);
             }
         }
     };
@@ -80,7 +102,7 @@ namespace {
         for (int m = 1, player = 0; m <= input.num_marbles; ++m, player = (player + 1) % input.num_players) {
             s.add_marble(player, m);
         }
-        const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+        const auto winner = std::max_element(s.scores().begin(), s.scores().end());
         return std::to_string(*winner);
     }
 
@@ -92,7 +114,7 @@ namespace {
         for (int m = 1, player = 0; m <= input.num_marbles ; ++m, player = (player + 1) % input.num_players) {
             s.add_marble(player, m);
         }
-        const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+        const auto winner = std::max_element(s.scores().begin(), s.scores().end());
         return std::to_string(*winner);
     }
 
@@ -105,7 +127,7 @@ namespace {
             for (int m = 1, player = 0; m <= input.num_marbles; ++m, player = (player + 1) % input.num_players) {
                 s.add_marble(player, m);
             }
-            const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+            const auto winner = std::max_element(s.scores().begin(), s.scores().end());
             CHECK_EQ(*winner, 32);
         }
         /*
@@ -121,7 +143,7 @@ namespace {
             for (int m = 1, player = 0; m <= input.num_marbles; ++m, player = (player + 1) % input.num_players) {
                 s.add_marble(player, m);
             }
-            const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+            const auto winner = std::max_element(s.scores().begin(), s.scores().end());
             CHECK_EQ(*winner, 8317);
         }
         TEST_CASE("2018_day09:other_example2") {
@@ -130,7 +152,7 @@ namespace {
             for (int m = 1, player = 0; m <= input.num_marbles; ++m, player = (player + 1) % input.num_players) {
                 s.add_marble(player, m);
             }
-            const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+            const auto winner = std::max_element(s.scores().begin(), s.scores().end());
             CHECK_EQ(*winner, 146373);
         }
         TEST_CASE("2018_day09:other_example3") {
@@ -139,7 +161,7 @@ namespace {
             for (int m = 1, player = 0; m <= input.num_marbles; ++m, player = (player + 1) % input.num_players) {
                 s.add_marble(player, m);
             }
-            const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+            const auto winner = std::max_element(s.scores().begin(), s.scores().end());
             CHECK_EQ(*winner, 2764);
         }
         TEST_CASE("2018_day09:other_example4") {
@@ -148,7 +170,7 @@ namespace {
             for (int m = 1, player = 0; m <= input.num_marbles; ++m, player = (player + 1) % input.num_players) {
                 s.add_marble(player, m);
             }
-            const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+            const auto winner = std::max_element(s.scores().begin(), s.scores().end());
             CHECK_EQ(*winner, 54718);
         }
         TEST_CASE("2018_day09:other_example5") {
@@ -157,7 +179,7 @@ namespace {
             for (int m = 1, player = 0; m <= input.num_marbles; ++m, player = (player + 1) % input.num_players) {
                 s.add_marble(player, m);
             }
-            const auto winner = std::max_element(s.scores.begin(), s.scores.end());
+            const auto winner = std::max_element(s.scores().begin(), s.scores().end());
             CHECK_EQ(*winner, 37305);
         }
     }
