@@ -222,8 +222,8 @@ namespace {
 
     aoc::registration r {2018, 7, part_1, part_2};
 
-    TEST_SUITE("2018_day7") {
-        TEST_CASE("2018_day7:example") {
+    TEST_SUITE("2018_day07") {
+        TEST_CASE("2018_day07:example") {
             const std::vector<std::string> lines {
                 "Step C must be finished before step A can begin.",
                 "Step C must be finished before step F can begin.",
