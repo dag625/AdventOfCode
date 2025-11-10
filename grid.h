@@ -451,6 +451,16 @@ namespace aoc {
             return retval;
         }
 
+        [[nodiscard]] grid transpose() const {
+            grid retval {num_cols(), num_rows()};
+            for (int x = 0; x < retval.num_rows(); ++x) {
+                for (int y = 0; y < retval.num_cols(); ++y) {
+                    retval[position{x, y}] = (*this)[position{y, x}];
+                }
+            }
+            return retval;
+        }
+
         void display(std::ostream& os, std::optional<position> marked = std::nullopt, int col_width = 8) const {
             std::size_t idx = 0;
             os << std::setw(6) << std::left << (idx / m_num_cols);

@@ -42,13 +42,11 @@ namespace {
         iter current = marbles.begin();
 
         [[nodiscard]] iter next(const iter start) const {
-            iter retval = std::next(start);
+            auto retval = std::next(start);
             if (retval == marbles.end()) {
                 return marbles.begin();
             }
-            else {
-                return retval;
-            }
+            return retval;
         }
 
         [[nodiscard]] iter prev(const iter start, int steps) const {
@@ -65,7 +63,7 @@ namespace {
     public:
         explicit state(const game& g) { m_scores.resize(g.num_players); }
 
-        const std::vector<int64_t>& scores() const { return m_scores; }
+        [[nodiscard]] const std::vector<int64_t>& scores() const { return m_scores; }
 
         [[nodiscard]] iter next() const {
             return next(next(current));
@@ -109,7 +107,7 @@ namespace {
     /************************* Part 2 *************************/
     std::string part_2(const std::vector<std::string>& lines) {
         auto input = get_input(lines);
-        input.num_marbles *= 100; //I'm sure there's a smart algorithm, but this finishes in just under 10 min on my machine.
+        input.num_marbles *= 100; //I'm sure there's a smart algorithm, but this finishes in about 6 sec on my machine.
         state s {input};
         for (int m = 1, player = 0; m <= input.num_marbles ; ++m, player = (player + 1) % input.num_players) {
             s.add_marble(player, m);
