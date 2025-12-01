@@ -238,19 +238,19 @@ namespace aoc {
         iterator emplace(const_iterator pos, Args&&... args);
         iterator erase(const_iterator pos);
         iterator erase(const_iterator first, const_iterator last);
-        void push_front(const T& value) { insert(begin(), value); }
-        void push_front(T&& value) { insert(begin(), std::move(value)); }
+        void push_front(const T& value) { insert(cbegin(), value); }
+        void push_front(T&& value) { insert(cbegin(), std::move(value)); }
         template<typename R>
-        void prepend_range(R&& rg) requires std::ranges::input_range<R> && std::convertible_to<std::ranges::range_reference_t<R>, T> { insert_range(begin(), std::forward<R>(rg)); }
+        void prepend_range(R&& rg) requires std::ranges::input_range<R> && std::convertible_to<std::ranges::range_reference_t<R>, T> { insert_range(cbegin(), std::forward<R>(rg)); }
         template< class... Args >
         reference emplace_front(Args&&... args) { emplace(begin(), std::forward<Args>(args)...); return front(); }
         void pop_front() { erase(begin()); }
-        void push_back(const T& value) { insert(end(), value); }
-        void push_back(T&& value) { insert(end(), std::move(value)); }
+        void push_back(const T& value) { insert(cend(), value); }
+        void push_back(T&& value) { insert(cend(), std::move(value)); }
         template<typename R>
-        void append_range(R&& rg) requires std::ranges::input_range<R> && std::convertible_to<std::ranges::range_reference_t<R>, T> { insert_range(end(), std::forward<R>(rg)); }
+        void append_range(R&& rg) requires std::ranges::input_range<R> && std::convertible_to<std::ranges::range_reference_t<R>, T> { insert_range(cend(), std::forward<R>(rg)); }
         template< class... Args >
-        reference emplace_back(Args&&... args) { emplace(end(), std::forward<Args>(args)...); return front(); }
+        reference emplace_back(Args&&... args) { emplace(cend(), std::forward<Args>(args)...); return front(); }
         void pop_back() { erase(end()); }
     };
 
@@ -303,7 +303,7 @@ namespace aoc {
 
         //Dereference
         reference operator*() noexcept { return m_ptr->data; }
-        const_reference operator*() const noexcept { return m_ptr->data; }
+        reference operator*() const noexcept { return m_ptr->data; }
         pointer operator->() noexcept { return &m_ptr->data; }
         const_pointer operator->() const noexcept { return &m_ptr->data; }
 
@@ -342,6 +342,18 @@ namespace aoc {
             return *this;
         }
     };
+
+    template <typename T>
+    circular_list_iterator<T> operator+(circular_list_iterator<T> it, const typename circular_list_iterator<T>::difference_type dist) noexcept {
+        it += dist;
+        return it;
+    }
+
+    template <typename T>
+    circular_list_iterator<T> operator-(circular_list_iterator<T> it, const typename circular_list_iterator<T>::difference_type dist) noexcept {
+        it -= dist;
+        return it;
+    }
 
     template <typename T>
     class circular_list_const_iterator {
@@ -434,6 +446,18 @@ namespace aoc {
         }
     };
 
+    template <typename T>
+    circular_list_const_iterator<T> operator+(circular_list_const_iterator<T> it, const typename circular_list_const_iterator<T>::difference_type dist) noexcept {
+        it += dist;
+        return it;
+    }
+
+    template <typename T>
+    circular_list_const_iterator<T> operator-(circular_list_const_iterator<T> it, const typename circular_list_const_iterator<T>::difference_type dist) noexcept {
+        it -= dist;
+        return it;
+    }
+
     //************************ circular_list Methods ************************
 
     template <typename T>
@@ -444,7 +468,7 @@ namespace aoc {
             const size_type count)
     {
         auto* first = first_node.get();
-        auto* last = first_node.get();
+        auto* last = last_node.get();
         if (pos.m_ptr == nullptr) {
             if (m_size == 0) {
                 last->next = first;
@@ -463,7 +487,7 @@ namespace aoc {
             pos.m_ptr->prev = last;
             pos.m_ptr->prev->next = first;
 
-            if (m_head == pos.m_ptr) {
+            if (m_head == pos.m_ptr && !pos.m_passed_end) {
                 m_head = first;
             }
             first_node.release();
