@@ -52,13 +52,13 @@ namespace {
     }
 
     struct instruction {
-        turn turn = turn::Left;
+        turn turn_dir = turn::Left;
         int distance = 0;
     };
 
     instruction parse_instruction(std::string_view s) {
         instruction retval;
-        retval.turn = s.front() == 'R' ? turn::Right : turn::Left;
+        retval.turn_dir = s.front() == 'R' ? turn::Right : turn::Left;
         s.remove_prefix(1);
         retval.distance = parse<int>(s);
         return retval;
@@ -70,13 +70,13 @@ namespace {
 
         state operator+(const instruction& i) {
             state retval = *this;
-            retval.dir = make_turn(dir, i.turn);
+            retval.dir = make_turn(dir, i.turn_dir);
             retval.pos = pos + (dir_to_vel(retval.dir) * i.distance);
             return *this;
         }
 
         state& operator+=(const instruction& i) {
-            dir = make_turn(dir, i.turn);
+            dir = make_turn(dir, i.turn_dir);
             pos = pos + (dir_to_vel(dir) * i.distance);
             return *this;
         }
@@ -133,7 +133,7 @@ namespace {
         std::vector<position> visited;
         visited.reserve(input.size() * 10);
         for (const auto& ins : input) {
-            const auto dir = make_turn(s.dir, ins.turn);
+            const auto dir = make_turn(s.dir, ins.turn_dir);
             const auto& vel = dir_to_vel(dir);
             auto pos = s.pos;
             bool revisited = false;

@@ -8,6 +8,7 @@
 #include <charconv>
 #include <regex>
 #include <numeric>
+#include <algorithm>
 
 #include "utilities.h"
 #include "ranges.h"

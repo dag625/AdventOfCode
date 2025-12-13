@@ -11,6 +11,7 @@
 #include <array>
 #include <ranges>
 #include <numeric>
+#include <algorithm>
 
 #include "utilities.h"
 

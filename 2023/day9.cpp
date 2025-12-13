@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <concepts>
+#include <algorithm>
 
 #include "utilities.h"
 #include "parse.h"

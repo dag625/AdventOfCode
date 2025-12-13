@@ -11,6 +11,7 @@
 #include <ranges>
 #include <regex>
 #include <set>
+#include <algorithm>
 
 #include "utilities.h"
 #include "point.h"

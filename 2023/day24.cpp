@@ -12,6 +12,8 @@
 #include "utilities.h"
 #include "parse.h"
 #include "ranges.h"
+#include "matrix.h"
+#include "int128.h"
 
 namespace fs = std::filesystem;
 
@@ -29,6 +31,57 @@ namespace {
         int64_t dx = 0;
         int64_t dy = 0;
         int64_t dz = 0;
+    };
+
+    struct vec3d {
+        //The numbers are big enough and we are doing multiplications, so we need this.
+        int128 x = 0;
+        int128 y = 0;
+        int128 z = 0;
+
+        vec3d() = default;
+        vec3d(int64_t x, int64_t y, int64_t z) : x(x), y(y), z(z) {}
+        vec3d(int128 x, int128 y, int128 z) : x(x), y(y), z(z) {}
+        vec3d(const position64& p) : x(p.x), y(p.y), z(p.z) {}
+        vec3d(const velocity64& v) : x(v.dx), y(v.dy), z(v.dz) {}
+
+        bool operator==(const vec3d& rhs) const noexcept = default;
+
+        [[nodiscard]] int128 dot(const vec3d& rhs) const noexcept { return x * rhs.x + y * rhs.y + z * rhs.z; }
+        [[nodiscard]] vec3d cross(const vec3d& rhs) const noexcept {
+            vec3d retval;
+            retval.x = y * rhs.z - z * rhs.y;
+            retval.y = z * rhs.x - x * rhs.z;
+            retval.z = x * rhs.y - y * rhs.x;
+            return retval;
+        }
+
+        [[nodiscard]] vec3d operator+(const vec3d& rhs) const noexcept { return {x + rhs.x, y + rhs.y, z + rhs.z}; }
+        [[nodiscard]] vec3d operator-(const vec3d& rhs) const noexcept { return {x - rhs.x, y - rhs.y, z - rhs.z}; }
+        vec3d& operator+=(const vec3d& rhs) noexcept { x += rhs.x, y += rhs.y, z += rhs.z; return *this; }
+        vec3d& operator-=(const vec3d& rhs) noexcept { x -= rhs.x, y -= rhs.y, z -= rhs.z; return *this; }
+
+        [[nodiscard]] vec3d operator+(const int64_t rhs) const noexcept { return {x + rhs, y + rhs, z + rhs}; }
+        [[nodiscard]] vec3d operator-(const int64_t rhs) const noexcept { return {x - rhs, y - rhs, z - rhs}; }
+        [[nodiscard]] vec3d operator*(const int64_t rhs) const noexcept { return {x * rhs, y * rhs, z * rhs}; }
+        [[nodiscard]] vec3d operator/(const int64_t rhs) const noexcept { return {x / rhs, y / rhs, z / rhs}; }
+        [[nodiscard]] vec3d operator%(const int64_t rhs) const noexcept { return {x % rhs, y % rhs, z % rhs}; }
+        vec3d& operator+=(const int64_t rhs) noexcept { x += rhs, y += rhs, z += rhs; return *this; }
+        vec3d& operator-=(const int64_t rhs) noexcept { x -= rhs, y -= rhs, z -= rhs; return *this; }
+        vec3d& operator*=(const int64_t rhs) noexcept { x *= rhs, y *= rhs, z *= rhs; return *this; }
+        vec3d& operator/=(const int64_t rhs) noexcept { x /= rhs, y /= rhs, z /= rhs; return *this; }
+        vec3d& operator%=(const int64_t rhs) noexcept { x %= rhs, y %= rhs, z %= rhs; return *this; }
+
+        [[nodiscard]] vec3d operator+(const int128 rhs) const noexcept { return {x + rhs, y + rhs, z + rhs}; }
+        [[nodiscard]] vec3d operator-(const int128 rhs) const noexcept { return {x - rhs, y - rhs, z - rhs}; }
+        [[nodiscard]] vec3d operator*(const int128 rhs) const noexcept { return {x * rhs, y * rhs, z * rhs}; }
+        [[nodiscard]] vec3d operator/(const int128 rhs) const noexcept { return {x / rhs, y / rhs, z / rhs}; }
+        [[nodiscard]] vec3d operator%(const int128 rhs) const noexcept { return {x % rhs, y % rhs, z % rhs}; }
+        vec3d& operator+=(const int128 rhs) noexcept { x += rhs, y += rhs, z += rhs; return *this; }
+        vec3d& operator-=(const int128 rhs) noexcept { x -= rhs, y -= rhs, z -= rhs; return *this; }
+        vec3d& operator*=(const int128 rhs) noexcept { x *= rhs, y *= rhs, z *= rhs; return *this; }
+        vec3d& operator/=(const int128 rhs) noexcept { x /= rhs, y /= rhs, z /= rhs; return *this; }
+        vec3d& operator%=(const int128 rhs) noexcept { x %= rhs, y %= rhs, z %= rhs; return *this; }
     };
 
     struct stone {
@@ -96,118 +149,46 @@ namespace {
         return count;
     }
 
-    /*
-    --- Day 24: Never Tell Me The Odds ---
-    It seems like something is going wrong with the snow-making process. Instead of forming snow, the water that's been absorbed into the air seems to be forming hail!
+    std::pair<vec3d, vec3d> find_intersection(const std::vector<stone>& stones) {
+        //Math from: https://www.reddit.com/r/adventofcode/comments/18pnycy/comment/kxqjg33/
+        const auto s0 =  vec3d{stones[0].pos};
+        const auto s1 =  vec3d{stones[1].pos};
+        const auto s2 =  vec3d{stones[2].pos};
+        const auto vs0 =  vec3d{stones[0].vel};
+        const auto vs1 =  vec3d{stones[1].vel};
+        const auto vs2 =  vec3d{stones[2].vel};
 
-    Maybe there's something you can do to break up the hailstones?
+        const auto p1 = s1 - s0;
+        const auto p2 = s2 - s0;
+        const auto v1 = vs1 - vs0;
+        const auto v2 = vs2 - vs0;
 
-    Due to strong, probably-magical winds, the hailstones are all flying through the air in perfectly linear trajectories. You make a note of each hailstone's position and velocity (your puzzle input). For example:
+        const auto t1_top = -(p1.cross(p2).dot(v2));
+        const auto t1_bot = v1.cross(p2).dot(v2);
+        const auto t2_top = -(p1.cross(p2).dot(v1));
+        const auto t2_bot = p1.cross(v2).dot(v1);
+        const auto t1 = t1_top / t1_bot;
+        const auto t2 = t2_top / t2_bot;
 
-    19, 13, 30 @ -2,  1, -2
-    18, 19, 22 @ -1, -1, -2
-    20, 25, 34 @ -2, -2, -4
-    12, 31, 28 @ -1, -2, -1
-    20, 19, 15 @  1, -5, -3
-    Each line of text corresponds to the position and velocity of a single hailstone. The positions indicate where the hailstones are right now (at time 0). The velocities are constant and indicate exactly how far each hailstone will move in one nanosecond.
+        const auto d1 = s1 + (vs1 * t1);
+        const auto d2 = s2 + (vs2 * t2);
+        const auto dp = d2 - d1;
+        const auto dt = t2 - t1;
+        const auto v = dp / dt;
+        const auto p = d1 - v * t1;
 
-    Each line of text uses the format px py pz @ vx vy vz. For instance, the hailstone specified by 20, 19, 15 @ 1, -5, -3 has initial X position 20, Y position 19, Z position 15, X velocity 1, Y velocity -5, and Z velocity -3. After one nanosecond, the hailstone would be at 21, 14, 12.
+        return {p, v};
+    }
 
-    Perhaps you won't have to do anything. How likely are the hailstones to collide with each other and smash into tiny ice crystals?
-
-    To estimate this, consider only the X and Y axes; ignore the Z axis. Looking forward in time, how many of the hailstones' paths will intersect within a test area? (The hailstones themselves don't have to collide, just test for intersections between the paths they will trace.)
-
-    In this example, look for intersections that happen with an X and Y position each at least 7 and at most 27; in your actual data, you'll need to check a much larger test area. Comparing all pairs of hailstones' future paths produces the following results:
-
-    Hailstone A: 19, 13, 30 @ -2, 1, -2
-    Hailstone B: 18, 19, 22 @ -1, -1, -2
-    Hailstones' paths will cross inside the test area (at x=14.333, y=15.333).
-
-    Hailstone A: 19, 13, 30 @ -2, 1, -2
-    Hailstone B: 20, 25, 34 @ -2, -2, -4
-    Hailstones' paths will cross inside the test area (at x=11.667, y=16.667).
-
-    Hailstone A: 19, 13, 30 @ -2, 1, -2
-    Hailstone B: 12, 31, 28 @ -1, -2, -1
-    Hailstones' paths will cross outside the test area (at x=6.2, y=19.4).
-
-    Hailstone A: 19, 13, 30 @ -2, 1, -2
-    Hailstone B: 20, 19, 15 @ 1, -5, -3
-    Hailstones' paths crossed in the past for hailstone A.
-
-    Hailstone A: 18, 19, 22 @ -1, -1, -2
-    Hailstone B: 20, 25, 34 @ -2, -2, -4
-    Hailstones' paths are parallel; they never intersect.
-
-    Hailstone A: 18, 19, 22 @ -1, -1, -2
-    Hailstone B: 12, 31, 28 @ -1, -2, -1
-    Hailstones' paths will cross outside the test area (at x=-6, y=-5).
-
-    Hailstone A: 18, 19, 22 @ -1, -1, -2
-    Hailstone B: 20, 19, 15 @ 1, -5, -3
-    Hailstones' paths crossed in the past for both hailstones.
-
-    Hailstone A: 20, 25, 34 @ -2, -2, -4
-    Hailstone B: 12, 31, 28 @ -1, -2, -1
-    Hailstones' paths will cross outside the test area (at x=-2, y=3).
-
-    Hailstone A: 20, 25, 34 @ -2, -2, -4
-    Hailstone B: 20, 19, 15 @ 1, -5, -3
-    Hailstones' paths crossed in the past for hailstone B.
-
-    Hailstone A: 12, 31, 28 @ -1, -2, -1
-    Hailstone B: 20, 19, 15 @ 1, -5, -3
-    Hailstones' paths crossed in the past for both hailstones.
-    So, in this example, 2 hailstones' future paths cross inside the boundaries of the test area.
-
-    However, you'll need to search a much larger test area if you want to see if any hailstones might collide. Look for intersections that happen with an X and Y position each at least 200000000000000 and at most 400000000000000. Disregard the Z axis entirely.
-
-    Considering only the X and Y axes, check all pairs of hailstones' future paths for intersections. How many of these intersections occur within the test area?
-    */
+    /************************* Part 1 *************************/
     std::string part_1(const std::vector<std::string>& lines) {
         const auto input = get_input(lines);
         const auto count = find_intersections(input, MIN_POS, MAX_POS);
         return std::to_string(count);
     }
 
-    /*
-    --- Part Two ---
-    Upon further analysis, it doesn't seem like any hailstones will naturally collide. It's up to you to fix that!
-
-    You find a rock on the ground nearby. While it seems extremely unlikely, if you throw it just right, you should be able to hit every hailstone in a single throw!
-
-    You can use the probably-magical winds to reach any integer position you like and to propel the rock at any integer velocity. Now including the Z axis in your calculations, if you throw the rock at time 0, where do you need to be so that the rock perfectly collides with every hailstone? Due to probably-magical inertia, the rock won't slow down or change direction when it collides with a hailstone.
-
-    In the example above, you can achieve this by moving to position 24, 13, 10 and throwing the rock at velocity -3, 1, 2. If you do this, you will hit every hailstone as follows:
-
-    Hailstone: 19, 13, 30 @ -2, 1, -2
-    Collision time: 5
-    Collision position: 9, 18, 20
-
-    Hailstone: 18, 19, 22 @ -1, -1, -2
-    Collision time: 3
-    Collision position: 15, 16, 16
-
-    Hailstone: 20, 25, 34 @ -2, -2, -4
-    Collision time: 4
-    Collision position: 12, 17, 18
-
-    Hailstone: 12, 31, 28 @ -1, -2, -1
-    Collision time: 6
-    Collision position: 6, 19, 22
-
-    Hailstone: 20, 19, 15 @ 1, -5, -3
-    Collision time: 1
-    Collision position: 21, 14, 12
-    Above, each hailstone is identified by its initial position and its velocity. Then, the time and position of that hailstone's collision with your rock are given.
-
-    After 1 nanosecond, the rock has exactly the same position as one of the hailstones, obliterating it into ice dust! Another hailstone is smashed to bits two nanoseconds after that. After a total of 6 nanoseconds, all of the hailstones have been destroyed.
-
-    So, at time 0, the rock needs to be at X position 24, Y position 13, and Z position 10. Adding these three coordinates together produces 47. (Don't add any coordinates from the rock's velocity.)
-
-    Determine the exact position and velocity the rock needs to have at time 0 so that it perfectly collides with every hailstone. What do you get if you add up the X, Y, and Z coordinates of that initial position?
-    */
-    std::string part_2(const std::vector<std::string>& lines) {
+    /************************* Part 2 *************************/
+    std::string part_2_python(const std::vector<std::string>& lines) {
         const auto input = get_input(lines);
         /*
          * Run the python script day24_part2.py, passing the input file as the argument, e.g.:
@@ -219,10 +200,17 @@ namespace {
          * For now, trying to do the algebra by hand to be able to do this from C++ is a no-go,
          * particularly on Christmas Eve.
          */
-        return std::to_string(781390555762385ll);
+        return std::to_string(0ll/* Redacted */);
     }
 
-    aoc::registration r{2023, 24, part_1, part_2};
+    std::string part_2_cpp(const std::vector<std::string>& lines) {
+        const auto input = get_input(lines);
+        const auto [p, v] = find_intersection(input);
+        const auto res = p.x + p.y + p.z;
+        return std::to_string(static_cast<int64_t>(res));
+    }
+
+    aoc::registration r{2023, 24, part_1, part_2_cpp};
 
     TEST_SUITE("2023_day24") {
         TEST_CASE("2023_day24:example") {
@@ -237,6 +225,15 @@ namespace {
             const auto input = lines | std::views::transform(&parse_stone) | to<std::vector>();
             const auto count = find_intersections(input, 7, 27);
             CHECK_EQ(count, 2);
+
+            const auto [p, v] = find_intersection(input);
+            CHECK_EQ(p.x, 24);
+            CHECK_EQ(p.y, 13);
+            CHECK_EQ(p.z, 10);
+            CHECK_EQ(v.x, -3);
+            CHECK_EQ(v.y, 1);
+            CHECK_EQ(v.z, 2);
+            CHECK_EQ(p.x + p.y + p.z, 47);
         }
     }
 

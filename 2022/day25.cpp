@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <numeric>
+#include <cmath>
 
 #include "utilities.h"
 #include "ranges.h"

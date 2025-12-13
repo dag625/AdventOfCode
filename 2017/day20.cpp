@@ -8,6 +8,7 @@
 #include <fmt/core.h>
 
 #include <vector>
+#include <cmath>
 
 #include "utilities.h"
 #include "ranges.h"

@@ -10,6 +10,7 @@
 #include <charconv>
 #include <regex>
 #include <deque>
+#include <algorithm>
 
 #include "utilities.h"
 #include "ranges.h"

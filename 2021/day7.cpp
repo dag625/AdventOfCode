@@ -2,6 +2,8 @@
 // Created by Dan on 12/6/2021.
 //
 
+#include <algorithm>
+
 #include "registration.h"
 
 #include <doctest/doctest.h>
@@ -11,6 +13,7 @@
 #include <array>
 #include <ranges>
 #include <numeric>
+#include <algorithm>
 
 #include "utilities.h"
 

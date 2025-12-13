@@ -9,6 +9,7 @@
 #include <charconv>
 #include <system_error>
 #include <optional>
+#include <cstdint>
 
 namespace aoc {
 

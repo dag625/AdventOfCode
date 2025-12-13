@@ -140,11 +140,11 @@ namespace aoc {
             return m_elements[pos];
         }
 
-        [[nodiscard]] constexpr reference operator[](_In_range_(0, Size - 1) size_type pos) noexcept {
+        [[nodiscard]] constexpr reference operator[](/*_In_range_(0, Size - 1)*/ size_type pos) noexcept {
             return m_elements[pos];
         }
 
-        [[nodiscard]] constexpr const_reference operator[](_In_range_(0, Size - 1) size_type pos) const noexcept {
+        [[nodiscard]] constexpr const_reference operator[](/*_In_range_(0, Size - 1)*/ size_type pos) const noexcept {
             return m_elements[pos];
         }
 

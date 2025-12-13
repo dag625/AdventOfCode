@@ -11,6 +11,7 @@
 #include <vector>
 #include <variant>
 #include <array>
+#include <algorithm>
 
 #include "utilities.h"
 #include "parse.h"

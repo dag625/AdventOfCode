@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <regex>
+#include <algorithm>
 
 #include "utilities.h"
 #include "ranges.h"

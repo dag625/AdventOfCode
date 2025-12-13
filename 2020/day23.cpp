@@ -9,6 +9,7 @@
 #include <iostream>
 #include <array>
 #include <sstream>
+#include <filesystem>
 
 #include "heap_array.h"
 

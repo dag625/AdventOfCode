@@ -11,6 +11,7 @@
 #include <regex>
 #include <fstream>
 #include <charconv>
+#include <filesystem>
 
 namespace fs = std::filesystem;
 

@@ -11,6 +11,7 @@
 #include <ranges>
 #include <numeric>
 #include <iostream>
+#include <algorithm>
 
 #include "utilities.h"
 #include "grid.h"

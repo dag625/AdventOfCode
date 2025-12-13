@@ -12,6 +12,7 @@
 #include <numeric>
 #include <vector>
 #include <tuple>
+#include <filesystem>
 
 namespace fs = std::filesystem;
 
