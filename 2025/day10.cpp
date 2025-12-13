@@ -15,6 +15,7 @@
 #include "utilities.h"
 #include "ranges.h"
 #include "parse.h"
+#include "matrix.h"
 
 namespace {
     using namespace aoc;
@@ -26,13 +27,14 @@ namespace {
     using light_t = decltype(std::declval<std::bitset<16>>().to_ulong());
 
     struct indicator {
-        light_t desired;
+        light_t desired = 0u;
+        std::string desired_str;
         std::vector<light_t> toggles;
         std::vector<int> joltages;
 
         indicator() = default;
         indicator(std::string_view l, std::vector<light_t> t, std::vector<int> j) :
-            toggles{std::move(t)}, joltages{std::move(j)}
+            desired_str{l}, toggles{std::move(t)}, joltages{std::move(j)}
         {
             std::bitset<16> lights;
             for (int i = 0; i < lights.size() && i < l.size(); ++i) {
@@ -112,6 +114,122 @@ namespace {
         return min;
     }
 
+    bool try_solution(const matrix& A, const vector& b, const vector& x) {
+        if (std::any_of(x.data().begin(), x.data().end(), [&](const auto v) { return v < 0.0; })) {
+            return false;
+        }
+        const auto res = A * x;
+        return res == b;
+    }
+
+    int64_t solution_count(const vector& x) {
+        return std::accumulate(x.data().begin(), x.data().end(), 0ll,[](int64_t total, double val){ return total + static_cast<int64_t>(std::round(val)); });
+    }
+
+    vector build_solution(const matrix& A_r, const vector& b_r, const std::vector<size_t>& free_var_idxs, const std::vector<double>& free_vars, const double tolerance) {
+        vector retval (A_r.num_cols());
+        for (int i = 0; i < free_var_idxs.size(); i++) {
+            retval[free_var_idxs[i]] = free_vars[i];
+        }
+        for (size_t c = 0; c < retval.size(); c++) {
+            if (std::any_of(free_var_idxs.begin(), free_var_idxs.end(), [c](const size_t i){ return c == i; })) {
+                continue;
+            }
+            const auto col = A_r.col_span(c);
+            for (size_t r = 0; r < col.size(); r++) {
+                if (col[r] == 1.0) {
+                    retval[c] = b_r[r];
+                    for (size_t i = 0; i < free_var_idxs.size(); i++) {
+                        retval[c] -= free_vars[i] * A_r[r, free_var_idxs[i]];
+                    }
+                    break;
+                }
+            }
+            retval[c] = std::round(retval[c]);
+            if (std::abs(retval[c]) < tolerance) {
+                retval[c] = 0.0;
+            }
+        }
+        return retval;
+    }
+
+    int64_t find_solution(const matrix& A, const vector& b) {
+        const double tolerance = 0.0001;
+        auto eq = A.adjoin(b.to_matrix());
+        to_reduced_row_echelon(eq);
+        eq.set_zeros(tolerance);
+        const auto A_r = eq.submatrix(A.num_rows(), A.num_cols());
+        const auto b_r = eq.col_vector(eq.num_cols() - 1);
+
+        std::vector<size_t> free_var_idxs;
+        for (size_t col = 0; col < A.num_cols(); col++) {
+            int num_nonzero = 0;
+            for (size_t row = 0; row < eq.num_rows(); row++) {
+                if (eq[row, col] != 0.0) {
+                    ++num_nonzero;
+                }
+            }
+            if (num_nonzero > 1) {
+                free_var_idxs.push_back(col);
+            }
+        }
+
+        /*
+         *Just because a matrix is square or taller and thus fully- or over-determined in theory
+         *doesn't mean that there are no free variables.  There can be redundant equations.
+         */
+        if (free_var_idxs.empty()) {
+            //At least a square matrix, should be either fully determined or overdetermined with no free variables.
+            const auto sol = b_r.subvector(A.num_cols());//Actually this shouldn't matter given we only want the count and the last entry should be 0 if it's overdetermined.
+            const auto count = solution_count(sol);
+            return static_cast<int64_t>(count);
+        }
+
+        const auto max_presses = *std::max_element(b.data().begin(), b.data().end());
+
+        std::vector<double> free_vars;
+        free_vars.resize(free_var_idxs.size());
+        auto best_count = std::numeric_limits<int64_t>::max();
+        vector best;
+        while (std::all_of(free_vars.begin(), free_vars.end(), [max_presses](const auto v) { return v <= max_presses; })) {
+            auto x = build_solution(A_r, b_r, free_var_idxs, free_vars, tolerance);
+            const auto count = solution_count(x);
+            if (count < best_count && try_solution(A, b, x)) {
+                best = x;
+                best_count = count;
+            }
+            int incr = 0;
+            for (double& v : free_vars) {
+                ++v;
+                if (v <= max_presses) {
+                    break;
+                }
+                ++incr;
+                v = 0;
+            }
+            if (incr == free_vars.size() && free_vars.back() == 0) {
+                break; //Incremented everything, but last is 0 means we looped everything and have tried all values.
+            }
+        }
+
+        return static_cast<int64_t>(best_count);
+    }
+
+    int64_t find_count_p2(const indicator& ind) {
+        matrix A {ind.joltages.size(), ind.toggles.size()};
+        vector b {vector::convert_tag{}, ind.joltages.begin(), ind.joltages.end()};
+        for (const auto [c, t] : ind.toggles | std::views::enumerate) {
+            for (size_t r = 0; r < A.num_rows(); r++) {
+                light_t v = 1u << r;
+                if (v & t) {
+                    A[r, c] = 1.0;
+                }
+            }
+        }
+        const auto solution = find_solution(A, b);
+        return solution;
+    }
+
     /************************* Part 1 *************************/
     std::string part_1(const std::vector<std::string>& lines) {
         const auto input = get_input(lines);
@@ -126,8 +244,12 @@ namespace {
     /************************* Part 2 *************************/
     std::string part_2(const std::vector<std::string>& lines) {
         const auto input = get_input(lines);
-
-        return std::to_string(-1);
+        int64_t sum = 0;
+        for (const auto& ind : input) {
+            const auto presses = find_count_p2(ind);
+            sum += presses;
+        }
+        return std::to_string(sum);
     }
 
     aoc::registration r {2025, 10, part_1, part_2};
