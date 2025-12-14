@@ -484,8 +484,8 @@ namespace aoc {
         else {
             last->next = pos.m_ptr;
             first->prev = pos.m_ptr->prev;
-            pos.m_ptr->prev = last;
             pos.m_ptr->prev->next = first;
+            pos.m_ptr->prev = last;
 
             if (m_head == pos.m_ptr && !pos.m_passed_end) {
                 m_head = first;
